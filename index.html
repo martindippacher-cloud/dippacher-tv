@@ -1,0 +1,42 @@
+<!DOCTYPE html><html lang="de"><head><meta charset="utf-8"><title>Dippacher TV</title>
+<meta name="viewport" content="width=1920">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+<style>
+html,body{margin:0;width:100vw;height:100vh;overflow:hidden;background:#1d120c;font-family:'Source Sans 3',sans-serif;color:#f6ead6;cursor:none}
+.f{position:absolute;inset:0;opacity:0;transition:opacity 1.5s;display:flex;align-items:center;background:radial-gradient(ellipse at 30% 40%,#4a2a18,#1d120c 75%)}
+.f.on{opacity:1}
+.bg{position:absolute;inset:0;background-size:cover;background-position:center;filter:brightness(.38) saturate(1.05)}
+.in{position:relative;display:flex;align-items:center;gap:6vw;padding:0 7vw;width:100%;box-sizing:border-box}
+.txt{flex:1}
+h1{font-family:'Playfair Display',serif;font-size:6.2vw;line-height:1.05;margin:0 0 1.5vh;color:#fff;text-shadow:0 .3vw 1vw #000}
+h2{font-size:3vw;margin:0 0 3vh;color:#e9b44c;font-weight:600;text-shadow:0 .2vw .6vw #000}
+p{font-size:2.3vw;margin:0;max-width:60vw;text-shadow:0 .2vw .6vw #000}
+.qr{background:#fff;padding:1.2vw;border-radius:1vw;text-align:center;box-shadow:0 1vw 3vw #000a}
+.qr img{width:18vw;display:block}.qr div{color:#5a1d16;font-size:1.35vw;font-weight:600;margin-top:.6vw}
+.badge{display:inline-block;background:#A13036;color:#fff;font-size:1.6vw;font-weight:600;padding:.3vw 1.2vw;border-radius:.4vw;margin-bottom:2vh;letter-spacing:.15vw}
+ul{list-style:none;padding:0;margin:0 0 3vh;font-size:2.6vw}
+li{display:flex;justify-content:space-between;border-bottom:.15vw dotted #e9b44c88;padding:1.1vh 0;max-width:70vw}
+li span:last-child{color:#e9b44c}
+.bar{position:absolute;left:0;right:0;bottom:0;height:9vh;background:linear-gradient(transparent,#000c);display:flex;align-items:center;justify-content:space-between;padding:0 3vw;z-index:5}
+.bar img{height:6.5vh;filter:drop-shadow(0 0 .4vw #000)}
+#uhr{font-size:1.8vw;color:#f6ead6cc}
+.rand{position:absolute;inset:1.2vw;border:.2vw solid #e9b44c55;border-radius:1vw;pointer-events:none;z-index:4}
+</style></head><body>
+<div id="s"></div><div class="rand"></div>
+<div class="bar"><img src="assets/logo.png" alt="Dippacher"><div id="uhr"></div></div>
+<script src="slides.js"></script>
+<script>
+const P=new URLSearchParams(location.search),DAUER=10,RELOAD=5*60*1000;
+const min=t=>{const[a,b]=t.split(':');return a*60+ +b};
+function aktiv(f){if(f.aktiv===false)return false;if(P.has('alle'))return true;const d=new Date(),m=d.getHours()*60+d.getMinutes(),wt=d.getDay()||7;
+ if(f.tage&&!f.tage.includes(wt))return false;if(f.zeit&&(m<min(f.zeit.von)||m>min(f.zeit.bis)))return false;return true}
+const S=document.getElementById('s'),els=FOLIEN.map(f=>{const e=document.createElement('div');e.className='f';
+ e.innerHTML=(f.bild?`<div class="bg" style="background-image:url('${f.bild}')"></div>`:'')+`<div class="in"><div class="txt">${f.badge?`<div class="badge">${f.badge}</div>`:''}<h1>${f.titel}</h1>${f.unter?`<h2>${f.unter}</h2>`:''}${f.liste?'<ul>'+f.liste.map(r=>`<li><span>${r[0]}</span><span>${r[1]}</span></li>`).join('')+'</ul>':''}${f.text?`<p>${f.text}</p>`:''}</div>${f.qr?`<div class="qr"><img src="${f.qr}"><div>${f.link}</div></div>`:''}</div>`;
+ S.appendChild(e);return e});
+let i=-1;function next(){const idx=FOLIEN.map((f,k)=>k).filter(k=>aktiv(FOLIEN[k]));if(!idx.length)return;
+ i=idx[(idx.indexOf(i)+1)%idx.length]??idx[0];els.forEach((e,k)=>e.classList.toggle('on',k===i));setTimeout(next,(FOLIEN[i].dauer||DAUER)*1000)}
+if(P.has('folie')){els[+P.get('folie')].classList.add('on')}else next();
+function uhr(){document.getElementById('uhr').textContent=new Date().toLocaleString('de-DE',{weekday:'long',day:'2-digit',month:'long',hour:'2-digit',minute:'2-digit'})}
+uhr();setInterval(uhr,10000);
+if(!P.has('folie'))setInterval(()=>fetch(location.href,{cache:'no-store'}).then(r=>{if(r.ok)location.reload()}).catch(()=>{}),RELOAD);
+</script></body></html>
