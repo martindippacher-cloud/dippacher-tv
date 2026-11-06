@@ -1,9 +1,15 @@
 // ===== FOLIEN – hier Inhalte ändern =====
-// Felder: typ, titel, text, bild (Hintergrund), qr, link, dauer (Sek.),
+// Felder: typ, titel, text, bild (Hintergrund), qr/logo, link, dauer (Sek.),
 // zeit: {von:"11:00", bis:"14:00"} = nur in diesem Zeitfenster zeigen (optional)
+// datum: "YYYY-MM-DD" = nur an diesem Kalendertag (Europe/Berlin, optional)
 // tage: [1..7] Mo=1 … So=7 (optional), aktiv:false = ausblenden
 // typ:"bestand" + dataUrl = Live-Bestand aus inventory.json
 window.FOLIEN = [
+ {titel:"Herzlich willkommen", unter:"Stadtwerke Forchheim",
+  text:"Schön, dass Sie da sind!<br>Wir wünschen eine schöne Weihnachtsfeier.",
+  bild:"assets/stadtwerke_forchheim_bg.jpg",
+  logo:"assets/stadtwerke_forchheim_logo.png",
+  datum:"2026-11-06"},
  {titel:"Herzlich willkommen", unter:"in der Gaststätte Dippacher", text:"Fränkische Gastlichkeit in Poppendorf – schön, dass Sie da sind!", bild:"assets/schaueferla_9731Lr.jpg"},
  {titel:"Mittagstisch heute", badge:"BEISPIEL", zeit:{von:"10:00",bis:"14:30"},
   liste:[["Fränkisches Schäufele mit Kloß","Beispiel €"],["Schweinebraten mit Wirsing","Beispiel €"],["Tagessuppe","Beispiel €"]], text:"Testfolie – erscheint nur mittags (10:00–14:30)"},

@@ -52,6 +52,11 @@ li span:last-child{color:#e9b44c}
 .f.kompakt p{font-size:1.75vw;line-height:1.35;max-width:58vw;margin-bottom:0}
 .f.kompakt .qr img{width:14vw}
 .f.kompakt .qr div{font-size:1.15vw}
+.glogo{background:#fff;padding:2.2vw 2.4vw;border-radius:1vw;text-align:center;box-shadow:0 1vw 3vw #000a;min-width:28vw}
+.glogo img{display:block;margin:0 auto;width:26vw;max-width:520px;height:auto;object-fit:contain}
+.glogo div{display:none}
+.txt p{max-width:55vw}
+
 </style></head><body>
 <div id="s"></div><div class="rand"></div>
 <div class="bar"><img src="assets/logo.png" alt="Dippacher"><div id="uhr"></div></div>
@@ -60,6 +65,8 @@ li span:last-child{color:#e9b44c}
 const P=new URLSearchParams(location.search),DAUER=15,RELOAD=5*60*1000,BESTAND_MS=45000;
 const min=t=>{const[a,b]=t.split(':');return a*60+ +b};
 function aktiv(f){if(f.aktiv===false)return false;if(P.has('alle'))return true;const d=new Date(),m=d.getHours()*60+d.getMinutes(),wt=d.getDay()||7;
+ const iso=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+ if(f.datum&&f.datum!==iso)return false;
  if(f.tage&&!f.tage.includes(wt))return false;if(f.zeit&&(m<min(f.zeit.von)||m>min(f.zeit.bis)))return false;return true}
 const eur=new Intl.NumberFormat('de-DE',{style:'currency',currency:'EUR'});
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -83,7 +90,7 @@ const S=document.getElementById('s'),els=FOLIEN.map(f=>{const e=document.createE
   e.innerHTML='<div class="in"><div class="txt" style="width:100%"><h1>'+esc(f.titel)+'</h1>'+(f.unter?'<h2>'+esc(f.unter)+'</h2>':'')+'<div class="bst"><p class="bst-meta">Lade Bestand …</p></div></div></div>';
   loadBestand(f,e);setInterval(function(){loadBestand(f,e)},BESTAND_MS);
  }else{
-  e.innerHTML=(f.bild?'<div class="bg" style="background-image:url(\''+f.bild+'\')"></div>':'')+'<div class="in"><div class="txt">'+(f.badge?'<div class="badge">'+f.badge+'</div>':'')+'<h1>'+f.titel+'</h1>'+(f.unter?'<h2>'+f.unter+'</h2>':'')+(f.liste?'<ul>'+f.liste.map(function(r){return '<li><span>'+r[0]+'</span><span>'+r[1]+'</span></li>'}).join('')+'</ul>':'')+(f.text?'<p>'+f.text+'</p>':'')+'</div>'+(f.qr?'<div class="qr"><img src="'+f.qr+'"><div>'+f.link+'</div></div>':'')+'</div>';
+  e.innerHTML=(f.bild?'<div class="bg" style="background-image:url(\''+f.bild+'\')"></div>':'')+'<div class="in"><div class="txt">'+(f.badge?'<div class="badge">'+f.badge+'</div>':'')+'<h1>'+f.titel+'</h1>'+(f.unter?'<h2>'+f.unter+'</h2>':'')+(f.liste?'<ul>'+f.liste.map(function(r){return '<li><span>'+r[0]+'</span><span>'+r[1]+'</span></li>'}).join('')+'</ul>':'')+(f.text?'<p>'+f.text+'</p>':'')+'</div>'+(f.logo?'<div class="glogo"><img src="'+f.logo+'" alt=""></div>':(f.qr?'<div class="qr"><img src="'+f.qr+'"><div>'+f.link+'</div></div>':''))+'</div>';
  }
  S.appendChild(e);return e});
 let i=-1;function next(){const idx=FOLIEN.map(function(f,k){return k}).filter(function(k){return aktiv(FOLIEN[k])});if(!idx.length)return;
