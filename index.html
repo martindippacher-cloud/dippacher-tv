@@ -21,21 +21,74 @@ li span:last-child{color:#e9b44c}
 .bar img{height:6.5vh;filter:drop-shadow(0 0 .4vw #000)}
 #uhr{font-size:1.8vw;color:#f6ead6cc}
 .rand{position:absolute;inset:1.2vw;border:.2vw solid #e9b44c55;border-radius:1vw;pointer-events:none;z-index:4}
+/* Live-Bestand – große Schrift für 65-Zoll */
+.f.bestand .in{padding:0 4vw 8vh;align-items:stretch}
+.f.bestand h1{font-size:3.8vw;margin-bottom:.5vh}
+.f.bestand h2{font-size:2vw;margin-bottom:1vh}
+.bst{width:100%}
+.bst-meta{font-size:1.5vw;color:#f6ead6aa;margin:0 0 1.5vh;text-shadow:0 .15vw .4vw #000}
+.bst-grid{display:grid;grid-template-columns:1fr 1fr;gap:.6vh 2.5vw}
+.bst-row{display:grid;grid-template-columns:4.2vw minmax(0,1fr) 7.5vw 13vw;gap:.8vw;align-items:center;border-bottom:.12vw solid #e9b44c44;padding:.55vh 0;font-size:1.95vw}
+.bst-row .fach{color:#e9b44c;font-weight:600;font-variant-numeric:tabular-nums}
+.bst-row .name{color:#fff;font-weight:600;white-space:normal;overflow:visible;line-height:1.15;hyphens:manual}
+.bst-row .preis{color:#e9b44c;text-align:right;font-variant-numeric:tabular-nums;align-self:center}
+.bst-row .qty{text-align:right;font-weight:600;font-variant-numeric:tabular-nums;align-self:center;white-space:nowrap}
+.bst-row .fach{align-self:center}
+.bst-row .qty.ok{color:#9fd89f}
+.bst-row .qty.low{color:#e9b44c}
+.bst-row .qty.out{color:#ff8a8a;letter-spacing:.04em}
+.bst-err{font-size:2.4vw;color:#ffb4b4;margin-top:2vh;text-shadow:0 .2vw .6vw #000}
+.bst-head{display:grid;grid-template-columns:4.2vw minmax(0,1fr) 7.5vw 13vw;gap:.8vw;font-size:1.3vw;color:#e9b44caa;text-transform:uppercase;letter-spacing:.08em;padding-bottom:.5vh;border-bottom:.15vw solid #e9b44c66;margin-bottom:.3vh}
+.bst-head span:nth-child(3),.bst-head span:nth-child(4){text-align:right}
+/* etwas kleinere Schrift, zweizeilige Namen möglich */
+.bst-row{align-items:start;font-size:1.75vw;padding:.45vh 0}
+.bst-row .name{font-size:1.75vw}
+/* Vorbestell-Folie: kompakter, Abstand zur Logo-Leiste */
+.f.kompakt .in{padding:0 7vw 13vh;align-items:center}
+.f.kompakt h1{font-size:4.5vw;margin-bottom:.8vh}
+.f.kompakt h2{font-size:2.2vw;margin-bottom:1.2vh}
+.f.kompakt ul{font-size:2.05vw;margin:0 0 1vh;max-width:58vw}
+.f.kompakt li{padding:.45vh 0}
+.f.kompakt p{font-size:1.75vw;line-height:1.35;max-width:58vw;margin-bottom:0}
+.f.kompakt .qr img{width:14vw}
+.f.kompakt .qr div{font-size:1.15vw}
 </style></head><body>
 <div id="s"></div><div class="rand"></div>
 <div class="bar"><img src="assets/logo.png" alt="Dippacher"><div id="uhr"></div></div>
 <script src="slides.js"></script>
 <script>
-const P=new URLSearchParams(location.search),DAUER=10,RELOAD=5*60*1000;
+const P=new URLSearchParams(location.search),DAUER=15,RELOAD=5*60*1000,BESTAND_MS=45000;
 const min=t=>{const[a,b]=t.split(':');return a*60+ +b};
 function aktiv(f){if(f.aktiv===false)return false;if(P.has('alle'))return true;const d=new Date(),m=d.getHours()*60+d.getMinutes(),wt=d.getDay()||7;
  if(f.tage&&!f.tage.includes(wt))return false;if(f.zeit&&(m<min(f.zeit.von)||m>min(f.zeit.bis)))return false;return true}
-const S=document.getElementById('s'),els=FOLIEN.map(f=>{const e=document.createElement('div');e.className='f';
- e.innerHTML=(f.bild?`<div class="bg" style="background-image:url('${f.bild}')"></div>`:'')+`<div class="in"><div class="txt">${f.badge?`<div class="badge">${f.badge}</div>`:''}<h1>${f.titel}</h1>${f.unter?`<h2>${f.unter}</h2>`:''}${f.liste?'<ul>'+f.liste.map(r=>`<li><span>${r[0]}</span><span>${r[1]}</span></li>`).join('')+'</ul>':''}${f.text?`<p>${f.text}</p>`:''}</div>${f.qr?`<div class="qr"><img src="${f.qr}"><div>${f.link}</div></div>`:''}</div>`;
+const eur=new Intl.NumberFormat('de-DE',{style:'currency',currency:'EUR'});
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function qtyLabel(q){q=Math.max(0,Number(q)||0);if(q<=0)return{t:'AUSVERKAUFT',c:'out'};if(q<=2)return{t:q+' Stück',c:'low'};return{t:q+' Stück',c:'ok'}}
+function renderBestand(el,data,err){
+  const box=el.querySelector('.bst');if(!box)return;
+  if(err||!data){box.innerHTML='<p class="bst-err">'+esc(err||'Bestand gerade nicht erreichbar – bitte später erneut prüfen.')+'</p>';return}
+  const items=[...(data.items||[])].sort((a,b)=>(Number(a.fach)||99)-(Number(b.fach)||99)||String(a.name).localeCompare(String(b.name),'de'));
+  const stamp=data.checkedAt||data.updatedAt;
+  const when=stamp?new Date(stamp).toLocaleString('de-DE',{timeZone:'Europe/Berlin',weekday:'short',day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})+' Uhr':'–';
+  const rows=items.map(i=>{const q=qtyLabel(i.quantity);return '<div class="bst-row"><span class="fach">'+esc(i.fach!=null?i.fach:'–')+'</span><span class="name">'+esc(i.name)+'</span><span class="preis">'+eur.format(Number(i.price)||0)+'</span><span class="qty '+q.c+'">'+q.t+'</span></div>'}).join('');
+  box.innerHTML='<div class="bst-meta">Stand: '+esc(when)+' · Quelle: Food-Box Automat</div><div class="bst-head"><span>Fach</span><span>Artikel</span><span>Preis</span><span>Bestand</span></div><div class="bst-grid">'+rows+'</div>';
+}
+async function loadBestand(f,el){
+  if(!f.dataUrl)return;
+  try{const r=await fetch(f.dataUrl,{cache:'no-store'});if(!r.ok)throw new Error('HTTP '+r.status);const d=await r.json();renderBestand(el,d,null)}
+  catch(e){renderBestand(el,null,'Bestand gerade nicht erreichbar ('+e.message+').')}
+}
+const S=document.getElementById('s'),els=FOLIEN.map(f=>{const e=document.createElement('div');e.className='f'+(f.typ==='bestand'?' bestand':'')+(f.klasse?' '+f.klasse:'');
+ if(f.typ==='bestand'){
+  e.innerHTML='<div class="in"><div class="txt" style="width:100%"><h1>'+esc(f.titel)+'</h1>'+(f.unter?'<h2>'+esc(f.unter)+'</h2>':'')+'<div class="bst"><p class="bst-meta">Lade Bestand …</p></div></div></div>';
+  loadBestand(f,e);setInterval(function(){loadBestand(f,e)},BESTAND_MS);
+ }else{
+  e.innerHTML=(f.bild?'<div class="bg" style="background-image:url(\''+f.bild+'\')"></div>':'')+'<div class="in"><div class="txt">'+(f.badge?'<div class="badge">'+f.badge+'</div>':'')+'<h1>'+f.titel+'</h1>'+(f.unter?'<h2>'+f.unter+'</h2>':'')+(f.liste?'<ul>'+f.liste.map(function(r){return '<li><span>'+r[0]+'</span><span>'+r[1]+'</span></li>'}).join('')+'</ul>':'')+(f.text?'<p>'+f.text+'</p>':'')+'</div>'+(f.qr?'<div class="qr"><img src="'+f.qr+'"><div>'+f.link+'</div></div>':'')+'</div>';
+ }
  S.appendChild(e);return e});
-let i=-1;function next(){const idx=FOLIEN.map((f,k)=>k).filter(k=>aktiv(FOLIEN[k]));if(!idx.length)return;
- i=idx[(idx.indexOf(i)+1)%idx.length]??idx[0];els.forEach((e,k)=>e.classList.toggle('on',k===i));setTimeout(next,(FOLIEN[i].dauer||DAUER)*1000)}
-if(P.has('folie')){els[+P.get('folie')].classList.add('on')}else next();
+let i=-1;function next(){const idx=FOLIEN.map(function(f,k){return k}).filter(function(k){return aktiv(FOLIEN[k])});if(!idx.length)return;
+ i=idx[(idx.indexOf(i)+1)%idx.length];if(i==null)i=idx[0];els.forEach(function(e,k){e.classList.toggle('on',k===i)});setTimeout(next,(FOLIEN[i].dauer||DAUER)*1000)}
+if(P.has('folie')){els[+P.get('folie')].classList.add('on');els[+P.get('folie')].style.opacity='1'}else next();
 function uhr(){document.getElementById('uhr').textContent=new Date().toLocaleString('de-DE',{weekday:'long',day:'2-digit',month:'long',hour:'2-digit',minute:'2-digit'})}
 uhr();setInterval(uhr,10000);
 if(!P.has('folie'))setInterval(()=>fetch(location.href,{cache:'no-store'}).then(r=>{if(r.ok)location.reload()}).catch(()=>{}),RELOAD);
