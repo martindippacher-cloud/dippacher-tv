@@ -60,7 +60,7 @@ code{background:#0005;padding:.05rem .3rem;border-radius:.25rem;color:var(--gold
   <div class="grid" id="grid">Lade Folien …</div>
 </main>
 <footer>
-  Anleitung: <code>FOLIEN.md</code> · <code>version.json</code> · <code>einblendung.json</code> · Offline: <code>sw.js</code> + <code>assets/fonts/</code>
+  Anleitung: <code>FOLIEN.md</code> · <code>MONITORING.md</code> · Offline: <code>sw.js</code> · Alarm: <code>.github/workflows/tv-alarm.yml</code>
 </footer>
 <script src="schedule.js"></script>
 <script src="slides.js"></script>
@@ -87,8 +87,9 @@ code{background:#0005;padding:.05rem .3rem;border-radius:.25rem;color:var(--gold
   Promise.all([
     loadFolien(),
     fetch('version.json',{cache:'no-store'}).then(r=>r.ok?r.json():{version:'–'}).catch(()=>({version:'–'})),
-    fetch('einblendung.json',{cache:'no-store'}).then(r=>r.ok?r.json():{aktiv:false}).catch(()=>({aktiv:false}))
-  ]).then(([FOLIEN, ver, eb])=>{
+    fetch('einblendung.json',{cache:'no-store'}).then(r=>r.ok?r.json():{aktiv:false}).catch(()=>({aktiv:false})),
+    fetch('status/tv-check.json',{cache:'no-store'}).then(r=>r.ok?r.json():null).catch(()=>null)
+  ]).then(([FOLIEN, ver, eb, chk])=>{
     const meta=document.getElementById('meta');
     const ebOn=einblendungAktiv(eb);
     const online=navigator.onLine;
@@ -103,7 +104,10 @@ code{background:#0005;padding:.05rem .3rem;border-radius:.25rem;color:var(--gold
         : 'keine')+'</div>'+
       '<div class="chip"><b>Netz</b> '+(online?'online':'OFFLINE')+'</div>'+
       '<div class="chip"><b>Offline-Cache</b> '+swState+'</div>'+
-      '<div class="chip"><b>Folien</b> '+FOLIEN.length+'</div>';
+      '<div class="chip"><b>Folien</b> '+FOLIEN.length+'</div>'+
+      '<div class="chip"><b>Letzter Check</b> '+(chk&&chk.checkedAt
+        ? (new Date(chk.checkedAt).toLocaleString('de-DE')+(chk.ok===true?' · OK':chk.ok===false?' · FEHLER':''))
+        : 'noch keiner (siehe MONITORING.md)')+'</div>';
 
     const grid=document.getElementById('grid'); grid.innerHTML='';
     FOLIEN.forEach((f,i)=>{

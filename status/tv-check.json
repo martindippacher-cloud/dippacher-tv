@@ -1,0 +1,12 @@
+{
+  "ok": true,
+  "checkedAt": "2026-11-09T20:35:39+01:00",
+  "base": "http://127.0.0.1:8770",
+  "notes": [
+    "Base: http://127.0.0.1:8770",
+    "Live-Seite HTTP 200",
+    "version.json OK (2026-11-09T20:34:55+01:00)",
+    "auswahl.json OK",
+    "inventory.json frisch genug"
+  ]
+}

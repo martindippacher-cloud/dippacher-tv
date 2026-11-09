@@ -1,0 +1,95 @@
+# TV-Alarm: prüft Live-Seite, version.json, inventory-Frische.
+# Nur GITHUB_TOKEN – kein Extra-Secret, kein SMTP.
+# Bei Fehler: Job schlägt fehl + Issue „TV-Alarm“ öffnen/aktualisieren.
+name: TV-Alarm
+on:
+  schedule:
+    - cron: '7/15 * * * *'   # alle ~15 Min (UTC)
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: TV-Checks
+        id: check
+        continue-on-error: true
+        env:
+          TV_BASE_URL: https://martindippacher-cloud.github.io/dippacher-tv
+          TV_INVENTORY_URL: https://martindippacher-cloud.github.io/automat-bestand/inventory.json
+          TV_INV_MAX_AGE_H: '36'
+        run: bash scripts/tv-check.sh | tee /tmp/tv-check-out.txt
+
+      - name: Issue TV-Alarm öffnen/aktualisieren bei Fehler
+        if: steps.check.outcome == 'failure'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const body = [
+              '## TV-Alarm',
+              '',
+              `Automatischer Check ist fehlgeschlagen (${new Date().toISOString()}).`,
+              '',
+              '```',
+              fs.existsSync('/tmp/tv-check-out.txt') ? fs.readFileSync('/tmp/tv-check-out.txt','utf8').slice(0,6000) : '(keine Ausgabe)',
+              '```',
+              '',
+              'Workflow: TV-Alarm. Kein SMTP – Benachrichtigung über GitHub Issue / Bot-Routine.',
+              '',
+              'Nach Behebung: dieses Issue schließen. Der nächste erfolgreiche Lauf kommentiert ggf. darunter.'
+            ].join('\n');
+            const title = 'TV-Alarm';
+            const labels = ['tv-alarm'];
+            // Label sicherstellen
+            try { await github.rest.issues.createLabel({ owner: context.repo.owner, repo: context.repo.repo, name: 'tv-alarm', color: 'B60205' }); } catch (_) {}
+            const open = await github.rest.issues.listForRepo({
+              owner: context.repo.owner, repo: context.repo.repo,
+              state: 'open', labels: 'tv-alarm', per_page: 5
+            });
+            if (open.data.length) {
+              const issue = open.data[0];
+              await github.rest.issues.createComment({
+                owner: context.repo.owner, repo: context.repo.repo,
+                issue_number: issue.number, body
+              });
+              await github.rest.issues.update({
+                owner: context.repo.owner, repo: context.repo.repo,
+                issue_number: issue.number, title, state: 'open'
+              });
+              core.info('Updated issue #' + issue.number);
+            } else {
+              const created = await github.rest.issues.create({
+                owner: context.repo.owner, repo: context.repo.repo,
+                title, body, labels
+              });
+              core.info('Opened issue #' + created.data.number);
+            }
+
+      - name: Bei Erfolg offenes TV-Alarm-Issue kommentieren
+        if: steps.check.outcome == 'success'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const open = await github.rest.issues.listForRepo({
+              owner: context.repo.owner, repo: context.repo.repo,
+              state: 'open', labels: 'tv-alarm', per_page: 5
+            });
+            if (!open.data.length) return;
+            const issue = open.data[0];
+            await github.rest.issues.createComment({
+              owner: context.repo.owner, repo: context.repo.repo,
+              issue_number: issue.number,
+              body: `✅ Check wieder OK (${new Date().toISOString()}). Bitte Issue schließen, wenn alles passt.`
+            });
+
+      - name: Job-Status
+        if: steps.check.outcome == 'failure'
+        run: exit 1

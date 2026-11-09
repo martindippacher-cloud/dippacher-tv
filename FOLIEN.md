@@ -151,3 +151,7 @@ Nach Inhaltsänderung lokal/per Bot **`version` hochsetzen** (Zeitstempel reicht
 - `sw.js` cached Shell, Folien-JSON und Assets. Bei fehlendem Netz läuft die letzte Version weiter.
 - Bestand-Folie: letzter erfolgreicher Abruf im `localStorage`; offline erscheint **„Stand von HH:MM“** statt Fehler.
 - Nach Inhaltsänderung: `version.json` hochsetzen; Service-Worker-Cache-Name bei Breaking Changes erhöhen (`dippacher-tv-vN`).
+
+## Monitoring
+Siehe `MONITORING.md` und `.github/workflows/tv-alarm.yml`.
+
