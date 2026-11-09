@@ -20,5 +20,7 @@
       "Beispiel €"
     ]
   ],
-  "text": "Testfolie – erscheint nur mittags (10:00–14:30)"
+  "text": "Testfolie – erscheint nur mittags (10:00–14:30)",
+  "csvUrl": null,
+  "_csvHinweis": "Optional: URL einer als CSV veröffentlichten Google-Tabelle (Spalten Datum,Gericht,Preis,Hinweis). null = bisherige feste liste nutzen. Siehe MITTAGSTISCH.md"
 }

@@ -132,6 +132,71 @@ async function loadBestand(f,el){
   }
 }
 function aktiv(f){return TVSchedule.aktiv(f, new Date(), P.has('alle'))}
+
+function parseCSV(text){
+  const rows=[]; let row=[], cur='', q=false;
+  for(let i=0;i<text.length;i++){
+    const c=text[i], n=text[i+1];
+    if(q){
+      if(c==='"'&&n==='"'){cur+='"';i++}
+      else if(c==='"'){q=false}
+      else cur+=c;
+    }else{
+      if(c==='"') q=true;
+      else if(c===','){row.push(cur);cur=''}
+      else if(c==='\n'||c==='\r'){
+        if(c==='\r'&&n==='\n') i++;
+        row.push(cur); rows.push(row); row=[]; cur='';
+      }else cur+=c;
+    }
+  }
+  if(cur.length||row.length){row.push(cur);rows.push(row)}
+  return rows.filter(r=>r.some(c=>String(c).trim()!==''));
+}
+function heuteISO(d){
+  d=d||new Date();
+  const y=d.getFullYear(), m=String(d.getMonth()+1).padStart(2,'0'), day=String(d.getDate()).padStart(2,'0');
+  return y+'-'+m+'-'+day;
+}
+function parseDatumCell(s){
+  s=String(s||'').trim();
+  if(/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+  const m=s.match(/^(\d{1,2})\.(\d{1,2})\.(\d{4})$/);
+  if(m) return m[3]+'-'+m[2].padStart(2,'0')+'-'+m[1].padStart(2,'0');
+  return s;
+}
+async function applyMittagstischCSV(FOLIEN){
+  for(const f of FOLIEN){
+    if(!f.csvUrl) continue;
+    try{
+      const r=await fetch(f.csvUrl,{cache:'no-store'});
+      if(!r.ok) throw new Error('HTTP '+r.status);
+      const rows=parseCSV(await r.text());
+      if(rows.length<2) continue;
+      const head=rows[0].map(h=>String(h).trim().toLowerCase());
+      const iD=head.findIndex(h=>h==='datum');
+      const iG=head.findIndex(h=>h==='gericht'||h==='name'||h==='gerichtname');
+      const iP=head.findIndex(h=>h==='preis');
+      const iH=head.findIndex(h=>h==='hinweis'||h==='info');
+      if(iD<0||iG<0) continue;
+      const today=heuteISO(new Date());
+      const items=rows.slice(1).filter(r=>parseDatumCell(r[iD])===today).map(r=>{
+        const name=String(r[iG]||'').trim();
+        const preis=iP>=0?String(r[iP]||'').trim():'';
+        const hinweis=iH>=0?String(r[iH]||'').trim():'';
+        return [hinweis?name+' ('+hinweis+')':name, preis];
+      }).filter(x=>x[0]);
+      if(items.length){
+        f.liste=items;
+        f._csvQuelle=f.csvUrl;
+        f.badge=f.badge||'Heute';
+        if(f.text&&/Testfolie|Beispiel/i.test(f.text)) f.text='Aus Google-Tabelle · '+today;
+      }
+    }catch(e){ console.warn('Mittagstisch CSV', e); }
+  }
+  return FOLIEN;
+}
+
 function fitClass(f){return (f.fit==='contain')?'contain':'cover'}
 function buildSlide(f){
   const e=document.createElement('div');
@@ -252,10 +317,11 @@ async function pollEinblendung(){
 }
 
 loadFolien().then(function(FOLIEN){
+  return applyMittagstischCSV(FOLIEN);
+}).then(function(FOLIEN){
   startPlayer(FOLIEN);
   pollEinblendung();
   if(!P.has('folie')) setInterval(pollEinblendung, EINBL_MS);
-  // Einblendung auch bei ?folie= zeigen (Vorschau)
   else { pollEinblendung(); setInterval(pollEinblendung, EINBL_MS); }
 }).catch(err=>{
   document.getElementById('s').innerHTML='<div class="f on" style="opacity:1;padding:4vw;font-size:2vw">Folien konnten nicht geladen werden: '+esc(err.message)+'</div>';

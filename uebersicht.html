@@ -107,7 +107,13 @@ code{background:#0005;padding:.05rem .3rem;border-radius:.25rem;color:var(--gold
       '<div class="chip"><b>Folien</b> '+FOLIEN.length+'</div>'+
       '<div class="chip"><b>Letzter Check</b> '+(chk&&chk.checkedAt
         ? (new Date(chk.checkedAt).toLocaleString('de-DE')+(chk.ok===true?' · OK':chk.ok===false?' · FEHLER':''))
-        : 'noch keiner (siehe MONITORING.md)')+'</div>';
+        : 'noch keiner (siehe MONITORING.md)')+'</div>'+
+      '<div class="chip"><b>Mittagstisch</b> '+((function(){
+          const m=FOLIEN.find(function(f){return f.id==='mittagstisch'});
+          if(!m) return '–';
+          if(m.csvUrl) return 'CSV · '+m.csvUrl.replace(/^https?:\/\//,'').slice(0,42)+'…';
+          return 'feste Liste (keine csvUrl)';
+        })())+'</div>';
 
     const grid=document.getElementById('grid'); grid.innerHTML='';
     FOLIEN.forEach((f,i)=>{

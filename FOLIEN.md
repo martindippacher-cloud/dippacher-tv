@@ -155,3 +155,7 @@ Nach Inhaltsänderung lokal/per Bot **`version` hochsetzen** (Zeitstempel reicht
 ## Monitoring
 Siehe `MONITORING.md` und `.github/workflows/tv-alarm.yml`.
 
+
+## Mittagstisch-Tabelle
+Siehe `MITTAGSTISCH.md` und `beispiele/mittagstisch-beispiel.csv`.
+
