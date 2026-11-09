@@ -206,7 +206,7 @@ function renderEinblendung(eb){
   if(!einblendungAktiv(eb)){box.classList.remove('on'); box.innerHTML=''; return}
   box.innerHTML='<div class="eb-box">'+(eb.bild?'<img src="'+esc(eb.bild)+'" alt="">':'')+
     (eb.titel?'<h1>'+esc(eb.titel)+'</h1>':'')+
-    (eb.text?'<p>'+eb.text+'</p>':'')+
+    (eb.text?'<p>'+esc(eb.text).replace(/\n/g,'<br>')+'</p>':'')+
     (eb.bis?'<div class="eb-meta">bis '+esc(new Date(eb.bis).toLocaleString('de-DE'))+'</div>':'')+
     '</div>';
   box.classList.add('on');
