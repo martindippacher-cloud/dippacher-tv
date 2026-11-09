@@ -144,3 +144,10 @@ Nach Inhaltsänderung lokal/per Bot **`version` hochsetzen** (Zeitstempel reicht
 - `titel`/`text` nur Klartext (HTML wird escapet; Zeilenumbrüche `\n` → sichtbarer Umbruch)
 - Optional `wiederholung: { "zeit": {...}, "tage": [...] }` wie bei Folien
 - Übersicht zeigt den Status der Einblendung
+
+## Offline-Betrieb
+
+- Schriften liegen unter `assets/fonts/` (OFL, siehe dortige Lizenzdateien) – kein Google-CDN.
+- `sw.js` cached Shell, Folien-JSON und Assets. Bei fehlendem Netz läuft die letzte Version weiter.
+- Bestand-Folie: letzter erfolgreicher Abruf im `localStorage`; offline erscheint **„Stand von HH:MM“** statt Fehler.
+- Nach Inhaltsänderung: `version.json` hochsetzen; Service-Worker-Cache-Name bei Breaking Changes erhöhen (`dippacher-tv-vN`).

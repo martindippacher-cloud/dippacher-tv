@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Dippacher TV – Folien-Übersicht</title>
-<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/fonts/fonts.css">
 <style>
 :root{--bg:#1d120c;--card:#2a1a12;--line:#e9b44c55;--gold:#e9b44c;--cream:#f6ead6;--muted:#f6ead699}
 *{box-sizing:border-box}
@@ -50,7 +50,7 @@ code{background:#0005;padding:.05rem .3rem;border-radius:.25rem;color:var(--gold
   <div>
     <div class="pill">NUR LESEN · Änderungen über Bot / Dateien</div>
     <h1>Folien-Übersicht</h1>
-    <p class="meta">Miniaturen der Live-Folien. Reihenfolge aus <code>auswahl.json</code>. Typ HTML/Bild/Video, Version und Einblendung siehe unten.</p>
+    <p class="meta">Miniaturen der Live-Folien. Reihenfolge aus <code>auswahl.json</code>. Typ HTML/Bild/Video, Version, Einblendung, Offline-Cache siehe unten.</p>
   </div>
   <div class="toolbar"><a href="./?alle" target="_blank" rel="noopener">TV-Vorschau</a></div>
 </header>
@@ -60,7 +60,7 @@ code{background:#0005;padding:.05rem .3rem;border-radius:.25rem;color:var(--gold
   <div class="grid" id="grid">Lade Folien …</div>
 </main>
 <footer>
-  Anleitung: <code>FOLIEN.md</code> · <code>version.json</code> · <code>einblendung.json</code>
+  Anleitung: <code>FOLIEN.md</code> · <code>version.json</code> · <code>einblendung.json</code> · Offline: <code>sw.js</code> + <code>assets/fonts/</code>
 </footer>
 <script src="schedule.js"></script>
 <script src="slides.js"></script>
@@ -91,11 +91,18 @@ code{background:#0005;padding:.05rem .3rem;border-radius:.25rem;color:var(--gold
   ]).then(([FOLIEN, ver, eb])=>{
     const meta=document.getElementById('meta');
     const ebOn=einblendungAktiv(eb);
+    const online=navigator.onLine;
+    let swState='kein SW';
+    if('serviceWorker' in navigator){
+      swState=navigator.serviceWorker.controller?'aktiv (kontrolliert)':'registriert / wartend';
+    }
     meta.innerHTML=
       '<div class="chip"><b>Version</b> '+(ver.version||'–')+(ver.notiz?' · '+ver.notiz:'')+'</div>'+
       '<div class="chip"><b>Einblendung</b> '+(ebOn
         ? ('aktiv'+(eb.titel?': '+eb.titel:'')+(eb.bis?' · bis '+new Date(eb.bis).toLocaleString('de-DE'):''))
         : 'keine')+'</div>'+
+      '<div class="chip"><b>Netz</b> '+(online?'online':'OFFLINE')+'</div>'+
+      '<div class="chip"><b>Offline-Cache</b> '+swState+'</div>'+
       '<div class="chip"><b>Folien</b> '+FOLIEN.length+'</div>';
 
     const grid=document.getElementById('grid'); grid.innerHTML='';

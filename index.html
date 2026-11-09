@@ -1,6 +1,6 @@
 <!DOCTYPE html><html lang="de"><head><meta charset="utf-8"><title>Dippacher TV</title>
 <meta name="viewport" content="width=1920">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/fonts/fonts.css">
 <style>
 html,body{margin:0;width:100vw;height:100vh;overflow:hidden;background:#1d120c;font-family:'Source Sans 3',sans-serif;color:#f6ead6;cursor:none}
 .f{position:absolute;inset:0;opacity:0;transition:opacity 1.5s;display:flex;align-items:center;background:radial-gradient(ellipse at 30% 40%,#4a2a18,#1d120c 75%)}
@@ -85,19 +85,51 @@ const P=new URLSearchParams(location.search),DAUER=15,BESTAND_MS=45000,VERSION_M
 const eur=new Intl.NumberFormat('de-DE',{style:'currency',currency:'EUR'});
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function qtyLabel(q){q=Math.max(0,Number(q)||0);if(q<=0)return{t:'AUSVERKAUFT',c:'out'};if(q<=2)return{t:q+' Stück',c:'low'};return{t:q+' Stück',c:'ok'}}
-function renderBestand(el,data,err){
+function renderBestand(el,data,err,offlineAt){
   const box=el.querySelector('.bst');if(!box)return;
   if(err||!data){box.innerHTML='<p class="bst-err">'+esc(err||'Bestand gerade nicht erreichbar – bitte später erneut prüfen.')+'</p>';return}
   const items=[...(data.items||[])].sort((a,b)=>(Number(a.fach)||99)-(Number(b.fach)||99)||String(a.name).localeCompare(String(b.name),'de'));
-  const stamp=data.checkedAt||data.updatedAt;
-  const when=stamp?new Date(stamp).toLocaleString('de-DE',{timeZone:'Europe/Berlin',weekday:'short',day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})+' Uhr':'–';
+  let when;
+  if(offlineAt){
+    const d=new Date(offlineAt);
+    when='Stand von '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')+' (offline)';
+  } else {
+    const stamp=data.checkedAt||data.updatedAt;
+    when=stamp?new Date(stamp).toLocaleString('de-DE',{timeZone:'Europe/Berlin',weekday:'short',day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})+' Uhr':'–';
+    when='Stand: '+when;
+  }
   const rows=items.map(i=>{const q=qtyLabel(i.quantity);return '<div class="bst-row"><span class="fach">'+esc(i.fach!=null?i.fach:'–')+'</span><span class="name">'+esc(i.name)+'</span><span class="preis">'+eur.format(Number(i.price)||0)+'</span><span class="qty '+q.c+'">'+q.t+'</span></div>'}).join('');
-  box.innerHTML='<div class="bst-meta">Stand: '+esc(when)+' · Quelle: Food-Box Automat</div><div class="bst-head"><span>Fach</span><span>Artikel</span><span>Preis</span><span>Bestand</span></div><div class="bst-grid">'+rows+'</div>';
+  box.innerHTML='<div class="bst-meta">'+esc(when)+' · Quelle: Food-Box Automat</div><div class="bst-head"><span>Fach</span><span>Artikel</span><span>Preis</span><span>Bestand</span></div><div class="bst-grid">'+rows+'</div>';
 }
 async function loadBestand(f,el){
   if(!f.dataUrl)return;
-  try{const r=await fetch(f.dataUrl,{cache:'no-store'});if(!r.ok)throw new Error('HTTP '+r.status);const d=await r.json();renderBestand(el,d,null)}
-  catch(e){renderBestand(el,null,'Bestand gerade nicht erreichbar ('+e.message+').')}
+  const key='bestand-cache:'+f.dataUrl;
+  const offline=!navigator.onLine;
+  try{
+    const r=await fetch(f.dataUrl,{cache:'no-store'});
+    if(!r.ok)throw new Error('HTTP '+r.status);
+    const d=await r.json();
+    if(!offline){
+      try{localStorage.setItem(key, JSON.stringify({at:Date.now(), data:d}))}catch(err){}
+      renderBestand(el,d,null,null);
+    } else {
+      let cached=null;
+      try{cached=JSON.parse(localStorage.getItem(key)||'null')}catch(err){}
+      const at=(cached&&cached.at)||Date.now();
+      if(!cached||!cached.data){
+        try{localStorage.setItem(key, JSON.stringify({at:at, data:d}))}catch(err){}
+      }
+      renderBestand(el, (cached&&cached.data)||d, null, at);
+    }
+  }catch(e){
+    let cached=null;
+    try{cached=JSON.parse(localStorage.getItem(key)||'null')}catch(err){}
+    if(cached && cached.data){
+      renderBestand(el, cached.data, null, cached.at||Date.now());
+    } else {
+      renderBestand(el,null,'Bestand offline – noch kein Cache vorhanden.',null);
+    }
+  }
 }
 function aktiv(f){return TVSchedule.aktiv(f, new Date(), P.has('alle'))}
 function fitClass(f){return (f.fit==='contain')?'contain':'cover'}
@@ -228,4 +260,8 @@ loadFolien().then(function(FOLIEN){
 }).catch(err=>{
   document.getElementById('s').innerHTML='<div class="f on" style="opacity:1;padding:4vw;font-size:2vw">Folien konnten nicht geladen werden: '+esc(err.message)+'</div>';
 });
+
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('./sw.js').catch(function(e){console.warn('SW',e)});
+}
 </script></body></html>
