@@ -1,0 +1,9 @@
+{
+  "_info": "Sofort-Einblendung / Takeover. Bis-Zeitstempel ISO-8601. Optional wiederholung:{zeit,tage}. Deaktivieren: aktiv:false.",
+  "aktiv": false,
+  "titel": "",
+  "text": "",
+  "bild": null,
+  "bis": null,
+  "wiederholung": null
+}

@@ -11,7 +11,9 @@
     "kloesse",
     "reservieren",
     "oeffnung-dezember",
-    "abend"
+    "abend",
+    "beispiel-bild",
+    "beispiel-video"
   ],
   "overrides": {}
 }

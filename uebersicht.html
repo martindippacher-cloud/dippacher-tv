@@ -16,14 +16,20 @@ h1{font-family:'Playfair Display',serif;margin:0;font-size:clamp(1.5rem,3vw,2.2r
 .toolbar a{display:inline-block;border:1px solid var(--gold);color:var(--gold);text-decoration:none;padding:.45rem .9rem;border-radius:.4rem;font-weight:600}
 main{padding:1.2rem 1.5rem 2.5rem}
 .hint{margin:0 0 1.1rem;padding:.85rem 1rem;border:1px dashed var(--line);border-radius:.55rem;background:#0003;color:var(--muted);font-size:.92rem;line-height:1.45}
+.hint strong{color:var(--cream)}
+.meta-row{display:flex;flex-wrap:wrap;gap:.6rem;margin:0 0 1.1rem}
+.chip{background:#0005;border:1px solid var(--line);border-radius:.4rem;padding:.35rem .7rem;font-size:.85rem}
+.chip b{color:var(--gold);font-weight:600}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1rem}
 .card{background:var(--card);border:1px solid var(--line);border-radius:.7rem;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 .5rem 1.4rem #0005}
 .card.dim .preview{filter:grayscale(.7) brightness(.55)}
 .preview{position:relative;aspect-ratio:16/9;background:#000;overflow:hidden}
 .preview iframe{position:absolute;inset:0;width:1920px;height:1080px;border:0;transform-origin:0 0;pointer-events:none;background:#1d120c}
 .preview .veil{position:absolute;inset:0;z-index:2}
+.preview-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .body{padding:.85rem 1rem 1rem;display:flex;flex-direction:column;gap:.45rem;flex:1}
 .idx{font-size:.72rem;letter-spacing:.06em;color:var(--muted)}
+.typ{display:inline-block;font-size:.7rem;font-weight:700;letter-spacing:.06em;padding:.15rem .45rem;border-radius:.3rem;background:#3a2a18;color:var(--gold);margin-left:.35rem}
 .body h2{margin:0;font-size:1.08rem;line-height:1.25;color:#fff}
 .sub{margin:0;color:var(--gold);font-size:.88rem}
 .status{display:inline-flex;width:fit-content;font-size:.8rem;font-weight:600;padding:.22rem .55rem;border-radius:.35rem}
@@ -31,6 +37,7 @@ main{padding:1.2rem 1.5rem 2.5rem}
 .status.zeit,.status.geplant{background:#4a3a10;color:#ffd978}
 .status.abgelaufen,.status.aus{background:#4a2020;color:#ffb4b4}
 .status.heute-nicht{background:#403018;color:#e8c98a}
+.status.einbl{background:#5a1d16;color:#ffd0c8}
 .row{display:flex;justify-content:space-between;align-items:center;gap:.6rem;margin-top:auto;padding-top:.45rem;border-top:1px solid #e9b44c22}
 .row a{color:var(--gold);text-decoration:none;font-size:.88rem;font-weight:600;border:1px solid #e9b44c55;padding:.28rem .55rem;border-radius:.35rem}
 footer{padding:0 1.5rem 2rem;color:var(--muted);font-size:.85rem;line-height:1.45}
@@ -43,16 +50,17 @@ code{background:#0005;padding:.05rem .3rem;border-radius:.25rem;color:var(--gold
   <div>
     <div class="pill">NUR LESEN · Änderungen über Bot / Dateien</div>
     <h1>Folien-Übersicht</h1>
-    <p class="meta">Miniaturen der Live-Folien. Reihenfolge aus <code>auswahl.json</code>. Schalten/Tauschen macht der Bot (keine Secrets hier).</p>
+    <p class="meta">Miniaturen der Live-Folien. Reihenfolge aus <code>auswahl.json</code>. Typ HTML/Bild/Video, Version und Einblendung siehe unten.</p>
   </div>
   <div class="toolbar"><a href="./?alle" target="_blank" rel="noopener">TV-Vorschau</a></div>
 </header>
 <main>
   <p class="hint" id="clock"></p>
+  <div class="meta-row" id="meta"></div>
   <div class="grid" id="grid">Lade Folien …</div>
 </main>
 <footer>
-  Anleitung: <code>FOLIEN.md</code> · Einzeldateien: <code>folien/&lt;id&gt;.json</code> · Reihenfolge: <code>auswahl.json</code>
+  Anleitung: <code>FOLIEN.md</code> · <code>version.json</code> · <code>einblendung.json</code>
 </footer>
 <script src="schedule.js"></script>
 <script src="slides.js"></script>
@@ -60,21 +68,53 @@ code{background:#0005;padding:.05rem .3rem;border-radius:.25rem;color:var(--gold
 (function(){
   const d=new Date();
   document.getElementById('clock').innerHTML='<strong>Jetzt:</strong> '+d.toLocaleString('de-DE',{weekday:'long',day:'2-digit',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'})+' (Europe/Berlin am Gerät)';
+  function typLabel(f){
+    const t=f.typ||'html';
+    if(t==='bild') return 'Bild';
+    if(t==='video') return 'Video';
+    if(t==='bestand') return 'Bestand';
+    return 'HTML';
+  }
   function scale(wrap,iframe){
     const go=()=>{iframe.style.transform='scale('+((wrap.clientWidth||320)/1920)+')'};
     go(); new ResizeObserver(go).observe(wrap);
   }
-  loadFolien().then(FOLIEN=>{
+  function einblendungAktiv(eb){
+    if(!eb||eb.aktiv===false) return false;
+    if(eb.bis){const t=Date.parse(eb.bis); if(!isNaN(t)&&Date.now()>t) return false}
+    return !!(eb.text||eb.titel||eb.bild);
+  }
+  Promise.all([
+    loadFolien(),
+    fetch('version.json',{cache:'no-store'}).then(r=>r.ok?r.json():{version:'–'}).catch(()=>({version:'–'})),
+    fetch('einblendung.json',{cache:'no-store'}).then(r=>r.ok?r.json():{aktiv:false}).catch(()=>({aktiv:false}))
+  ]).then(([FOLIEN, ver, eb])=>{
+    const meta=document.getElementById('meta');
+    const ebOn=einblendungAktiv(eb);
+    meta.innerHTML=
+      '<div class="chip"><b>Version</b> '+(ver.version||'–')+(ver.notiz?' · '+ver.notiz:'')+'</div>'+
+      '<div class="chip"><b>Einblendung</b> '+(ebOn
+        ? ('aktiv'+(eb.titel?': '+eb.titel:'')+(eb.bis?' · bis '+new Date(eb.bis).toLocaleString('de-DE'):''))
+        : 'keine')+'</div>'+
+      '<div class="chip"><b>Folien</b> '+FOLIEN.length+'</div>';
+
     const grid=document.getElementById('grid'); grid.innerHTML='';
     FOLIEN.forEach((f,i)=>{
       const st=TVSchedule.statusInfo(f,d);
       const card=document.createElement('article');
       card.className='card'+(st.live?'':' dim');
       const title=f.titel+(f.unter?' · '+f.unter:'');
+      const typ=typLabel(f);
+      let preview='';
+      if((f.typ==='bild') && (f.datei||f.bild)){
+        preview='<img class="preview-img" src="'+(f.datei||f.bild)+'" alt="">';
+      } else {
+        preview='<iframe loading="lazy" title="'+f.id+'" src="./?folie='+i+'&alle" tabindex="-1"></iframe><div class="veil"></div>';
+      }
       card.innerHTML=
-        '<div class="preview"><iframe loading="lazy" title="'+f.id+'" src="./?folie='+i+'&alle" tabindex="-1"></iframe><div class="veil"></div></div>'+
+        '<div class="preview">'+preview+'</div>'+
         '<div class="body">'+
-          '<div class="idx">#'+i+' · <code>'+f.id+'</code>'+(f.dauer?' · '+f.dauer+'s':'')+(f.typ?' · '+f.typ:'')+'</div>'+
+          '<div class="idx">#'+i+' · <code>'+f.id+'</code><span class="typ">'+typ+'</span>'+(f.dauer?' · '+f.dauer+'s':'')+'</div>'+
           '<h2>'+title+'</h2>'+
           (f.badge?'<p class="sub">Badge: '+f.badge+'</p>':'')+
           '<span class="status '+st.cls+'">'+st.label+'</span>'+
@@ -82,9 +122,8 @@ code{background:#0005;padding:.05rem .3rem;border-radius:.25rem;color:var(--gold
           '<a href="./?folie='+i+'&alle" target="_blank" rel="noopener">Öffnen</a></div>'+
         '</div>';
       grid.appendChild(card);
-      const iframe=card.querySelector('iframe'), preview=card.querySelector('.preview');
-      iframe.addEventListener('load',()=>scale(preview,iframe));
-      scale(preview,iframe);
+      const iframe=card.querySelector('iframe'), prev=card.querySelector('.preview');
+      if(iframe){iframe.addEventListener('load',()=>scale(prev,iframe)); scale(prev,iframe)}
     });
   }).catch(e=>{
     document.getElementById('grid').textContent='Fehler: '+e.message;

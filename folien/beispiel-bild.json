@@ -1,0 +1,10 @@
+{
+  "id": "beispiel-bild",
+  "typ": "bild",
+  "titel": "Beispiel Bildfolie",
+  "unter": "Vollbild aus assets (Test)",
+  "datei": "assets/schaueferla_9731Lr.jpg",
+  "fit": "cover",
+  "dauer": 12,
+  "aktiv": false
+}

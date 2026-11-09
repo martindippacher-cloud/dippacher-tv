@@ -1,0 +1,9 @@
+{
+  "id": "beispiel-video",
+  "typ": "video",
+  "titel": "Beispiel Videofolie",
+  "unter": "MP4 Vollbild (Platzhalter – Datei fehlt absichtlich)",
+  "datei": "assets/beispiel.mp4",
+  "fit": "contain",
+  "aktiv": false
+}
