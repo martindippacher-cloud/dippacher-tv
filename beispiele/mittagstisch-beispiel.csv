@@ -1,5 +1,5 @@
 Datum,Gericht,Preis,Hinweis
-2026-11-09,BEISPIEL Fränkisches Schäufele mit Kloß,BEISPIEL 12,90 €,nur Demo – keine Live-Preise
-2026-11-09,BEISPIEL Schweinebraten mit Wirsing,BEISPIEL 11,90 €,
-2026-11-09,BEISPIEL Tagessuppe,BEISPIEL 4,50 €,vegetarisch möglich
-2026-12-24,BEISPIEL Festtagsmenü (andere Datum-Zeile),BEISPIEL –,erscheint nur an diesem Datum
+2026-11-09,"BEISPIEL Fränkisches Schäufele mit Kloß","BEISPIEL 12,90 €","nur Demo – keine Live-Preise"
+2026-11-09,"BEISPIEL Schweinebraten mit Wirsing","BEISPIEL 11,90 €",
+2026-11-09,"BEISPIEL Tagessuppe","BEISPIEL 4,50 €","vegetarisch möglich"
+2026-12-24,"BEISPIEL Festtagsmenü (andere Datum-Zeile)","BEISPIEL –","erscheint nur an diesem Datum"

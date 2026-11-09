@@ -159,3 +159,18 @@ Siehe `MONITORING.md` und `.github/workflows/tv-alarm.yml`.
 ## Mittagstisch-Tabelle
 Siehe `MITTAGSTISCH.md` und `beispiele/mittagstisch-beispiel.csv`.
 
+
+## Laufband (Fußzeile)
+
+`laufband.json` – standardmäßig **`aktiv: false`**.
+
+```json
+{
+  "aktiv": true,
+  "geschwindigkeit": 60,
+  "texte": ["Text eins", "Text zwei"]
+}
+```
+
+- Läuft über der Logo-Leiste; Folienfläche wird etwas verkürzt (`body.lb-on`), Inhalte werden nicht überdeckt.
+- `geschwindigkeit`: Sekunden für einen Durchlauf (größer = langsamer). Schrift ~2vw für 65 Zoll.

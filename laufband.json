@@ -1,0 +1,10 @@
+{
+  "_info": "Fußzeilen-Laufband. Standard AUS. Texte werden strikt escapet.",
+  "aktiv": false,
+  "geschwindigkeit": 60,
+  "texte": [
+    "Willkommen in der Gaststätte Dippacher",
+    "Food-Box Automat · 24/7 hinterm Haus",
+    "Tisch reservieren unter dippacher.de"
+  ]
+}

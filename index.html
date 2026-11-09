@@ -74,9 +74,22 @@ li span:last-child{color:#e9b44c}
 #einblendung img{max-width:50vw;max-height:45vh;border-radius:1vw;box-shadow:0 1vw 3vw #000a;margin-bottom:2vh}
 #einblendung .eb-meta{margin-top:2.5vh;font-size:1.4vw;color:#e9b44caa}
 
+
+/* Laufband über Logo-Leiste */
+#laufband{position:absolute;left:0;right:0;bottom:9vh;height:4.2vh;z-index:6;display:none;overflow:hidden;background:#120c08ee;border-top:.12vw solid #e9b44c66;align-items:center}
+#laufband.on{display:flex}
+#laufband .lb-track{display:inline-flex;white-space:nowrap;will-change:transform;animation:lb-scroll linear infinite;padding-left:100%}
+#laufband .lb-item{font-size:2vw;font-weight:600;color:#f6ead6;padding:0 4vw;letter-spacing:.02em;text-shadow:0 .15vw .4vw #000}
+#laufband .lb-sep{color:#e9b44c;padding:0 .5vw}
+@keyframes lb-scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+body.lb-on .f{bottom:13.2vh}
+body.lb-on .f.media .media-cap{bottom:0}
+body.lb-on .bar{/* bleibt 9vh */}
+
 </style></head><body>
 <div id="s"></div><div class="rand"></div>
 <div id="einblendung" aria-live="polite"></div>
+<div id="laufband" aria-hidden="true"></div>
 <div class="bar"><img src="assets/logo.png" alt="Dippacher"><div id="uhr"></div></div>
 <script src="schedule.js"></script>
 <script src="slides.js"></script>
@@ -308,6 +321,27 @@ function renderEinblendung(eb){
     '</div>';
   box.classList.add('on');
 }
+
+const LAUFBAND_MS=30*1000;
+function renderLaufband(lb){
+  const box=document.getElementById('laufband'); if(!box) return;
+  const on=lb && lb.aktiv!==false && Array.isArray(lb.texte) && lb.texte.filter(Boolean).length;
+  document.body.classList.toggle('lb-on', !!on);
+  if(!on){ box.classList.remove('on'); box.innerHTML=''; return; }
+  const speed=Math.max(20, Math.min(200, Number(lb.geschwindigkeit)||60));
+  const items=lb.texte.filter(Boolean).map(function(s){return '<span class="lb-item">'+esc(s)+'</span>'}).join('<span class="lb-sep">·</span>');
+  // doppelter Track für nahtlose Schleife
+  box.innerHTML='<div class="lb-track" style="animation-duration:'+speed+'s">'+items+'<span class="lb-sep">·</span>'+items+'</div>';
+  box.classList.add('on');
+}
+async function pollLaufband(){
+  try{
+    const r=await fetch('laufband.json',{cache:'no-store'});
+    if(!r.ok) return;
+    renderLaufband(await r.json());
+  }catch(e){}
+}
+
 async function pollEinblendung(){
   try{
     const r=await fetch('einblendung.json',{cache:'no-store'});
@@ -321,8 +355,14 @@ loadFolien().then(function(FOLIEN){
 }).then(function(FOLIEN){
   startPlayer(FOLIEN);
   pollEinblendung();
-  if(!P.has('folie')) setInterval(pollEinblendung, EINBL_MS);
-  else { pollEinblendung(); setInterval(pollEinblendung, EINBL_MS); }
+  pollLaufband();
+  if(!P.has('folie')){
+    setInterval(pollEinblendung, EINBL_MS);
+    setInterval(pollLaufband, LAUFBAND_MS);
+  } else {
+    setInterval(pollEinblendung, EINBL_MS);
+    setInterval(pollLaufband, LAUFBAND_MS);
+  }
 }).catch(err=>{
   document.getElementById('s').innerHTML='<div class="f on" style="opacity:1;padding:4vw;font-size:2vw">Folien konnten nicht geladen werden: '+esc(err.message)+'</div>';
 });

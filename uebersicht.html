@@ -88,8 +88,9 @@ code{background:#0005;padding:.05rem .3rem;border-radius:.25rem;color:var(--gold
     loadFolien(),
     fetch('version.json',{cache:'no-store'}).then(r=>r.ok?r.json():{version:'–'}).catch(()=>({version:'–'})),
     fetch('einblendung.json',{cache:'no-store'}).then(r=>r.ok?r.json():{aktiv:false}).catch(()=>({aktiv:false})),
-    fetch('status/tv-check.json',{cache:'no-store'}).then(r=>r.ok?r.json():null).catch(()=>null)
-  ]).then(([FOLIEN, ver, eb, chk])=>{
+    fetch('status/tv-check.json',{cache:'no-store'}).then(r=>r.ok?r.json():null).catch(()=>null),
+    fetch('laufband.json',{cache:'no-store'}).then(r=>r.ok?r.json():{aktiv:false}).catch(()=>({aktiv:false}))
+  ]).then(([FOLIEN, ver, eb, chk, lb])=>{
     const meta=document.getElementById('meta');
     const ebOn=einblendungAktiv(eb);
     const online=navigator.onLine;
@@ -113,7 +114,8 @@ code{background:#0005;padding:.05rem .3rem;border-radius:.25rem;color:var(--gold
           if(!m) return '–';
           if(m.csvUrl) return 'CSV · '+m.csvUrl.replace(/^https?:\/\//,'').slice(0,42)+'…';
           return 'feste Liste (keine csvUrl)';
-        })())+'</div>';
+        })())+'</div>'+
+      '<div class="chip"><b>Laufband</b> '+(lb&&lb.aktiv?'AN · '+((lb.texte||[]).filter(Boolean).length)+' Texte · Tempo '+(lb.geschwindigkeit||'?')+'s':'AUS')+'</div>';
 
     const grid=document.getElementById('grid'); grid.innerHTML='';
     FOLIEN.forEach((f,i)=>{

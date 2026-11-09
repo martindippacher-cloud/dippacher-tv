@@ -10,6 +10,7 @@ const PRECACHE = [
   './auswahl.json',
   './version.json',
   './einblendung.json',
+  './laufband.json',
   './assets/fonts/fonts.css',
   './assets/fonts/playfair-display-700-latin.woff2',
   './assets/fonts/playfair-display-700-latin-ext.woff2',
