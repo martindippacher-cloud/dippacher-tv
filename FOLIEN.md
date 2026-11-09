@@ -141,5 +141,6 @@ Nach Inhaltsänderung lokal/per Bot **`version` hochsetzen** (Zeitstempel reicht
 ```
 
 - Overlay über der Rotation, bis `bis` (ISO-8601) erreicht ist oder `aktiv:false`
+- `titel`/`text` nur Klartext (HTML wird escapet; Zeilenumbrüche `\n` → sichtbarer Umbruch)
 - Optional `wiederholung: { "zeit": {...}, "tage": [...] }` wie bei Folien
 - Übersicht zeigt den Status der Einblendung
