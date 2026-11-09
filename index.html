@@ -60,14 +60,10 @@ li span:last-child{color:#e9b44c}
 </style></head><body>
 <div id="s"></div><div class="rand"></div>
 <div class="bar"><img src="assets/logo.png" alt="Dippacher"><div id="uhr"></div></div>
+<script src="schedule.js"></script>
 <script src="slides.js"></script>
 <script>
 const P=new URLSearchParams(location.search),DAUER=15,RELOAD=5*60*1000,BESTAND_MS=45000;
-const min=t=>{const[a,b]=t.split(':');return a*60+ +b};
-function aktiv(f){if(f.aktiv===false)return false;if(P.has('alle'))return true;const d=new Date(),m=d.getHours()*60+d.getMinutes(),wt=d.getDay()||7;
- const iso=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
- if(f.datum&&f.datum!==iso)return false;
- if(f.tage&&!f.tage.includes(wt))return false;if(f.zeit&&(m<min(f.zeit.von)||m>min(f.zeit.bis)))return false;return true}
 const eur=new Intl.NumberFormat('de-DE',{style:'currency',currency:'EUR'});
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function qtyLabel(q){q=Math.max(0,Number(q)||0);if(q<=0)return{t:'AUSVERKAUFT',c:'out'};if(q<=2)return{t:q+' Stück',c:'low'};return{t:q+' Stück',c:'ok'}}
@@ -85,18 +81,28 @@ async function loadBestand(f,el){
   try{const r=await fetch(f.dataUrl,{cache:'no-store'});if(!r.ok)throw new Error('HTTP '+r.status);const d=await r.json();renderBestand(el,d,null)}
   catch(e){renderBestand(el,null,'Bestand gerade nicht erreichbar ('+e.message+').')}
 }
-const S=document.getElementById('s'),els=FOLIEN.map(f=>{const e=document.createElement('div');e.className='f'+(f.typ==='bestand'?' bestand':'')+(f.klasse?' '+f.klasse:'');
- if(f.typ==='bestand'){
-  e.innerHTML='<div class="in"><div class="txt" style="width:100%"><h1>'+esc(f.titel)+'</h1>'+(f.unter?'<h2>'+esc(f.unter)+'</h2>':'')+'<div class="bst"><p class="bst-meta">Lade Bestand …</p></div></div></div>';
-  loadBestand(f,e);setInterval(function(){loadBestand(f,e)},BESTAND_MS);
- }else{
-  e.innerHTML=(f.bild?'<div class="bg" style="background-image:url(\''+f.bild+'\')"></div>':'')+'<div class="in"><div class="txt">'+(f.badge?'<div class="badge">'+f.badge+'</div>':'')+'<h1>'+f.titel+'</h1>'+(f.unter?'<h2>'+f.unter+'</h2>':'')+(f.liste?'<ul>'+f.liste.map(function(r){return '<li><span>'+r[0]+'</span><span>'+r[1]+'</span></li>'}).join('')+'</ul>':'')+(f.text?'<p>'+f.text+'</p>':'')+'</div>'+(f.logo?'<div class="glogo"><img src="'+f.logo+'" alt=""></div>':(f.qr?'<div class="qr"><img src="'+f.qr+'"><div>'+f.link+'</div></div>':''))+'</div>';
- }
- S.appendChild(e);return e});
-let i=-1;function next(){const idx=FOLIEN.map(function(f,k){return k}).filter(function(k){return aktiv(FOLIEN[k])});if(!idx.length)return;
- i=idx[(idx.indexOf(i)+1)%idx.length];if(i==null)i=idx[0];els.forEach(function(e,k){e.classList.toggle('on',k===i)});setTimeout(next,(FOLIEN[i].dauer||DAUER)*1000)}
-if(P.has('folie')){els[+P.get('folie')].classList.add('on');els[+P.get('folie')].style.opacity='1'}else next();
-function uhr(){document.getElementById('uhr').textContent=new Date().toLocaleString('de-DE',{weekday:'long',day:'2-digit',month:'long',hour:'2-digit',minute:'2-digit'})}
-uhr();setInterval(uhr,10000);
-if(!P.has('folie'))setInterval(()=>fetch(location.href,{cache:'no-store'}).then(r=>{if(r.ok)location.reload()}).catch(()=>{}),RELOAD);
+function aktiv(f){return TVSchedule.aktiv(f, new Date(), P.has('alle'))}
+function startPlayer(FOLIEN){
+  const S=document.getElementById('s');
+  const els=FOLIEN.map(f=>{const e=document.createElement('div');e.className='f'+(f.typ==='bestand'?' bestand':'')+(f.klasse?' '+f.klasse:'');
+   if(f.typ==='bestand'){
+    e.innerHTML='<div class="in"><div class="txt" style="width:100%"><h1>'+esc(f.titel)+'</h1>'+(f.unter?'<h2>'+esc(f.unter)+'</h2>':'')+'<div class="bst"><p class="bst-meta">Lade Bestand …</p></div></div></div>';
+    loadBestand(f,e);setInterval(function(){loadBestand(f,e)},BESTAND_MS);
+   }else{
+    e.innerHTML=(f.bild?'<div class="bg" style="background-image:url(\''+f.bild+'\')"></div>':'')+'<div class="in"><div class="txt">'+(f.badge?'<div class="badge">'+f.badge+'</div>':'')+'<h1>'+f.titel+'</h1>'+(f.unter?'<h2>'+f.unter+'</h2>':'')+(f.liste?'<ul>'+f.liste.map(function(r){return '<li><span>'+r[0]+'</span><span>'+r[1]+'</span></li>'}).join('')+'</ul>':'')+(f.text?'<p>'+f.text+'</p>':'')+'</div>'+(f.logo?'<div class="glogo"><img src="'+f.logo+'" alt=""></div>':(f.qr?'<div class="qr"><img src="'+f.qr+'"><div>'+f.link+'</div></div>':''))+'</div>';
+   }
+   S.appendChild(e);return e});
+  let i=-1;function next(){const idx=FOLIEN.map(function(f,k){return k}).filter(function(k){return aktiv(FOLIEN[k])});if(!idx.length)return;
+   i=idx[(idx.indexOf(i)+1)%idx.length];if(i==null)i=idx[0];els.forEach(function(e,k){e.classList.toggle('on',k===i)});setTimeout(next,(FOLIEN[i].dauer||DAUER)*1000)}
+  if(P.has('folie')){
+    const n=+P.get('folie');
+    if(els[n]){els[n].classList.add('on');els[n].style.opacity='1'}
+  } else next();
+  function uhr(){document.getElementById('uhr').textContent=new Date().toLocaleString('de-DE',{weekday:'long',day:'2-digit',month:'long',hour:'2-digit',minute:'2-digit'})}
+  uhr();setInterval(uhr,10000);
+  if(!P.has('folie'))setInterval(()=>fetch(location.href,{cache:'no-store'}).then(r=>{if(r.ok)location.reload()}).catch(()=>{}),RELOAD);
+}
+loadFolien().then(startPlayer).catch(err=>{
+  document.getElementById('s').innerHTML='<div class="f on" style="opacity:1;padding:4vw;font-size:2vw">Folien konnten nicht geladen werden: '+esc(err.message)+'</div>';
+});
 </script></body></html>

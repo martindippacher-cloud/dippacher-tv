@@ -1,0 +1,31 @@
+{
+  "id": "weihnachten-vorbestellung",
+  "titel": "Weihnachtsessen vorbestellen",
+  "unter": "Abholung am 23. Dezember",
+  "klasse": "kompakt",
+  "liste": [
+    [
+      "Sauerbraten",
+      "10,50 €"
+    ],
+    [
+      "Kalbsrahmbraten",
+      "11,00 €"
+    ],
+    [
+      "Rinderrouladen",
+      "12,50 €"
+    ],
+    [
+      "Blaukraut",
+      "3,00 €"
+    ],
+    [
+      "Wirsing",
+      "4,90 €"
+    ]
+  ],
+  "text": "Bestellen bis Do, 17.12., 20 Uhr · online oder vor Ort<br>Telefon/WhatsApp 09190&nbsp;1807",
+  "qr": "assets/qr_weihnachten.png",
+  "link": "www.dippacher.de/weihnachten.html"
+}

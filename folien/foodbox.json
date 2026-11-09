@@ -1,0 +1,9 @@
+{
+  "id": "foodbox",
+  "titel": "Food-Box Automat",
+  "unter": "24 Stunden · 7 Tage",
+  "text": "Fränkische Spezialitäten zum Mitnehmen – rund um die Uhr",
+  "qr": "assets/qr_foodbox.png",
+  "link": "www.dippacher.de/food-box.html",
+  "bild": "assets/food-box-24.7.jpg"
+}

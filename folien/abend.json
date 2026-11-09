@@ -1,0 +1,10 @@
+{
+  "id": "abend",
+  "titel": "Schönen Abend!",
+  "unter": "Fragen Sie nach unseren Aktionen",
+  "text": "Testfolie – erscheint nur abends ab 17:00",
+  "zeit": {
+    "von": "17:00",
+    "bis": "23:59"
+  }
+}

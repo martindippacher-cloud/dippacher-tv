@@ -1,0 +1,17 @@
+{
+  "_info": "Reihenfolge der Folien (ids). Optional overrides: {\"id\":{\"aktiv\":false}}. Änderungen nur lokal/per Bot – kein Token im Frontend.",
+  "reihenfolge": [
+    "welcome-stadtwerke",
+    "welcome",
+    "mittagstisch",
+    "gutschein",
+    "weihnachten-vorbestellung",
+    "foodbox",
+    "bestand",
+    "kloesse",
+    "reservieren",
+    "oeffnung-dezember",
+    "abend"
+  ],
+  "overrides": {}
+}

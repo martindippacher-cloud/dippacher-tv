@@ -1,0 +1,9 @@
+{
+  "id": "gutschein",
+  "titel": "Das perfekte Weihnachtsgeschenk",
+  "unter": "Gutscheine der Gaststätte Dippacher",
+  "text": "Als Karte vor Ort oder bequem online kaufen",
+  "qr": "assets/qr_gutschein.png",
+  "link": "www.dippacher.de/gutscheine.html",
+  "bild": "assets/gutscheinkartedippacher.jpg"
+}

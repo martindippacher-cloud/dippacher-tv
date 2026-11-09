@@ -1,0 +1,24 @@
+{
+  "id": "mittagstisch",
+  "titel": "Mittagstisch heute",
+  "badge": "BEISPIEL",
+  "zeit": {
+    "von": "10:00",
+    "bis": "14:30"
+  },
+  "liste": [
+    [
+      "Fränkisches Schäufele mit Kloß",
+      "Beispiel €"
+    ],
+    [
+      "Schweinebraten mit Wirsing",
+      "Beispiel €"
+    ],
+    [
+      "Tagessuppe",
+      "Beispiel €"
+    ]
+  ],
+  "text": "Testfolie – erscheint nur mittags (10:00–14:30)"
+}

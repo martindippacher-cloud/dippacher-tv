@@ -1,0 +1,8 @@
+{
+  "id": "bestand",
+  "typ": "bestand",
+  "titel": "Live-Bestand Food-Box Automat",
+  "unter": "Aktuell im Automaten",
+  "dataUrl": "https://martindippacher-cloud.github.io/automat-bestand/inventory.json",
+  "dauer": 20
+}
