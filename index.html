@@ -2,90 +2,119 @@
 <meta name="viewport" content="width=1920">
 <link rel="stylesheet" href="assets/fonts/fonts.css">
 <style>
-html,body{margin:0;width:100vw;height:100vh;overflow:hidden;background:#1d120c;font-family:'Source Sans 3',sans-serif;color:#f6ead6;cursor:none}
-.f{position:absolute;inset:0;opacity:0;transition:opacity 1.5s;display:flex;align-items:center;background:radial-gradient(ellipse at 30% 40%,#4a2a18,#1d120c 75%)}
+/* ===== Helles Farbschema (vorschau-hell) – Kontraste: scripts/kontrast.py ===== */
+:root{
+  --creme:#F5EDDF;        /* Grund, kein reines Weiß (blendet nicht) */
+  --creme2:#EADDC6;       /* Rand des Verlaufs, Logoleiste */
+  --karte:#FFFCF5;        /* QR-/Logo-Karte */
+  --tinte:#2A1810;        /* Titel */
+  --text:#3A2519;         /* Fließtext */
+  --meta:#4F3A2C;         /* Nebeninfos */
+  --rot:#7A1F23;          /* Dippacher-Rot, abgedunkelt für Text */
+  --rot-logo:#A53134;     /* Logo-Rot, nur Flächen/Linien */
+  --gold-text:#5A3F0B;    /* Gold als Text (Preise) */
+  --gold:#C9A04A;         /* Gold nur für Linien/Flächen */
+  --gruen:#174A25;
+  --s:0px;--t:0px;        /* Einbrennschutz-Versatz */
+}
+html,body{margin:0;width:100vw;height:100vh;overflow:hidden;background:var(--creme);font-family:'Source Sans 3',sans-serif;color:var(--text);cursor:none}
+.f{position:absolute;inset:0;opacity:0;transition:opacity 1.5s;display:flex;align-items:center;background:radial-gradient(ellipse at 30% 35%,var(--creme) 45%,var(--creme2) 100%)}
 .f.on{opacity:1}
-.bg{position:absolute;inset:0;background-size:cover;background-position:center;filter:brightness(.38) saturate(1.05)}
-.in{position:relative;display:flex;align-items:center;gap:6vw;padding:0 7vw;width:100%;box-sizing:border-box}
-.txt{flex:1}
-h1{font-family:'Playfair Display',serif;font-size:6.2vw;line-height:1.05;margin:0 0 1.5vh;color:#fff;text-shadow:0 .3vw 1vw #000}
-h2{font-size:3vw;margin:0 0 3vh;color:#e9b44c;font-weight:600;text-shadow:0 .2vw .6vw #000}
-p{font-size:2.3vw;margin:0;max-width:60vw;text-shadow:0 .2vw .6vw #000}
-.qr{background:#fff;padding:1.2vw;border-radius:1vw;text-align:center;box-shadow:0 1vw 3vw #000a}
-.qr img{width:18vw;display:block}.qr div{color:#5a1d16;font-size:1.35vw;font-weight:600;margin-top:.6vw}
-.badge{display:inline-block;background:#A13036;color:#fff;font-size:1.6vw;font-weight:600;padding:.3vw 1.2vw;border-radius:.4vw;margin-bottom:2vh;letter-spacing:.15vw}
-ul{list-style:none;padding:0;margin:0 0 3vh;font-size:2.6vw}
-li{display:flex;justify-content:space-between;border-bottom:.15vw dotted #e9b44c88;padding:1.1vh 0;max-width:70vw}
-li span:last-child{color:#e9b44c}
-.bar{position:absolute;left:0;right:0;bottom:0;height:9vh;background:linear-gradient(transparent,#000c);display:flex;align-items:center;justify-content:space-between;padding:0 3vw;z-index:5}
-.bar img{height:6.5vh;filter:drop-shadow(0 0 .4vw #000)}
-#uhr{font-size:1.8vw;color:#f6ead6cc}
-.rand{position:absolute;inset:1.2vw;border:.2vw solid #e9b44c55;border-radius:1vw;pointer-events:none;z-index:4}
-/* Live-Bestand – große Schrift für 65-Zoll */
-.f.bestand .in{padding:0 4vw 8vh;align-items:stretch}
-.f.bestand h1{font-size:3.8vw;margin-bottom:.5vh}
-.f.bestand h2{font-size:2vw;margin-bottom:1vh}
-.bst{width:100%}
-.bst-meta{font-size:1.5vw;color:#f6ead6aa;margin:0 0 1.5vh;text-shadow:0 .15vw .4vw #000}
-.bst-grid{display:grid;grid-template-columns:1fr 1fr;gap:.6vh 2.5vw}
-.bst-row{display:grid;grid-template-columns:4.2vw minmax(0,1fr) 7.5vw 13vw;gap:.8vw;align-items:center;border-bottom:.12vw solid #e9b44c44;padding:.55vh 0;font-size:1.95vw}
-.bst-row .fach{color:#e9b44c;font-weight:600;font-variant-numeric:tabular-nums}
-.bst-row .name{color:#fff;font-weight:600;white-space:normal;overflow:visible;line-height:1.15;hyphens:manual}
-.bst-row .preis{color:#e9b44c;text-align:right;font-variant-numeric:tabular-nums;align-self:center}
-.bst-row .qty{text-align:right;font-weight:600;font-variant-numeric:tabular-nums;align-self:center;white-space:nowrap}
-.bst-row .fach{align-self:center}
-.bst-row .qty.ok{color:#9fd89f}
-.bst-row .qty.low{color:#e9b44c}
-.bst-row .qty.out{color:#ff8a8a;letter-spacing:.04em}
-.bst-err{font-size:2.4vw;color:#ffb4b4;margin-top:2vh;text-shadow:0 .2vw .6vw #000}
-.bst-head{display:grid;grid-template-columns:4.2vw minmax(0,1fr) 7.5vw 13vw;gap:.8vw;font-size:1.3vw;color:#e9b44caa;text-transform:uppercase;letter-spacing:.08em;padding-bottom:.5vh;border-bottom:.15vw solid #e9b44c66;margin-bottom:.3vh}
-.bst-head span:nth-child(3),.bst-head span:nth-child(4){text-align:right}
-/* etwas kleinere Schrift, zweizeilige Namen möglich */
-.bst-row{align-items:start;font-size:1.75vw;padding:.45vh 0}
-.bst-row .name{font-size:1.75vw}
-/* Vorbestell-Folie: kompakter, Abstand zur Logo-Leiste */
-.f.kompakt .in{padding:0 7vw 13vh;align-items:center}
-.f.kompakt h1{font-size:4.5vw;margin-bottom:.8vh}
-.f.kompakt h2{font-size:2.2vw;margin-bottom:1.2vh}
-.f.kompakt ul{font-size:2.05vw;margin:0 0 1vh;max-width:58vw}
-.f.kompakt li{padding:.45vh 0}
-.f.kompakt p{font-size:1.75vw;line-height:1.35;max-width:58vw;margin-bottom:0}
-.f.kompakt .qr img{width:14vw}
-.f.kompakt .qr div{font-size:1.15vw}
-.glogo{background:#fff;padding:2.2vw 2.4vw;border-radius:1vw;text-align:center;box-shadow:0 1vw 3vw #000a;min-width:28vw}
+/* Foto rechts, Text links auf ruhigem Creme-Grund */
+.bg{position:absolute;top:0;bottom:0;right:0;left:56%;background-size:cover;background-position:center;-webkit-mask-image:linear-gradient(90deg,transparent 0,#0008 14%,#000 32%);mask-image:linear-gradient(90deg,transparent 0,#0008 14%,#000 32%)}
+.f.hatbild .txt{max-width:48vw}
+.f.hatbild .txt p{max-width:48vw}
+.in{position:relative;display:flex;align-items:center;gap:5vw;padding:0 7vw 9vh;width:100%;box-sizing:border-box}
+.txt{flex:1;min-width:0}
+h1{font-family:'Playfair Display',serif;font-size:6.2vw;line-height:1.05;margin:0 0 1.5vh;color:var(--tinte)}
+h2{font-size:3vw;margin:0 0 3vh;color:var(--rot);font-weight:600}
+p{font-size:2.6vw;line-height:1.3;margin:0;max-width:60vw;color:var(--text)}
+.qr{background:var(--karte);padding:1.3vw;border-radius:1vw;text-align:center;box-shadow:0 .6vw 2vw #5a3a2033;border:.15vw solid var(--gold);max-width:22vw;flex:none}
+.qr img{width:18vw;display:block;margin:0 auto}
+.qr div{color:#5A1D16;font-size:1.8vw;font-weight:600;margin-top:.7vw;line-height:1.2;overflow-wrap:anywhere}
+.badge{display:inline-block;background:#8E2A2E;color:#FFF8EC;font-size:2vw;font-weight:700;padding:.3vw 1.2vw;border-radius:.4vw;margin-bottom:2vh;letter-spacing:.15vw}
+ul{list-style:none;padding:0;margin:0 0 3vh;font-size:2.6vw;color:var(--text)}
+li{display:flex;justify-content:space-between;gap:2vw;border-bottom:.15vw dotted var(--gold);padding:1.1vh 0;max-width:70vw}
+li span:last-child{color:var(--gold-text);font-weight:600;white-space:nowrap}
+.bar{position:absolute;left:0;right:0;bottom:0;height:9vh;background:var(--creme2);border-top:.18vw solid var(--gold);display:flex;align-items:center;justify-content:space-between;padding:0 3vw;z-index:5;transform:translate(var(--s),var(--t));transition:transform 4s ease}
+.bar img{height:6.8vh}
+#uhr{font-size:2.2vw;font-weight:600;color:var(--text);font-variant-numeric:tabular-nums}
+.rand{position:absolute;inset:1.2vw;border:.2vw solid #C9A04A88;border-radius:1vw;pointer-events:none;z-index:4;transform:translate(var(--s),var(--t));transition:transform 4s ease}
+/* Live-Bestand – mind. ~48 px (2,5vw) bei 1920 px.
+   Layout "eins": eine Spalte, Name/Preis/Bestand in einer Zeile (bis ca. 12 Artikel).
+   Layout "zwei": zwei Spalten, Preis und Bestand unter dem Namen (viele Artikel). */
+.f.bestand{align-items:flex-start}
+.f.bestand .in{padding:3vh 4vw 0;align-items:stretch}
+.f.bestand .bst{max-height:calc(89vh - 3vh - 3.4vw*1.05 - 2.3vw*1.3 - 1.6vh);overflow:hidden}
+body.lb-on .f.bestand .bst{max-height:calc(84vh - 3vh - 3.4vw*1.05 - 2.3vw*1.3 - 1.6vh)}
+.f.bestand h1{font-size:3.4vw;margin:0 0 .3vh}
+.f.bestand h2{font-size:2.3vw;margin:0 0 .8vh}
+.bst{width:100%;--fs:2.5vw}
+.bst-meta{font-size:1.9vw;color:var(--meta);margin:0 0 1.2vh}
+/* Stand-Zeile rechts neben dem Untertitel, spart eine Zeile */
+.f.bestand .bst-meta{position:absolute;right:4vw;top:calc(3vh + 3.4vw*1.05 + .3vh + .25vw);margin:0}
+.bst-err{font-size:2.6vw;color:var(--rot);margin-top:2vh}
+.bst-row,.bst-head{display:grid;gap:1.2vw;align-items:center}
+.bst-row{border-bottom:.12vw solid #C9A04A99;padding:.35vh 0;font-size:var(--fs);line-height:1.12}
+.bst-head{font-size:1.5vw;font-weight:700;color:var(--meta);text-transform:uppercase;letter-spacing:.08em;padding-bottom:.4vh;border-bottom:.15vw solid var(--gold)}
+.bst-row .fach{color:var(--rot);font-weight:700;font-variant-numeric:tabular-nums}
+.bst-row .name{color:var(--tinte);font-weight:600;overflow-wrap:break-word}
+.bst-row .preis{color:var(--gold-text);font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+.bst-row .qty{font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
+.bst-row .qty.ok{color:var(--gruen)}
+.bst-row .qty.low{color:var(--gold-text)}
+.bst-row .qty.out{color:var(--rot);letter-spacing:.02em}
+.bst.eins .bst-row,.bst.eins .bst-head{grid-template-columns:4.5vw minmax(0,1fr) calc(var(--fs)*4) calc(var(--fs)*7.2)}
+.bst.eins .preis,.bst.eins .qty,.bst.eins .bst-head span:nth-child(3),.bst.eins .bst-head span:nth-child(4){text-align:right}
+.bst.zwei .bst-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 3vw}
+.bst.zwei .bst-head{display:none}
+.bst.zwei .bst-row{grid-template-columns:4vw minmax(0,1fr) auto;grid-template-areas:"fach name name" ". preis qty";row-gap:0;align-items:baseline}
+.bst.zwei .fach{grid-area:fach}.bst.zwei .name{grid-area:name}.bst.zwei .preis{grid-area:preis}.bst.zwei .qty{grid-area:qty;text-align:right}
+/* Notlösung bei sehr vielen Artikeln: zwei Spalten, alles in einer Zeile */
+.bst.dicht .bst-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 3vw}
+.bst.dicht .bst-head{display:none}
+.bst.dicht .bst-row{grid-template-columns:3.2vw minmax(0,1fr) calc(var(--fs)*3.8) calc(var(--fs)*6.4);gap:.8vw}
+.bst.dicht .preis,.bst.dicht .qty{text-align:right}
+.bst.dicht .qty.out{font-size:.85em}
+/* Vorbestell-Folie: kompakt, aber mind. ~48 px Text */
+.f.kompakt .in{padding:0 6vw 11vh;align-items:center}
+.f.kompakt h1{font-size:4.4vw;margin-bottom:.6vh}
+.f.kompakt h2{font-size:2.6vw;margin-bottom:1vh}
+.f.kompakt ul{font-size:2.5vw;margin:0 0 1.2vh;max-width:60vw}
+.f.kompakt li{padding:.35vh 0}
+.f.kompakt p{font-size:2.5vw;line-height:1.25;max-width:60vw;margin-bottom:0}
+.f.kompakt .qr img{width:15vw}
+.glogo{background:var(--karte);padding:2.2vw 2.4vw;border-radius:1vw;text-align:center;box-shadow:0 .6vw 2vw #5a3a2033;border:.15vw solid var(--gold);min-width:28vw;flex:none}
 .glogo img{display:block;margin:0 auto;width:26vw;max-width:520px;height:auto;object-fit:contain}
-.glogo div{display:none}
 .txt p{max-width:55vw}
-
 
 /* Bild-/Video-Folien Vollbild */
 .f.media{padding:0;align-items:stretch}
-.f.media .media-full{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#000}
+.f.media .media-full{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:var(--creme2)}
 .f.media .media-full.contain{object-fit:contain}
-.f.media .media-cap{position:absolute;left:0;right:0;bottom:9vh;padding:1.5vh 4vw;background:linear-gradient(transparent,#000c);z-index:3}
-.f.media .media-cap h1{font-size:3.2vw;margin:0 0 .4vh}
-.f.media .media-cap h2{font-size:1.8vw;margin:0;color:#e9b44c}
+.f.media .media-cap{position:absolute;left:0;right:0;bottom:9vh;padding:1.6vh 4vw;background:rgba(245,237,223,.94);border-top:.18vw solid var(--gold);z-index:3}
+.f.media .media-cap h1{font-size:3.4vw;margin:0 0 .4vh}
+.f.media .media-cap h2{font-size:2.4vw;margin:0}
 /* Sofort-Einblendung Overlay */
-#einblendung{position:absolute;inset:0;z-index:20;display:none;align-items:center;justify-content:center;background:rgba(10,6,4,.82);padding:6vw;box-sizing:border-box}
+#einblendung{position:absolute;inset:0;z-index:20;display:none;align-items:center;justify-content:center;background:rgba(245,237,223,.96);padding:6vw;box-sizing:border-box}
 #einblendung.on{display:flex}
 #einblendung .eb-box{max-width:70vw;text-align:center}
-#einblendung h1{font-size:5vw;margin:0 0 2vh;color:#fff}
-#einblendung p{font-size:2.6vw;margin:0;max-width:100%}
-#einblendung img{max-width:50vw;max-height:45vh;border-radius:1vw;box-shadow:0 1vw 3vw #000a;margin-bottom:2vh}
-#einblendung .eb-meta{margin-top:2.5vh;font-size:1.4vw;color:#e9b44caa}
-
+#einblendung h1{font-size:5vw;margin:0 0 2vh}
+#einblendung p{font-size:2.8vw;margin:0;max-width:100%}
+#einblendung img{max-width:50vw;max-height:45vh;border-radius:1vw;box-shadow:0 .6vw 2vw #5a3a2033;margin-bottom:2vh}
+#einblendung .eb-meta{margin-top:2.5vh;font-size:1.9vw;color:var(--meta)}
 
 /* Laufband über Logo-Leiste */
-#laufband{position:absolute;left:0;right:0;bottom:9vh;height:4.2vh;z-index:6;display:none;overflow:hidden;background:#120c08ee;border-top:.12vw solid #e9b44c66;align-items:center}
+#laufband{position:absolute;left:0;right:0;bottom:9vh;height:5vh;z-index:6;display:none;overflow:hidden;background:#E3D3B6;border-top:.12vw solid var(--gold);align-items:center}
 #laufband.on{display:flex}
 #laufband .lb-track{display:inline-flex;white-space:nowrap;will-change:transform;animation:lb-scroll linear infinite;padding-left:100%}
-#laufband .lb-item{font-size:2vw;font-weight:600;color:#f6ead6;padding:0 4vw;letter-spacing:.02em;text-shadow:0 .15vw .4vw #000}
-#laufband .lb-sep{color:#e9b44c;padding:0 .5vw}
+#laufband .lb-item{font-size:2.4vw;font-weight:600;color:var(--tinte);padding:0 4vw;letter-spacing:.02em}
+#laufband .lb-sep{color:var(--rot);padding:0 .5vw}
 @keyframes lb-scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
-body.lb-on .f{bottom:13.2vh}
+body.lb-on .f{bottom:14vh}
+body.lb-on .f .in,body.lb-on .f.kompakt .in{padding-bottom:2vh}
 body.lb-on .f.media .media-cap{bottom:0}
-body.lb-on .bar{/* bleibt 9vh */}
-
+.fehler{padding:4vw;font-size:2.6vw;color:var(--rot)}
 </style></head><body>
 <div id="s"></div><div class="rand"></div>
 <div id="einblendung" aria-live="polite"></div>
@@ -94,9 +123,13 @@ body.lb-on .bar{/* bleibt 9vh */}
 <script src="schedule.js"></script>
 <script src="slides.js"></script>
 <script>
-const P=new URLSearchParams(location.search),DAUER=15,BESTAND_MS=45000,VERSION_MS=60*1000,DAY_MS=24*60*60*1000,EINBL_MS=15*1000;
+const P=new URLSearchParams(location.search),SHIFT_MS=4*60*1000,BESTAND_MS=45000,VERSION_MS=60*1000,DAY_MS=24*60*60*1000,EINBL_MS=15*1000;
 const eur=new Intl.NumberFormat('de-DE',{style:'currency',currency:'EUR'});
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+/* Einheitliches Escaping für Folientexte: alles escapen, nur <br> und &nbsp; bleiben erlaubt */
+const rich=s=>esc(s).replace(/&lt;br\s*\/?&gt;/gi,'<br>').replace(/&amp;nbsp;/g,'&nbsp;');
+/* Link-Text: escapen, Umbruch nach "/" erlauben */
+const linkTxt=s=>String(s??'').split('/').map(function(t){return '<span style="white-space:nowrap">'+esc(t)+'</span>'}).join('/<wbr>');
 function qtyLabel(q){q=Math.max(0,Number(q)||0);if(q<=0)return{t:'AUSVERKAUFT',c:'out'};if(q<=2)return{t:q+' Stück',c:'low'};return{t:q+' Stück',c:'ok'}}
 function renderBestand(el,data,err,offlineAt){
   const box=el.querySelector('.bst');if(!box)return;
@@ -113,6 +146,19 @@ function renderBestand(el,data,err,offlineAt){
   }
   const rows=items.map(i=>{const q=qtyLabel(i.quantity);return '<div class="bst-row"><span class="fach">'+esc(i.fach!=null?i.fach:'–')+'</span><span class="name">'+esc(i.name)+'</span><span class="preis">'+eur.format(Number(i.price)||0)+'</span><span class="qty '+q.c+'">'+q.t+'</span></div>'}).join('');
   box.innerHTML='<div class="bst-meta">'+esc(when)+' · Quelle: Food-Box Automat</div><div class="bst-head"><span>Fach</span><span>Artikel</span><span>Preis</span><span>Bestand</span></div><div class="bst-grid">'+rows+'</div>';
+  fitBestand(box);
+}
+/* Bei vielen Artikeln Schrift schrittweise verkleinern, nie unter 2,2vw (~42 px) */
+function fitBestand(box){
+  const zuGross=()=>box.scrollHeight>box.clientHeight+1;
+  function versuch(layout,min){
+    box.classList.remove('eins','zwei'); box.classList.add(layout);
+    let fs=2.5; box.style.setProperty('--fs',fs+'vw');
+    while(fs>min && zuGross()){fs=Math.round((fs-0.05)*100)/100; box.style.setProperty('--fs',fs+'vw')}
+    return !zuGross();
+  }
+  /* max-height begrenzt die Box: Überlauf = scrollHeight > clientHeight */
+  if(!versuch('eins',2.3) && !versuch('zwei',2.1)) versuch('dicht',1.5);
 }
 async function loadBestand(f,el){
   if(!f.dataUrl)return;
@@ -144,7 +190,7 @@ async function loadBestand(f,el){
     }
   }
 }
-function aktiv(f){return TVSchedule.aktiv(f, new Date(), P.has('alle'))}
+function aktiv(f){return !f._kaputt && TVSchedule.aktiv(f, new Date(), P.has('alle'))}
 
 function parseCSV(text){
   const rows=[]; let row=[], cur='', q=false;
@@ -211,27 +257,60 @@ async function applyMittagstischCSV(FOLIEN){
 }
 
 function fitClass(f){return (f.fit==='contain')?'contain':'cover'}
+/* Medium kaputt: Bild-/Videofolie wird übersprungen */
+function markKaputt(f,e,grund){
+  if(f._kaputt) return; f._kaputt=true; e.dataset.kaputt=grund; console.warn('Folie übersprungen:',f.id,grund);
+  if(e.classList.contains('on') && window.__tvNext) window.__tvNext();
+}
 function buildSlide(f){
   const e=document.createElement('div');
   const typ=f.typ||'html';
-  e.className='f'+(typ==='bestand'?' bestand':'')+(typ==='bild'||typ==='video'?' media':'')+(f.klasse?' '+f.klasse:'');
+  e.className='f'+(typ==='bestand'?' bestand':'')+(typ==='bild'||typ==='video'?' media':'')+(typ==='html'&&f.bild?' hatbild':'')+(f.klasse?' '+String(f.klasse).replace(/[^\w -]/g,''):'');
   e.dataset.typ=typ;
+  const cap=(f.titel||f.unter)?'<div class="media-cap">'+(f.titel?'<h1>'+rich(f.titel)+'</h1>':'')+(f.unter?'<h2>'+rich(f.unter)+'</h2>':'')+'</div>':'';
   if(typ==='bestand'){
     e.innerHTML='<div class="in"><div class="txt" style="width:100%"><h1>'+esc(f.titel)+'</h1>'+(f.unter?'<h2>'+esc(f.unter)+'</h2>':'')+'<div class="bst"><p class="bst-meta">Lade Bestand …</p></div></div></div>';
     loadBestand(f,e);setInterval(function(){loadBestand(f,e)},BESTAND_MS);
   }else if(typ==='bild'){
     const src=f.datei||f.bild||'';
-    e.innerHTML='<img class="media-full '+fitClass(f)+'" src="'+esc(src)+'" alt="">'+
-      ((f.titel||f.unter)?'<div class="media-cap">'+(f.titel?'<h1>'+esc(f.titel)+'</h1>':'')+(f.unter?'<h2>'+esc(f.unter)+'</h2>':'')+'</div>':'');
+    e.innerHTML='<img class="media-full '+fitClass(f)+'" src="'+esc(src)+'" alt="">'+cap;
+    const img=e.querySelector('img');
+    if(!src) markKaputt(f,e,'kein Bild'); else img.onerror=function(){markKaputt(f,e,'Bild fehlt: '+src)};
   }else if(typ==='video'){
     const src=f.datei||'';
-    e.innerHTML='<video class="media-full '+fitClass(f)+'" src="'+esc(src)+'" muted autoplay playsinline></video>'+
-      ((f.titel||f.unter)?'<div class="media-cap">'+(f.titel?'<h1>'+esc(f.titel)+'</h1>':'')+(f.unter?'<h2>'+esc(f.unter)+'</h2>':'')+'</div>':'');
+    e.innerHTML='<video class="media-full '+fitClass(f)+'" src="'+esc(src)+'" muted autoplay playsinline preload="auto"></video>'+cap;
+    const v=e.querySelector('video');
+    if(!src) markKaputt(f,e,'kein Video'); else v.onerror=function(){markKaputt(f,e,'Video fehlt: '+src)};
   }else{
-    e.innerHTML=(f.bild?'<div class="bg" style="background-image:url(\''+f.bild+'\')"></div>':'')+'<div class="in"><div class="txt">'+(f.badge?'<div class="badge">'+f.badge+'</div>':'')+'<h1>'+f.titel+'</h1>'+(f.unter?'<h2>'+f.unter+'</h2>':'')+(f.liste?'<ul>'+f.liste.map(function(r){return '<li><span>'+r[0]+'</span><span>'+r[1]+'</span></li>'}).join('')+'</ul>':'')+(f.text?'<p>'+f.text+'</p>':'')+'</div>'+(f.logo?'<div class="glogo"><img src="'+f.logo+'" alt=""></div>':(f.qr?'<div class="qr"><img src="'+f.qr+'"><div>'+f.link+'</div></div>':''))+'</div>';
+    const rechts=f.logo?'<div class="glogo"><img src="'+esc(f.logo)+'" alt=""></div>'
+      :(f.qr?'<div class="qr"><img src="'+esc(f.qr)+'" alt="">'+(f.link?'<div>'+linkTxt(f.link)+'</div>':'')+'</div>':'');
+    e.innerHTML=(f.bild?'<div class="bg"></div>':'')+'<div class="in"><div class="txt">'+(f.badge?'<div class="badge">'+rich(f.badge)+'</div>':'')+'<h1>'+rich(f.titel)+'</h1>'+(f.unter?'<h2>'+rich(f.unter)+'</h2>':'')+(Array.isArray(f.liste)?'<ul>'+f.liste.map(function(r){r=Array.isArray(r)?r:[r,''];return '<li><span>'+rich(r[0])+'</span><span>'+rich(r[1])+'</span></li>'}).join('')+'</ul>':'')+(f.text?'<p>'+rich(f.text)+'</p>':'')+'</div>'+rechts+'</div>';
+    /* Hintergrundbild vorladen: fehlt es, Folie ohne Bild zeigen */
+    if(f.bild){
+      const bg=e.querySelector('.bg'), pre=new Image();
+      pre.onload=function(){bg.style.backgroundImage='url("'+encodeURI(f.bild).replace(/"/g,'%22')+'")'};
+      pre.onerror=function(){bg.remove(); e.classList.remove('hatbild'); console.warn('Hintergrund fehlt:',f.bild)};
+      pre.src=f.bild;
+    }
+    /* QR-Code/Logo fehlt: Karte ausblenden, Text bleibt */
+    e.querySelectorAll('.qr img,.glogo img').forEach(function(im){im.onerror=function(){const k=im.closest('.qr,.glogo'); if(k) k.remove()}});
   }
   return e;
 }
+/* Zu viel Text für eine HTML-Folie: Inhalt stufenweise verkleinern (bis 80 %), statt abzuschneiden */
+function fitSlide(e){
+  if(e.dataset.typ!=='html') return;
+  const inn=e.querySelector('.in'); if(!inn) return;
+  /* Überlange Wörter im Titel (z. B. "Weihnachtsgeschenk"): Titelschrift verkleinern statt überlaufen lassen */
+  e.querySelectorAll('.txt h1').forEach(function(h){
+    h.style.fontSize=''; let vw=parseFloat(getComputedStyle(h).fontSize)/window.innerWidth*100;
+    while(vw>3.6 && h.scrollWidth>h.clientWidth+1){vw=Math.round((vw-0.1)*100)/100; h.style.fontSize=vw+'vw'}
+  });
+  const platz=()=>e.clientHeight-window.innerHeight*0.02;
+  let z=1; inn.style.zoom='';
+  while(z>0.8 && inn.scrollHeight>platz()){z=Math.round((z-0.04)*100)/100; inn.style.zoom=z}
+}
+/* Anzeigedauer: explizites "dauer" hat Vorrang; Bestand 25 s; sonst nach Textmenge 15–30 s (slides.js: TVDauer) */
 function slideDauer(f, el){
   if(f.dauer) return f.dauer*1000;
   if((f.typ||'')==='video'){
@@ -239,11 +318,20 @@ function slideDauer(f, el){
     if(v && isFinite(v.duration) && v.duration>0) return Math.ceil(v.duration*1000);
     return 30000;
   }
-  return DAUER*1000;
+  return TVDauer.auto(f)*1000;
+}
+/* Einbrennschutz: Logoleiste (inkl. Uhr) und Rahmen alle paar Minuten um wenige Pixel versetzen */
+function einbrennschutz(){
+  const pos=[[0,0],[4,-3],[-4,3],[3,4],[-3,-4],[5,1],[-5,-1],[1,-5],[-1,5]];
+  let k=0;
+  setInterval(function(){k=(k+1)%pos.length; const r=document.documentElement.style; r.setProperty('--s',pos[k][0]+'px'); r.setProperty('--t',pos[k][1]+'px')}, SHIFT_MS);
 }
 function startPlayer(FOLIEN){
   const S=document.getElementById('s'); S.innerHTML='';
   const els=FOLIEN.map(f=>{const e=buildSlide(f); S.appendChild(e); return e});
+  const passen=()=>els.forEach(fitSlide);
+  window.__tvPassen=passen;
+  passen(); if(document.fonts&&document.fonts.ready) document.fonts.ready.then(passen);
   let i=-1, timer=null;
   function show(k){
     i=k; els.forEach(function(e,j){e.classList.toggle('on',j===i)});
@@ -251,6 +339,7 @@ function startPlayer(FOLIEN){
     if(v){try{v.currentTime=0; v.play().catch(function(){})}catch(err){}}
   }
   function next(){
+    if(P.has('folie')) return;
     const idx=FOLIEN.map(function(f,k){return k}).filter(function(k){return aktiv(FOLIEN[k])});
     if(!idx.length){timer=setTimeout(next,5000);return}
     const ni=idx[(idx.indexOf(i)+1)%idx.length];
@@ -269,10 +358,11 @@ function startPlayer(FOLIEN){
       v.onended=function(){arm(50)};
     } else arm(slideDauer(FOLIEN[k], els[k]));
   }
+  window.__tvNext=next;
   if(P.has('folie')){
     const n=+P.get('folie');
     if(els[n]){show(n); els[n].style.opacity='1'}
-  } else next();
+  } else { next(); einbrennschutz(); }
   function uhr(){document.getElementById('uhr').textContent=new Date().toLocaleString('de-DE',{weekday:'long',day:'2-digit',month:'long',hour:'2-digit',minute:'2-digit'})}
   uhr();setInterval(uhr,10000);
   // Version-Polling statt starrer 5-Min-Reload
@@ -284,7 +374,7 @@ function startPlayer(FOLIEN){
         if(!r.ok) return;
         const j=await r.json();
         const v=String(j.version||'');
-        if(curVer===null){curVer=v;return}
+        if(curVer===null){curVer=v;registerSW(v);return}
         if(v && v!==curVer){location.reload();return}
       }catch(e){}
       if(Date.now()-started>=DAY_MS) location.reload();
@@ -326,7 +416,12 @@ const LAUFBAND_MS=30*1000;
 function renderLaufband(lb){
   const box=document.getElementById('laufband'); if(!box) return;
   const on=lb && lb.aktiv!==false && Array.isArray(lb.texte) && lb.texte.filter(Boolean).length;
+  const vorher=document.body.classList.contains('lb-on');
   document.body.classList.toggle('lb-on', !!on);
+  if(vorher!==!!on){
+    if(window.__tvPassen) window.__tvPassen();
+    document.querySelectorAll('.f.bestand .bst.eins,.f.bestand .bst.zwei,.f.bestand .bst.dicht').forEach(fitBestand);
+  }
   if(!on){ box.classList.remove('on'); box.innerHTML=''; return; }
   const speed=Math.max(20, Math.min(200, Number(lb.geschwindigkeit)||60));
   const items=lb.texte.filter(Boolean).map(function(s){return '<span class="lb-item">'+esc(s)+'</span>'}).join('<span class="lb-sep">·</span>');
@@ -364,10 +459,13 @@ loadFolien().then(function(FOLIEN){
     setInterval(pollLaufband, LAUFBAND_MS);
   }
 }).catch(err=>{
-  document.getElementById('s').innerHTML='<div class="f on" style="opacity:1;padding:4vw;font-size:2vw">Folien konnten nicht geladen werden: '+esc(err.message)+'</div>';
+  document.getElementById('s').innerHTML='<div class="f on fehler" style="opacity:1">Folien konnten nicht geladen werden: '+esc(err.message)+'</div>';
 });
 
-if('serviceWorker' in navigator){
-  navigator.serviceWorker.register('./sw.js').catch(function(e){console.warn('SW',e)});
+/* Service Worker mit Version registrieren: neuer version.json-Wert = neuer Cache-Name.
+   Ohne Netz bleibt der bisher registrierte Worker aktiv. */
+function registerSW(v){
+  if(!('serviceWorker' in navigator) || !v) return;
+  navigator.serviceWorker.register('./sw.js?v='+encodeURIComponent(v)).catch(function(e){console.warn('SW',e)});
 }
 </script></body></html>

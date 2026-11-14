@@ -6,42 +6,44 @@
 <title>Dippacher TV – Folien-Übersicht</title>
 <link rel="stylesheet" href="assets/fonts/fonts.css">
 <style>
-:root{--bg:#1d120c;--card:#2a1a12;--line:#e9b44c55;--gold:#e9b44c;--cream:#f6ead6;--muted:#f6ead699}
+/* Helles Schema passend zum TV (vorschau-hell) */
+:root{--bg:#F5EDDF;--bg2:#EADDC6;--card:#FFFCF5;--line:#C9A04A;--gold:#5A3F0B;--rot:#7A1F23;--ink:#2A1810;--text:#3A2519;--muted:#4F3A2C}
 *{box-sizing:border-box}
-body{margin:0;font-family:'Source Sans 3',system-ui,sans-serif;background:radial-gradient(ellipse at 20% 0%,#3a2216,#1d120c 60%);color:var(--cream);min-height:100vh}
-header{padding:1.2rem 1.5rem .8rem;border-bottom:1px solid var(--line);display:flex;flex-wrap:wrap;gap:1rem;justify-content:space-between;align-items:flex-end}
-h1{font-family:'Playfair Display',serif;margin:0;font-size:clamp(1.5rem,3vw,2.2rem);color:#fff}
+body{margin:0;font-family:'Source Sans 3',system-ui,sans-serif;background:radial-gradient(ellipse at 20% 0%,var(--bg) 40%,var(--bg2) 100%);color:var(--text);min-height:100vh}
+header{padding:1.2rem 1.5rem .8rem;border-bottom:2px solid var(--line);display:flex;flex-wrap:wrap;gap:1rem;justify-content:space-between;align-items:flex-end}
+h1{font-family:'Playfair Display',serif;margin:0;font-size:clamp(1.5rem,3vw,2.2rem);color:var(--ink)}
 .meta{color:var(--muted);font-size:.95rem;max-width:40rem;line-height:1.4;margin:.35rem 0 0}
-.pill{display:inline-block;background:#3a2a18;border:1px solid var(--line);color:var(--gold);font-size:.72rem;font-weight:700;letter-spacing:.08em;padding:.2rem .55rem;border-radius:.3rem;margin-bottom:.35rem}
-.toolbar a{display:inline-block;border:1px solid var(--gold);color:var(--gold);text-decoration:none;padding:.45rem .9rem;border-radius:.4rem;font-weight:600}
+.pill{display:inline-block;background:#8E2A2E;color:#FFF8EC;font-size:.72rem;font-weight:700;letter-spacing:.08em;padding:.2rem .55rem;border-radius:.3rem;margin-bottom:.35rem}
+.toolbar a{display:inline-block;border:2px solid var(--rot);color:var(--rot);text-decoration:none;padding:.45rem .9rem;border-radius:.4rem;font-weight:700;background:var(--card)}
 main{padding:1.2rem 1.5rem 2.5rem}
-.hint{margin:0 0 1.1rem;padding:.85rem 1rem;border:1px dashed var(--line);border-radius:.55rem;background:#0003;color:var(--muted);font-size:.92rem;line-height:1.45}
-.hint strong{color:var(--cream)}
+.hint{margin:0 0 1.1rem;padding:.85rem 1rem;border:1px dashed var(--line);border-radius:.55rem;background:#fff6;color:var(--muted);font-size:.92rem;line-height:1.45}
+.hint strong{color:var(--ink)}
 .meta-row{display:flex;flex-wrap:wrap;gap:.6rem;margin:0 0 1.1rem}
-.chip{background:#0005;border:1px solid var(--line);border-radius:.4rem;padding:.35rem .7rem;font-size:.85rem}
-.chip b{color:var(--gold);font-weight:600}
+.chip{background:var(--card);border:1px solid var(--line);border-radius:.4rem;padding:.35rem .7rem;font-size:.85rem}
+.chip b{color:var(--rot);font-weight:700}
+.chip.warn{border-color:#8E1F24;background:#F7DCD6}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1rem}
-.card{background:var(--card);border:1px solid var(--line);border-radius:.7rem;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 .5rem 1.4rem #0005}
-.card.dim .preview{filter:grayscale(.7) brightness(.55)}
-.preview{position:relative;aspect-ratio:16/9;background:#000;overflow:hidden}
-.preview iframe{position:absolute;inset:0;width:1920px;height:1080px;border:0;transform-origin:0 0;pointer-events:none;background:#1d120c}
+.card{background:var(--card);border:1px solid var(--line);border-radius:.7rem;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 .4rem 1.2rem #5a3a2022}
+.card.dim .preview{filter:grayscale(.75) opacity(.6)}
+.preview{position:relative;aspect-ratio:16/9;background:var(--bg2);overflow:hidden;border-bottom:1px solid var(--line)}
+.preview iframe{position:absolute;inset:0;width:1920px;height:1080px;border:0;transform-origin:0 0;pointer-events:none;background:var(--bg)}
 .preview .veil{position:absolute;inset:0;z-index:2}
 .preview-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .body{padding:.85rem 1rem 1rem;display:flex;flex-direction:column;gap:.45rem;flex:1}
-.idx{font-size:.72rem;letter-spacing:.06em;color:var(--muted)}
-.typ{display:inline-block;font-size:.7rem;font-weight:700;letter-spacing:.06em;padding:.15rem .45rem;border-radius:.3rem;background:#3a2a18;color:var(--gold);margin-left:.35rem}
-.body h2{margin:0;font-size:1.08rem;line-height:1.25;color:#fff}
-.sub{margin:0;color:var(--gold);font-size:.88rem}
-.status{display:inline-flex;width:fit-content;font-size:.8rem;font-weight:600;padding:.22rem .55rem;border-radius:.35rem}
-.status.live{background:#1e4d32;color:#b7f0c8}
-.status.zeit,.status.geplant{background:#4a3a10;color:#ffd978}
-.status.abgelaufen,.status.aus{background:#4a2020;color:#ffb4b4}
-.status.heute-nicht{background:#403018;color:#e8c98a}
-.status.einbl{background:#5a1d16;color:#ffd0c8}
-.row{display:flex;justify-content:space-between;align-items:center;gap:.6rem;margin-top:auto;padding-top:.45rem;border-top:1px solid #e9b44c22}
-.row a{color:var(--gold);text-decoration:none;font-size:.88rem;font-weight:600;border:1px solid #e9b44c55;padding:.28rem .55rem;border-radius:.35rem}
+.idx{font-size:.8rem;letter-spacing:.04em;color:var(--muted)}
+.typ{display:inline-block;font-size:.7rem;font-weight:700;letter-spacing:.06em;padding:.15rem .45rem;border-radius:.3rem;background:var(--bg2);color:var(--gold);margin-left:.35rem}
+.body h2{margin:0;font-size:1.1rem;line-height:1.25;color:var(--ink)}
+.sub{margin:0;color:var(--rot);font-size:.9rem}
+.status{display:inline-flex;width:fit-content;font-size:.82rem;font-weight:700;padding:.22rem .55rem;border-radius:.35rem}
+.status.live{background:#D7EBDA;color:#174A25}
+.status.zeit,.status.geplant{background:#F2E2B8;color:#5A3F0B}
+.status.abgelaufen,.status.aus{background:#F3D6D2;color:#7A1F23}
+.status.heute-nicht{background:#EFE3CC;color:#4F3A2C}
+.status.einbl{background:#F3D6D2;color:#7A1F23}
+.row{display:flex;justify-content:space-between;align-items:center;gap:.6rem;margin-top:auto;padding-top:.45rem;border-top:1px solid #C9A04A66}
+.row a{color:var(--rot);text-decoration:none;font-size:.9rem;font-weight:700;border:1px solid var(--rot);padding:.28rem .55rem;border-radius:.35rem}
 footer{padding:0 1.5rem 2rem;color:var(--muted);font-size:.85rem;line-height:1.45}
-code{background:#0005;padding:.05rem .3rem;border-radius:.25rem;color:var(--gold)}
+code{background:#EADDC6;padding:.05rem .3rem;border-radius:.25rem;color:var(--ink)}
 @media(max-width:420px){.grid{grid-template-columns:1fr}header,main,footer{padding-left:1rem;padding-right:1rem}}
 </style>
 </head>
@@ -68,6 +70,8 @@ code{background:#0005;padding:.05rem .3rem;border-radius:.25rem;color:var(--gold
 (function(){
   const d=new Date();
   document.getElementById('clock').innerHTML='<strong>Jetzt:</strong> '+d.toLocaleString('de-DE',{weekday:'long',day:'2-digit',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'})+' (Europe/Berlin am Gerät)';
+  const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const txt=s=>esc(String(s??'').replace(/<br\s*\/?>/gi,' ').replace(/&nbsp;/g,' '));
   function typLabel(f){
     const t=f.typ||'html';
     if(t==='bild') return 'Bild';
@@ -99,9 +103,10 @@ code{background:#0005;padding:.05rem .3rem;border-radius:.25rem;color:var(--gold
       swState=navigator.serviceWorker.controller?'aktiv (kontrolliert)':'registriert / wartend';
     }
     meta.innerHTML=
-      '<div class="chip"><b>Version</b> '+(ver.version||'–')+(ver.notiz?' · '+ver.notiz:'')+'</div>'+
+      ((window.FOLIEN_FEHLER||[]).length?'<div class="chip warn"><b>Übersprungen</b> '+FOLIEN_FEHLER.map(x=>esc(x.id)+' ('+esc(x.fehler)+')').join(', ')+'</div>':'')+
+      '<div class="chip"><b>Version</b> '+esc(ver.version||'–')+(ver.notiz?' · '+esc(ver.notiz):'')+'</div>'+
       '<div class="chip"><b>Einblendung</b> '+(ebOn
-        ? ('aktiv'+(eb.titel?': '+eb.titel:'')+(eb.bis?' · bis '+new Date(eb.bis).toLocaleString('de-DE'):''))
+        ? ('aktiv'+(eb.titel?': '+esc(eb.titel):'')+(eb.bis?' · bis '+new Date(eb.bis).toLocaleString('de-DE'):''))
         : 'keine')+'</div>'+
       '<div class="chip"><b>Netz</b> '+(online?'online':'OFFLINE')+'</div>'+
       '<div class="chip"><b>Offline-Cache</b> '+swState+'</div>'+
@@ -112,7 +117,7 @@ code{background:#0005;padding:.05rem .3rem;border-radius:.25rem;color:var(--gold
       '<div class="chip"><b>Mittagstisch</b> '+((function(){
           const m=FOLIEN.find(function(f){return f.id==='mittagstisch'});
           if(!m) return '–';
-          if(m.csvUrl) return 'CSV · '+m.csvUrl.replace(/^https?:\/\//,'').slice(0,42)+'…';
+          if(m.csvUrl) return 'CSV · '+esc(m.csvUrl).replace(/^https?:\/\//,'').slice(0,42)+'…';
           return 'feste Liste (keine csvUrl)';
         })())+'</div>'+
       '<div class="chip"><b>Laufband</b> '+(lb&&lb.aktiv?'AN · '+((lb.texte||[]).filter(Boolean).length)+' Texte · Tempo '+(lb.geschwindigkeit||'?')+'s':'AUS')+'</div>';
@@ -122,20 +127,22 @@ code{background:#0005;padding:.05rem .3rem;border-radius:.25rem;color:var(--gold
       const st=TVSchedule.statusInfo(f,d);
       const card=document.createElement('article');
       card.className='card'+(st.live?'':' dim');
-      const title=f.titel+(f.unter?' · '+f.unter:'');
+      const title=txt(f.titel)+(f.unter?' · '+txt(f.unter):'');
+      const sek=TVDauer.sekunden(f);
+      const dauerTxt=f.dauer?(' · '+esc(f.dauer)+' s fest'):(sek?' · '+sek+' s auto':' · Videolänge');
       const typ=typLabel(f);
       let preview='';
       if((f.typ==='bild') && (f.datei||f.bild)){
-        preview='<img class="preview-img" src="'+(f.datei||f.bild)+'" alt="">';
+        preview='<img class="preview-img" src="'+esc(f.datei||f.bild)+'" alt="">';
       } else {
-        preview='<iframe loading="lazy" title="'+f.id+'" src="./?folie='+i+'&alle" tabindex="-1"></iframe><div class="veil"></div>';
+        preview='<iframe loading="lazy" title="'+esc(f.id)+'" src="./?folie='+i+'&alle" tabindex="-1"></iframe><div class="veil"></div>';
       }
       card.innerHTML=
         '<div class="preview">'+preview+'</div>'+
         '<div class="body">'+
-          '<div class="idx">#'+i+' · <code>'+f.id+'</code><span class="typ">'+typ+'</span>'+(f.dauer?' · '+f.dauer+'s':'')+'</div>'+
+          '<div class="idx">#'+i+' · <code>'+esc(f.id)+'</code><span class="typ">'+typ+'</span>'+dauerTxt+'</div>'+
           '<h2>'+title+'</h2>'+
-          (f.badge?'<p class="sub">Badge: '+f.badge+'</p>':'')+
+          (f.badge?'<p class="sub">Badge: '+txt(f.badge)+'</p>':'')+
           '<span class="status '+st.cls+'">'+st.label+'</span>'+
           '<div class="row"><span style="font-size:.8rem;color:var(--muted)">Reihenfolge '+(i+1)+'/'+FOLIEN.length+'</span>'+
           '<a href="./?folie='+i+'&alle" target="_blank" rel="noopener">Öffnen</a></div>'+

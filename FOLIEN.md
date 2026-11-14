@@ -69,6 +69,21 @@ Einzeltermin:
 
 `titel`, `unter`, `text`, `bild`, `qr`/`logo`, `link`, `liste`, `badge`, `klasse`, `dauer` (Sekunden), `typ` (`html`/`bestand`/`bild`/`video`), bei Bild/Video `datei` + optional `fit`.
 
+**Text-Format:** Alle Texte werden escaped. Erlaubt sind nur `<br>` (Zeilenumbruch) und `&nbsp;` (geschütztes Leerzeichen). Anderes HTML erscheint als Text.
+
+## Anzeigedauer
+
+- `dauer` in der Folie (Sekunden) hat immer Vorrang.
+- Ohne `dauer`: Bestand 25 s; sonst nach Textmenge: 8 s + 0,6 s je Wort (Titel, Untertitel, Liste, Text), mindestens 15 s, höchstens 30 s. Video: Länge der Datei.
+- Die Übersicht zeigt je Folie „… s fest“ oder „… s auto“.
+
+## Robustheit
+
+- Fehlt eine `folien/<id>.json` oder ist sie kaputt, wird nur diese Folie übersprungen (Übersicht: Hinweis „Übersprungen“). Nur ein Fehler in `auswahl.json` stoppt den Bildschirm.
+- Bild-/Videofolie mit fehlender Datei wird übersprungen. Fehlt bei einer HTML-Folie das Hintergrundbild, der QR-Code oder das Logo, erscheint die Folie ohne dieses Element.
+- Zu langer Titel oder zu viel Text: Schrift wird automatisch etwas verkleinert (Titel bis 3,6vw, Folie bis 80 %). Bestand wechselt bei vielen Artikeln von einer auf zwei Spalten.
+- Einbrennschutz: Logoleiste mit Uhr und Rahmen verschieben sich alle 4 Minuten um wenige Pixel.
+
 ## Übersicht
 
 `uebersicht.html` zeigt Status-Klartext (z. B. `Mo–Fr 10:00–14:30 · jetzt nicht`, `bis 23.12.2026`, `abgelaufen`, `aus`). **Nur lesen** – Schalter für den TV setzt der Bot in den Dateien.
@@ -173,4 +188,4 @@ Siehe `MITTAGSTISCH.md` und `beispiele/mittagstisch-beispiel.csv`.
 ```
 
 - Läuft über der Logo-Leiste; Folienfläche wird etwas verkürzt (`body.lb-on`), Inhalte werden nicht überdeckt.
-- `geschwindigkeit`: Sekunden für einen Durchlauf (größer = langsamer). Schrift ~2vw für 65 Zoll.
+- `geschwindigkeit`: Sekunden für einen Durchlauf (größer = langsamer). Schrift ~2,4vw für 65 Zoll.
