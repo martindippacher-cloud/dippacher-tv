@@ -20,10 +20,12 @@
 html,body{margin:0;width:100vw;height:100vh;overflow:hidden;background:var(--creme);font-family:'Source Sans 3',sans-serif;color:var(--text);cursor:none}
 .f{position:absolute;inset:0;opacity:0;transition:opacity 1.5s;display:flex;align-items:center;background:radial-gradient(ellipse at 30% 35%,var(--creme) 45%,var(--creme2) 100%)}
 .f.on{opacity:1}
-/* Foto rechts, Text links auf ruhigem Creme-Grund */
-.bg{position:absolute;top:0;bottom:0;right:0;left:56%;background-size:cover;background-position:center;-webkit-mask-image:linear-gradient(90deg,transparent 0,#0008 14%,#000 32%);mask-image:linear-gradient(90deg,transparent 0,#0008 14%,#000 32%)}
-.f.hatbild .txt{max-width:48vw}
-.f.hatbild .txt p{max-width:48vw}
+/* Foto rechts, Text links: Bildebene ab 32vw, weiche Maske mit S-Kurve (19 Stufen, kein harter Rand).
+   Volle Deckung des Fotos erst ab 74.2vw; Text endet bei max. 51vw. Kontrast gemessen: scripts/kontrast_bild_messen.js + kontrast_bild.py */
+.bg{position:absolute;top:0;bottom:0;right:0;left:32%;background-size:cover;background-position:center;-webkit-mask-image:linear-gradient(90deg,rgba(0,0,0,0.000) 0.00%,rgba(0,0,0,0.000) 3.44%,rgba(0,0,0,0.003) 6.89%,rgba(0,0,0,0.012) 10.33%,rgba(0,0,0,0.030) 13.78%,rgba(0,0,0,0.059) 17.22%,rgba(0,0,0,0.101) 20.67%,rgba(0,0,0,0.157) 24.11%,rgba(0,0,0,0.226) 27.56%,rgba(0,0,0,0.308) 31.00%,rgba(0,0,0,0.400) 34.44%,rgba(0,0,0,0.498) 37.89%,rgba(0,0,0,0.600) 41.33%,rgba(0,0,0,0.701) 44.78%,rgba(0,0,0,0.795) 48.22%,rgba(0,0,0,0.877) 51.67%,rgba(0,0,0,0.942) 55.11%,rgba(0,0,0,0.985) 58.56%,rgba(0,0,0,1.000) 62.00%);mask-image:linear-gradient(90deg,rgba(0,0,0,0.000) 0.00%,rgba(0,0,0,0.000) 3.44%,rgba(0,0,0,0.003) 6.89%,rgba(0,0,0,0.012) 10.33%,rgba(0,0,0,0.030) 13.78%,rgba(0,0,0,0.059) 17.22%,rgba(0,0,0,0.101) 20.67%,rgba(0,0,0,0.157) 24.11%,rgba(0,0,0,0.226) 27.56%,rgba(0,0,0,0.308) 31.00%,rgba(0,0,0,0.400) 34.44%,rgba(0,0,0,0.498) 37.89%,rgba(0,0,0,0.600) 41.33%,rgba(0,0,0,0.701) 44.78%,rgba(0,0,0,0.795) 48.22%,rgba(0,0,0,0.877) 51.67%,rgba(0,0,0,0.942) 55.11%,rgba(0,0,0,0.985) 58.56%,rgba(0,0,0,1.000) 62.00%)}
+.f.hatbild .txt{max-width:44vw}
+.f.hatbild .txt p{max-width:44vw}
+.f.hatbild h2{font-size:2.7vw}
 .in{position:relative;display:flex;align-items:center;gap:5vw;padding:0 7vw 9vh;width:100%;box-sizing:border-box}
 .txt{flex:1;min-width:0}
 h1{font-family:'Playfair Display',serif;font-size:6.2vw;line-height:1.05;margin:0 0 1.5vh;color:var(--tinte)}
@@ -92,7 +94,8 @@ body.lb-on .f.bestand .bst{max-height:calc(84vh - 3vh - 3.4vw*1.05 - 2.3vw*1.3 -
 .f.media{padding:0;align-items:stretch}
 .f.media .media-full{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:var(--creme2)}
 .f.media .media-full.contain{object-fit:contain}
-.f.media .media-cap{position:absolute;left:0;right:0;bottom:9vh;padding:1.6vh 4vw;background:rgba(245,237,223,.94);border-top:.18vw solid var(--gold);z-index:3}
+/* Bildunterschrift: Text auf deckendem Creme, nach oben weicher S-Kurven-Verlauf statt harter Kante */
+.f.media .media-cap{position:absolute;left:0;right:0;bottom:9vh;padding:9vh 4vw 1.6vh;background:linear-gradient(0deg,rgba(245,237,223,.94) 0%,rgba(245,237,223,.94) 58%,rgba(245,237,223,0.922) 61.5%,rgba(245,237,223,0.870) 65.0%,rgba(245,237,223,0.793) 68.5%,rgba(245,237,223,0.696) 72.0%,rgba(245,237,223,0.586) 75.5%,rgba(245,237,223,0.470) 79.0%,rgba(245,237,223,0.354) 82.5%,rgba(245,237,223,0.244) 86.0%,rgba(245,237,223,0.147) 89.5%,rgba(245,237,223,0.070) 93.0%,rgba(245,237,223,0.018) 96.5%,rgba(245,237,223,0.000) 100.0%);z-index:3}
 .f.media .media-cap h1{font-size:3.4vw;margin:0 0 .4vh}
 .f.media .media-cap h2{font-size:2.4vw;margin:0}
 /* Sofort-Einblendung Overlay */
