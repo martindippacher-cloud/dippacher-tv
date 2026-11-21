@@ -12,6 +12,8 @@
 | `uebersicht.html` | Nur lesende Übersicht mit Miniaturen |
 | `version.json` | Versionsstempel – Player lädt nur bei Änderung neu |
 | `einblendung.json` | Sofort-Einblendung / Takeover mit Ablauf |
+| `termine.json` | Anstehende Termine für die Dashboard-Kachel |
+| `dashboard.js` / `dashboard.css` | Dashboard-Folie (Infotafel, `typ: "dashboard"`) |
 
 Live-TV und Übersicht lesen dieselben Dateien. **Keine Tokens** im Frontend. Änderungen: lokal bzw. über den Bot, dann Commit/Push nach Freigabe.
 
@@ -67,7 +69,7 @@ Einzeltermin:
 
 ## Inhaltliche Felder (Kurz)
 
-`titel`, `unter`, `text`, `bild`, `qr`/`logo`, `link`, `qrPos`, `liste`, `badge`, `klasse`, `dauer` (Sekunden), `typ` (`html`/`bestand`/`bild`/`video`), bei Bild/Video `datei` + optional `fit`.
+`titel`, `unter`, `text`, `bild`, `qr`/`logo`, `link`, `qrPos`, `liste`, `badge`, `klasse`, `dauer` (Sekunden), `typ` (`html`/`bestand`/`bild`/`video`/`dashboard`), `wiederholeNach` (Hauptfolie, siehe unten), bei Bild/Video `datei` + optional `fit`.
 
 **QR-Position (`qrPos`):** Standard ist rechts neben dem Text. Mit `"qrPos": "text"` sitzt die QR-Karte (Code 15vw mit heller Ruhezone, Link daneben) in der Textspalte unter dem Fließtext, damit das Foto rechts frei bleibt. Gilt nur, wenn die Folie `qr` und kein `logo` hat. Beispiel: `folien/gutschein.json`.
 
@@ -76,7 +78,7 @@ Einzeltermin:
 ## Anzeigedauer
 
 - `dauer` in der Folie (Sekunden) hat immer Vorrang.
-- Ohne `dauer`: Bestand 25 s; sonst nach Textmenge: 8 s + 0,6 s je Wort (Titel, Untertitel, Liste, Text), mindestens 15 s, höchstens 30 s. Video: Länge der Datei.
+- Ohne `dauer`: Dashboard 50 s; Bestand 25 s; sonst nach Textmenge: 8 s + 0,6 s je Wort (Titel, Untertitel, Liste, Text), mindestens 15 s, höchstens 30 s. Video: Länge der Datei.
 - Die Übersicht zeigt je Folie „… s fest“ oder „… s auto“.
 
 ## Robustheit
@@ -191,3 +193,63 @@ Siehe `MITTAGSTISCH.md` und `beispiele/mittagstisch-beispiel.csv`.
 
 - Läuft über der Logo-Leiste; Folienfläche wird etwas verkürzt (`body.lb-on`), Inhalte werden nicht überdeckt.
 - `geschwindigkeit`: Sekunden für einen Durchlauf (größer = langsamer). Schrift ~2,4vw für 65 Zoll.
+
+
+## Dashboard (Hauptfolie, `folien/dashboard.json`)
+
+Infotafel mit Kopfzeile (Logo, Wetter, Datum, Uhr) und Kacheln in zwei Spalten. Die untere Logoleiste wird
+auf dieser Folie ausgeblendet, weil Logo und Uhr schon in der Kopfzeile stehen.
+
+```json
+{
+  "id": "dashboard", "typ": "dashboard", "dauer": 50, "wiederholeNach": 3,
+  "kacheln": [
+    { "typ": "wetter",       "bereich": "kopf",   "lat": 49.694, "lon": 10.965 },
+    { "typ": "teaser",       "bereich": "links",  "folien": ["welcome-stadtwerke", "welcome"] },
+    { "typ": "infos",        "bereich": "links",  "max": 2, "folien": ["weihnachten-vorbestellung", "gutschein", "foodbox"] },
+    { "typ": "mittagstisch", "bereich": "rechts", "folie": "mittagstisch", "alternative": "foodbox", "dataUrl": "…/inventory.json" },
+    { "typ": "termine",      "bereich": "rechts", "quelle": "termine.json", "max": 4 },
+    { "typ": "bestand",      "bereich": "rechts", "klein": true, "dataUrl": "…/inventory.json" },
+    { "typ": "qr",           "bereich": "rechts", "klein": true, "folie": "reservieren" }
+  ]
+}
+```
+
+- **Reihenfolge** der Kacheln = Reihenfolge in der Liste (je Bereich). **Ausschalten:** `"aktiv": false` an der Kachel.
+- `"klein": true` = kleine Kachel; mehrere kleine stehen nebeneinander am Ende der Spalte.
+- Die Kacheln holen ihre Inhalte aus den **vorhandenen Folien** (Titel, Unterzeile, Bild, QR). Wer eine Folie ändert, ändert damit auch die Kachel.
+  - `teaser`: erste Folie aus `folien`, die heute laut Zeitsteuerung gilt und ein `bild` hat.
+  - `infos`: bis zu `max` Folien, die heute gelten; Vorschaubild = `bild`, sonst der QR-Code der Folie.
+  - `mittagstisch`: Liste aus `folien/mittagstisch.json` (auch `csvUrl`). Gilt die Mittagstisch-Folie gerade nicht (Uhrzeit/Tage),
+    zeigt die Kachel stattdessen die verfügbaren Artikel im Food-Box-Automaten mit Preisen (Live-Bestand), ohne Bestand den Text der Food-Box-Folie.
+  - `bestand`: Zahl der verfügbaren Artikel im Automaten. Erscheint nicht, wenn die Mittagstisch-Kachel schon den Bestand zeigt.
+  - `wetter`: Open-Meteo (kostenlos, ohne Schlüssel), alle 30 min. Koordinaten = Gaststätte (Dorfstraße 23, Poppendorf).
+- **Robust:** Fällt eine Quelle aus, fehlt nur diese Kachel, die übrigen rücken nach. Passt etwas nicht, werden unten Zeilen
+  weggelassen (nie kleinere Schrift, nie abgeschnitten). Wetter offline: letzter Stand bis 12 h mit „Stand HH:MM Uhr“, danach ausgeblendet.
+
+## Hauptfolie: `wiederholeNach`
+
+Eine Folie mit `"wiederholeNach": N` kommt **zuerst** und danach **immer wieder nach je N anderen** (gerade aktiven) Folien.
+Die übrigen Folien laufen weiter in der Reihenfolge von `auswahl.json`. Beispiel mit `3`:
+
+`dashboard → welcome → gutschein → vorbestellung → dashboard → foodbox → bestand → kloesse → dashboard → …`
+
+- Häufiger: kleinere Zahl (`2`). Seltener: größere Zahl. Feld entfernen = normale Folie (einmal pro Durchlauf).
+- Die Übersicht (`uebersicht.html`) zeigt den aktuellen Ablauf, die Dauer eines Durchlaufs und den Anteil der Hauptfolie.
+
+## Termine pflegen (`termine.json`)
+
+```json
+{
+  "termine": [
+    { "datum": "2026-12-10", "bisDatum": "2026-12-13", "titel": "Familienfeier – geschlossen" },
+    { "datum": "2026-12-17", "titel": "Bestellschluss Weihnachtsessen", "zeit": "20 Uhr" }
+  ]
+}
+```
+
+- `datum` (Pflicht, `JJJJ-MM-TT`), `titel` (Pflicht), `bisDatum` (optional, letzter Tag inklusive), `zeit` (optional, freier Text, z. B. `"15–18 Uhr"`).
+- `quelle` ist nur eine Notiz für uns (woher der Termin stammt) und wird nicht angezeigt.
+- Reihenfolge in der Datei ist egal: Der TV sortiert nach Datum und zeigt die nächsten `max` (Standard 4) Termine.
+- **Vergangene Termine verschwinden automatisch** (nach `bisDatum` bzw. `datum`). Laufende mehrtägige Termine stehen als „bis Mi 6.1.“.
+- Heute/morgen erscheinen als „Heute“ bzw. „Morgen“. Nur echte, bestätigte Termine eintragen.

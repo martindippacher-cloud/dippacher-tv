@@ -1,6 +1,7 @@
 {
-  "_info": "Reihenfolge der Folien (ids). Optional overrides: {\"id\":{\"aktiv\":false}}. Änderungen nur lokal/per Bot – kein Token im Frontend.",
+  "_info": "Reihenfolge der Folien (ids). Optional overrides: {\"id\":{\"aktiv\":false}}. Änderungen nur lokal/per Bot – kein Token im Frontend. Hauptfolie: folien/dashboard.json hat \"wiederholeNach\": 3 und kommt nach je 3 anderen Folien wieder (siehe FOLIEN.md).",
   "reihenfolge": [
+    "dashboard",
     "welcome-stadtwerke",
     "welcome",
     "mittagstisch",

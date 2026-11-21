@@ -11,6 +11,9 @@ const PRECACHE = [
   './uebersicht.html',
   './schedule.js',
   './slides.js',
+  './dashboard.js',
+  './dashboard.css',
+  './termine.json',
   './auswahl.json',
   './version.json',
   './einblendung.json',
@@ -71,6 +74,8 @@ self.addEventListener('fetch', (e) => {
   const req = e.request;
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
+  /* Wetter (Open-Meteo) nie im SW-Cache: das Dashboard hält selbst den letzten Stand (localStorage, max. 12 h) */
+  if (url.hostname.endsWith('open-meteo.com')) return;
   if (url.origin !== self.location.origin) {
     e.respondWith(networkFirst(req));
     return;

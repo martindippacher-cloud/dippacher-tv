@@ -33,6 +33,16 @@ PAARE=[
  ('Laufband-Text',               '#2A1810',LAUF),
  ('Logo-Rot (nur Logo/Flaeche)', '#A53134',CREME),
  ('Gold (nur Linien/Rahmen)',    '#C9A04A',CREME),
+ # Dashboard: Kacheln auf KARTE (#FFFCF5), Kopfzeile auf CREME
+ ('Dashboard Kacheltitel/Zeilen',     '#2A1810',KARTE),
+ ('Dashboard Preise (Gold-Text)',     '#5A3F0B',KARTE),
+ ('Dashboard Datum/Unterzeile (Rot)', '#7A1F23',KARTE),
+ ('Dashboard Nebeninfo/Fuß',          '#4F3A2C',KARTE),
+ ('Dashboard Bestand-Zahl (gruen)',   '#174A25',KARTE),
+ ('Dashboard QR-Link',                '#5A1D16',KARTE),
+ ('Dashboard Uhr (Kopf)',             '#2A1810',CREME),
+ ('Dashboard Datum (Kopf)',           '#4F3A2C',CREME),
+ ('Dashboard Teaser-Text (96 % Karte ueber schwarz, worst case)','#3A2519','#'+''.join('%02X'%round(int(KARTE[i:i+2],16)*0.96) for i in (1,3,5))),
 ]
 if __name__=='__main__':
     print('| Element | Vordergrund | Hintergrund | Kontrast |')

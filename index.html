@@ -122,13 +122,16 @@ body.lb-on .f{bottom:14vh}
 body.lb-on .f .in,body.lb-on .f.kompakt .in{padding-bottom:2vh}
 body.lb-on .f.media .media-cap{bottom:0}
 .fehler{padding:4vw;font-size:2.6vw;color:var(--rot)}
-</style></head><body>
+</style>
+<link rel="stylesheet" href="dashboard.css">
+</head><body>
 <div id="s"></div><div class="rand"></div>
 <div id="einblendung" aria-live="polite"></div>
 <div id="laufband" aria-hidden="true"></div>
 <div class="bar"><img src="assets/logo.png" alt="Dippacher"><div id="uhr"></div></div>
 <script src="schedule.js"></script>
 <script src="slides.js"></script>
+<script src="dashboard.js"></script>
 <script>
 const P=new URLSearchParams(location.search),SHIFT_MS=4*60*1000,BESTAND_MS=45000,VERSION_MS=60*1000,DAY_MS=24*60*60*1000,EINBL_MS=15*1000;
 const eur=new Intl.NumberFormat('de-DE',{style:'currency',currency:'EUR'});
@@ -272,10 +275,14 @@ function markKaputt(f,e,grund){
 function buildSlide(f){
   const e=document.createElement('div');
   const typ=f.typ||'html';
-  e.className='f'+(typ==='bestand'?' bestand':'')+(typ==='bild'||typ==='video'?' media':'')+(typ==='html'&&f.bild?' hatbild':'')+(f.klasse?' '+String(f.klasse).replace(/[^\w -]/g,''):'');
+  e.className='f'+(typ==='bestand'?' bestand':'')+(typ==='dashboard'?' dash':'')+(typ==='bild'||typ==='video'?' media':'')+(typ==='html'&&f.bild?' hatbild':'')+(f.klasse?' '+String(f.klasse).replace(/[^\w -]/g,''):'');
   e.dataset.typ=typ;
   const cap=(f.titel||f.unter)?'<div class="media-cap">'+(f.titel?'<h1>'+rich(f.titel)+'</h1>':'')+(f.unter?'<h2>'+rich(f.unter)+'</h2>':'')+'</div>':'';
-  if(typ==='bestand'){
+  if(typ==='dashboard'){
+    /* Infotafel: eigene Kacheln und Datenquellen (dashboard.js); Fehler darin brechen nur diese Folie */
+    try{ if(!window.TVDashboard) throw new Error('dashboard.js fehlt'); TVDashboard.build(f,e); }
+    catch(err){ markKaputt(f,e,'Dashboard: '+(err.message||err)); }
+  }else if(typ==='bestand'){
     e.innerHTML='<div class="in"><div class="txt" style="width:100%"><h1>'+esc(f.titel)+'</h1>'+(f.unter?'<h2>'+esc(f.unter)+'</h2>':'')+'<div class="bst"><p class="bst-meta">Lade Bestand …</p></div></div></div>';
     loadBestand(f,e);setInterval(function(){loadBestand(f,e)},BESTAND_MS);
   }else if(typ==='bild'){
@@ -343,17 +350,19 @@ function startPlayer(FOLIEN){
   window.__tvPassen=passen;
   passen(); if(document.fonts&&document.fonts.ready) document.fonts.ready.then(passen);
   let i=-1, timer=null;
+  const rot=TVRotation.neu();
   function show(k){
     i=k; els.forEach(function(e,j){e.classList.toggle('on',j===i)});
+    /* Dashboard hat eigene Kopfzeile mit Logo und Uhr: untere Logoleiste dann ausblenden */
+    document.body.classList.toggle('dash-on', !!(FOLIEN[i] && FOLIEN[i].typ==='dashboard'));
     const v=els[i]&&els[i].querySelector('video');
     if(v){try{v.currentTime=0; v.play().catch(function(){})}catch(err){}}
   }
   function next(){
     if(P.has('folie')) return;
-    const idx=FOLIEN.map(function(f,k){return k}).filter(function(k){return aktiv(FOLIEN[k])});
-    if(!idx.length){timer=setTimeout(next,5000);return}
-    const ni=idx[(idx.indexOf(i)+1)%idx.length];
-    const k=(ni==null?idx[0]:ni);
+    /* Reihenfolge aus auswahl.json; Hauptfolien mit "wiederholeNach" kommen nach je N anderen Folien wieder (slides.js: TVRotation) */
+    const k=TVRotation.naechste(FOLIEN, function(k){return aktiv(FOLIEN[k])}, rot);
+    if(k<0){timer=setTimeout(next,5000);return}
     show(k);
     clearTimeout(timer);
     function arm(ms){clearTimeout(timer); timer=setTimeout(next, ms)}

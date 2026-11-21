@@ -1,0 +1,11 @@
+{
+  "_info": "Anstehende Termine für die Dashboard-Kachel. Felder: datum (YYYY-MM-DD), bisDatum (optional, inkl.), titel, zeit (optional), quelle (nur zur Doku, wird nicht angezeigt). Vergangene Einträge blendet der TV automatisch aus. Siehe FOLIEN.md.",
+  "termine": [
+    { "datum": "2026-12-10", "bisDatum": "2026-12-13", "titel": "Familienfeier – geschlossen", "quelle": "folien/oeffnung-dezember.json: „Familienfeier Do 10. – So 13. Dez. – geschlossen“" },
+    { "datum": "2026-12-17", "titel": "Bestellschluss Weihnachtsessen", "zeit": "20 Uhr", "quelle": "folien/weihnachten-vorbestellung.json: „Bestellen bis Do, 17.12., 20 Uhr“" },
+    { "datum": "2026-12-17", "titel": "Wieder da", "quelle": "folien/oeffnung-dezember.json: „Wieder da – ab Do 17. Dezember“" },
+    { "datum": "2026-12-21", "bisDatum": "2027-01-06", "titel": "Betriebsurlaub – geschlossen", "quelle": "folien/oeffnung-dezember.json: „Betriebsurlaub Mo 21. Dez. – Mi 6. Jan. – geschlossen“" },
+    { "datum": "2026-12-23", "titel": "Abholung Weihnachtsessen", "zeit": "15–18 Uhr", "quelle": "folien/oeffnung-dezember.json: „Mi 23. Dezember nur Abholung 15–18 Uhr“; folien/weihnachten-vorbestellung.json: „Abholung am 23. Dezember“" },
+    { "datum": "2027-01-07", "titel": "Wieder da", "quelle": "folien/oeffnung-dezember.json: „Wieder da – ab Do 7. Januar 2027“" }
+  ]
+}

@@ -21,6 +21,10 @@ main{padding:1.2rem 1.5rem 2.5rem}
 .meta-row{display:flex;flex-wrap:wrap;gap:.6rem;margin:0 0 1.1rem}
 .chip{background:var(--card);border:1px solid var(--line);border-radius:.4rem;padding:.35rem .7rem;font-size:.85rem}
 .chip b{color:var(--rot);font-weight:700}
+.rot{margin:0 0 1.1rem;padding:.85rem 1rem;border:1px solid var(--line);border-radius:.55rem;background:var(--card);font-size:.92rem;line-height:1.6}
+.rot b{color:var(--rot)}
+.rot .h{display:inline-block;background:#8E2A2E;color:#FFF8EC;border-radius:.3rem;padding:0 .4rem;font-weight:700}
+.haupt{display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.06em;padding:.15rem .45rem;border-radius:.3rem;background:#8E2A2E;color:#FFF8EC;margin-left:.35rem}
 .chip.warn{border-color:#8E1F24;background:#F7DCD6}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1rem}
 .card{background:var(--card);border:1px solid var(--line);border-radius:.7rem;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 .4rem 1.2rem #5a3a2022}
@@ -59,6 +63,7 @@ code{background:#EADDC6;padding:.05rem .3rem;border-radius:.25rem;color:var(--in
 <main>
   <p class="hint" id="clock"></p>
   <div class="meta-row" id="meta"></div>
+  <div class="rot" id="rotation"></div>
   <div class="grid" id="grid">Lade Folien …</div>
 </main>
 <footer>
@@ -77,6 +82,7 @@ code{background:#EADDC6;padding:.05rem .3rem;border-radius:.25rem;color:var(--in
     if(t==='bild') return 'Bild';
     if(t==='video') return 'Video';
     if(t==='bestand') return 'Bestand';
+    if(t==='dashboard') return 'Dashboard';
     return 'HTML';
   }
   function scale(wrap,iframe){
@@ -122,6 +128,22 @@ code{background:#EADDC6;padding:.05rem .3rem;border-radius:.25rem;color:var(--in
         })())+'</div>'+
       '<div class="chip"><b>Laufband</b> '+(lb&&lb.aktiv?'AN · '+((lb.texte||[]).filter(Boolean).length)+' Texte · Tempo '+(lb.geschwindigkeit||'?')+'s':'AUS')+'</div>';
 
+    /* Rotationsablauf jetzt (gleiche Logik wie der TV: slides.js TVRotation) */
+    (function(){
+      const box=document.getElementById('rotation');
+      const akt=k=>TVSchedule.aktiv(FOLIEN[k], d, false);
+      const seq=TVRotation.ablauf(FOLIEN, akt);
+      if(!seq.length){ box.innerHTML='<b>Rotation:</b> gerade keine Folie aktiv.'; return; }
+      let sum=0, hauptSum=0;
+      const teile=seq.map(k=>{const f=FOLIEN[k]; const sek=TVDauer.sekunden(f)||30; sum+=sek; const h=TVRotation.istHaupt(f); if(h) hauptSum+=sek;
+        return h?'<span class="h">'+esc(f.id)+' '+sek+' s</span>':esc(f.id)+' '+sek+' s';});
+      const mm=s=>Math.floor(s/60)+':'+String(s%60).padStart(2,'0');
+      const haupt=FOLIEN.filter(f=>TVRotation.istHaupt(f));
+      box.innerHTML='<b>Rotation jetzt</b> ('+d.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'})+' Uhr): '+teile.join(' → ')+
+        '<br><b>Ein Durchlauf:</b> '+mm(sum)+' min · '+seq.length+' Auftritte'+(hauptSum?' · Hauptfolie '+mm(hauptSum)+' min ('+Math.round(hauptSum/sum*100)+' %)':'')+
+        (haupt.length?'<br><b>Hauptfolie:</b> '+haupt.map(f=>esc(f.id)+' kommt nach je '+esc(f.wiederholeNach)+' anderen Folien wieder').join(', '):'');
+    })();
+
     const grid=document.getElementById('grid'); grid.innerHTML='';
     FOLIEN.forEach((f,i)=>{
       const st=TVSchedule.statusInfo(f,d);
@@ -140,7 +162,7 @@ code{background:#EADDC6;padding:.05rem .3rem;border-radius:.25rem;color:var(--in
       card.innerHTML=
         '<div class="preview">'+preview+'</div>'+
         '<div class="body">'+
-          '<div class="idx">#'+i+' · <code>'+esc(f.id)+'</code><span class="typ">'+typ+'</span>'+dauerTxt+'</div>'+
+          '<div class="idx">#'+i+' · <code>'+esc(f.id)+'</code><span class="typ">'+typ+'</span>'+(TVRotation.istHaupt(f)?'<span class="haupt">HAUPTFOLIE · alle '+esc(f.wiederholeNach)+'</span>':'')+dauerTxt+'</div>'+
           '<h2>'+title+'</h2>'+
           (f.badge?'<p class="sub">Badge: '+txt(f.badge)+'</p>':'')+
           '<span class="status '+st.cls+'">'+st.label+'</span>'+

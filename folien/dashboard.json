@@ -1,0 +1,23 @@
+{
+  "id": "dashboard",
+  "typ": "dashboard",
+  "titel": "Infotafel",
+  "unter": "Hauptfolie mit Mittagstisch, Terminen, Wetter und mehr",
+  "dauer": 50,
+  "wiederholeNach": 3,
+  "_info": "Kacheln: Reihenfolge = Reihenfolge in der Liste, je Bereich (kopf / links / rechts). \"aktiv\": false blendet eine Kachel aus. \"klein\": true = halbe Breite, mehrere kleine stehen nebeneinander. Siehe FOLIEN.md.",
+  "kacheln": [
+    { "typ": "wetter", "bereich": "kopf", "aktiv": true, "ort": "Poppendorf", "lat": 49.694, "lon": 10.965 },
+
+    { "typ": "teaser", "bereich": "links", "aktiv": true, "folien": ["welcome-stadtwerke", "welcome"] },
+    { "typ": "infos", "bereich": "links", "aktiv": true, "titel": "Weitere Infos", "max": 2,
+      "folien": ["weihnachten-vorbestellung", "gutschein", "foodbox"] },
+
+    { "typ": "mittagstisch", "bereich": "rechts", "aktiv": true, "folie": "mittagstisch",
+      "alternative": "foodbox", "dataUrl": "https://martindippacher-cloud.github.io/automat-bestand/inventory.json" },
+    { "typ": "termine", "bereich": "rechts", "aktiv": true, "titel": "Termine", "quelle": "termine.json", "max": 4 },
+    { "typ": "bestand", "bereich": "rechts", "aktiv": true, "klein": true,
+      "dataUrl": "https://martindippacher-cloud.github.io/automat-bestand/inventory.json" },
+    { "typ": "qr", "bereich": "rechts", "aktiv": true, "klein": true, "folie": "reservieren" }
+  ]
+}
