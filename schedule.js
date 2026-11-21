@@ -7,6 +7,7 @@
 //   ab:"YYYY-MM-DD"           Startdatum inklusive
 //   bisDatum:"YYYY-MM-DD"     Ablaufdatum inklusive  (nicht "bis" – das wäre Uhrzeit-Konflikt)
 // Alias: bisTag / ablauf akzeptiert als bisDatum
+//   pausen:[{von:"YYYY-MM-DD", bis:"YYYY-MM-DD"}]  Pausen inklusive (z. B. Betriebsurlaub); davor und danach normal
 (function(global){
   const TAG=[,'Mo','Di','Mi','Do','Fr','Sa','So'];
   const min=t=>{const[a,b]=String(t).split(':');return(+a)*60+(+b)};
@@ -14,6 +15,10 @@
     return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
   }
   function bisFeld(f){return f.bisDatum||f.bisTag||f.ablauf||null}
+  function pause(f, heute){
+    if(!Array.isArray(f.pausen)) return null;
+    return f.pausen.find(p=>p && p.von && p.bis && heute>=p.von && heute<=p.bis) || null;
+  }
   function aktiv(f, d, forceAlle){
     if(f.aktiv===false) return false;
     if(forceAlle) return true;
@@ -23,6 +28,7 @@
     const ab=f.ab||null, bis=bisFeld(f);
     if(ab && heute<ab) return false;
     if(bis && heute>bis) return false;
+    if(pause(f, heute)) return false;
     if(f.tage && !f.tage.includes(wt)) return false;
     if(f.zeit && (m<min(f.zeit.von)||m>min(f.zeit.bis))) return false;
     return true;
@@ -54,6 +60,8 @@
     }
     if(f.ab && heute<f.ab) return {cls:'geplant', label:'ab '+fmtDe(f.ab), live:false};
     if(bis && heute>bis) return {cls:'abgelaufen', label:'abgelaufen (bis '+fmtDe(bis)+')', live:false};
+    const pz=pause(f, heute);
+    if(pz) return {cls:'geplant', label:'Pause '+fmtDe(pz.von)+'–'+fmtDe(pz.bis)+(pz.grund?' ('+pz.grund+')':''), live:false};
     if(f.tage && !f.tage.includes(wt)){
       const tl=tageLabel(f.tage);
       const z=f.zeit?(' '+f.zeit.von+'–'+f.zeit.bis):'';
@@ -73,5 +81,5 @@
     if(!parts.length) return {cls:'live', label:'läuft jetzt', live:true};
     return {cls:'live', label:parts.join(' · ')+' · läuft jetzt', live:true};
   }
-  global.TVSchedule={aktiv, statusInfo, tageLabel, iso, bisFeld};
+  global.TVSchedule={aktiv, statusInfo, tageLabel, iso, bisFeld, pause};
 })(window);

@@ -42,8 +42,13 @@ Alle optional, kombinierbar. Gerätelokalzeit (Europe/Berlin am Player).
 | `datum` | `"2026-12-24"` | nur an diesem Kalendertag |
 | `ab` | `"2026-12-01"` | ab diesem Tag (inkl.) |
 | `bisDatum` | `"2026-12-23"` | bis zu diesem Tag (inkl.), Alias: `bisTag`, `ablauf` |
+| `pausen` | `[{"von":"2026-12-21","bis":"2027-01-06","grund":"Betriebsurlaub"}]` | Pause(n), jeweils inkl. von/bis; davor und danach läuft die Folie normal |
 
 Abwärtskompatibel: bisherige Felder `zeit`, `tage`, `datum`, `aktiv` gelten weiter.
+
+**Pausen** eignen sich für wiederkehrende Folien, die nur zeitweise nicht passen. Beispiel: Die Food-Box-Folien
+(`foodbox`, `bestand`, `kloesse`) pausieren im Betriebsurlaub 21.12.2026–06.01.2027, weil der Automat dann nicht befüllt wird.
+Die Übersicht zeigt „Pause …“. Auch Laufband-Texte können so pausieren: statt eines Strings `{"text":"…","pausen":[…]}`.
 
 ### Beispiele
 
@@ -269,6 +274,7 @@ Die übrigen Folien laufen weiter in der Reihenfolge von `auswahl.json`. Beispie
 | `silvester` | 24.–31.12.2026 | Betriebsurlaub 21.12.2026–06.01.2027 (oeffnungszeiten.html, aktuelles.html) |
 | `neujahr-urlaub` | 01.–06.01.2027 | wie oben, wieder da ab Do. 07.01.2027 |
 | `neujahr-wieder-da` | 07.–17.01.2027 | reguläre Öffnungszeiten von dippacher.de/oeffnungszeiten.html |
+| `foodbox`, `bestand`, `kloesse` | Pause 21.12.2026–06.01.2027 | Martin: Automat im Betriebsurlaub nicht befüllt |
 
 Reservieren-QR (`assets/qr_reservierung_resmio.png`) zeigt direkt auf Resmio:
 `https://app.resmio.com/gaststatte-dippacher/widget?fullscreen=true` (Link von dippacher.de/online-reservierung.html).

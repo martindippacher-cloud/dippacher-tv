@@ -1,10 +1,19 @@
 {
-  "_info": "Fußzeilen-Laufband. Standard AUS. Texte werden strikt escapet.",
+  "_info": "Fußzeilen-Laufband. Standard AUS. Texte werden strikt escapet. Ein Text kann auch {\"text\":\"…\",\"pausen\":[…]} bzw. mit ab/bisDatum sein (Zeitsteuerung wie bei Folien).",
   "aktiv": false,
   "geschwindigkeit": 60,
   "texte": [
     "Willkommen in der Gaststätte Dippacher",
-    "Food-Box-Automat · 24/7 hinterm Haus",
+    {
+      "text": "Food-Box-Automat · 24/7 hinterm Haus",
+      "pausen": [
+        {
+          "von": "2026-12-21",
+          "bis": "2027-01-06",
+          "grund": "Betriebsurlaub, Automat nicht befüllt"
+        }
+      ]
+    },
     "Tisch reservieren unter dippacher.de"
   ]
 }

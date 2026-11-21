@@ -4,5 +4,12 @@
   "titel": "Live-Bestand Food-Box-Automat",
   "unter": "Aktuell im Automaten",
   "dataUrl": "https://martindippacher-cloud.github.io/automat-bestand/inventory.json",
-  "dauer": 25
+  "dauer": 25,
+  "pausen": [
+    {
+      "von": "2026-12-21",
+      "bis": "2027-01-06",
+      "grund": "Betriebsurlaub, Automat nicht befüllt"
+    }
+  ]
 }

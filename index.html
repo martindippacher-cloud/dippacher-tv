@@ -434,7 +434,12 @@ function renderEinblendung(eb){
 const LAUFBAND_MS=30*1000;
 function renderLaufband(lb){
   const box=document.getElementById('laufband'); if(!box) return;
-  const on=lb && lb.aktiv!==false && Array.isArray(lb.texte) && lb.texte.filter(Boolean).length;
+  /* Texte: String oder {text, pausen/ab/bisDatum/…} mit derselben Zeitsteuerung wie Folien */
+  const texte=(lb&&Array.isArray(lb.texte)?lb.texte:[]).map(function(t){
+    if(t && typeof t==='object') return TVSchedule.aktiv(t,new Date(),false)?t.text:'';
+    return t;
+  }).filter(Boolean);
+  const on=lb && lb.aktiv!==false && texte.length;
   const vorher=document.body.classList.contains('lb-on');
   document.body.classList.toggle('lb-on', !!on);
   if(vorher!==!!on){
@@ -443,7 +448,7 @@ function renderLaufband(lb){
   }
   if(!on){ box.classList.remove('on'); box.innerHTML=''; return; }
   const speed=Math.max(20, Math.min(200, Number(lb.geschwindigkeit)||60));
-  const items=lb.texte.filter(Boolean).map(function(s){return '<span class="lb-item">'+esc(s)+'</span>'}).join('<span class="lb-sep">·</span>');
+  const items=texte.map(function(s){return '<span class="lb-item">'+esc(s)+'</span>'}).join('<span class="lb-sep">·</span>');
   // doppelter Track für nahtlose Schleife
   box.innerHTML='<div class="lb-track" style="animation-duration:'+speed+'s">'+items+'<span class="lb-sep">·</span>'+items+'</div>';
   box.classList.add('on');
