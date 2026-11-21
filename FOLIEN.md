@@ -256,5 +256,5 @@ Die übrigen Folien laufen weiter in der Reihenfolge von `auswahl.json`. Beispie
 - `datum` (Pflicht, `JJJJ-MM-TT`), `titel` (Pflicht), `bisDatum` (optional, letzter Tag inklusive), `zeit` (optional, freier Text, z. B. `"15–18 Uhr"`).
 - `quelle` ist nur eine Notiz für uns (woher der Termin stammt) und wird nicht angezeigt.
 - Reihenfolge in der Datei ist egal: Der TV sortiert nach Datum und zeigt die nächsten `max` (Standard 4) Termine.
-- **Vergangene Termine verschwinden automatisch** (nach `bisDatum` bzw. `datum`). Laufende mehrtägige Termine stehen als „bis Mi 6.1.“.
+- **Vergangene Termine verschwinden automatisch** (nach `bisDatum` bzw. `datum`). Laufende mehrtägige Termine stehen als „bis Mi. 6.1.“.
 - Heute/morgen erscheinen als „Heute“ bzw. „Morgen“. Nur echte, bestätigte Termine eintragen.

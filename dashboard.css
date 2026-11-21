@@ -57,7 +57,7 @@ body.dash-on.lb-on #laufband{bottom:0}
 .w-extra{font-size:2vw;font-weight:600;color:var(--meta)}
 .w-heute{font-size:2vw;font-weight:600;color:var(--text)}
 .w-tage{display:flex;flex-direction:column;border-top:.1vw dotted var(--gold)}
-.w-tag{display:grid;grid-template-columns:10.5vw 2.7vw minmax(0,1fr) auto;gap:1vw;align-items:center;padding:.45vh 0;line-height:1.15;border-bottom:.1vw dotted #C9A04A}
+.w-tag{display:grid;grid-template-columns:11.6vw 2.7vw minmax(0,1fr) auto;gap:1vw;align-items:center;padding:.45vh 0;line-height:1.15;border-bottom:.1vw dotted #C9A04A}
 .w-tag:last-child{border-bottom:0;padding-bottom:0}
 .w-lbl{font-size:2.2vw;font-weight:700;color:var(--rot);white-space:nowrap}
 .w-tag .wi{width:2.7vw;height:2.7vw;display:block}
@@ -71,7 +71,7 @@ body.dash-on.lb-on #laufband{bottom:0}
 .p-row .p{color:var(--gold-text);font-weight:700;white-space:nowrap;font-variant-numeric:tabular-nums}
 /* Termine */
 .k.termine{flex:1 0 auto}
-.t-row{display:grid;grid-template-columns:12.2vw minmax(0,1fr);gap:1.2vw;align-items:baseline;font-size:2.2vw;line-height:1.2}
+.t-row{display:grid;grid-template-columns:12.8vw minmax(0,1fr);gap:1.2vw;align-items:baseline;font-size:2.2vw;line-height:1.2}
 .t-row .d{color:var(--rot);font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
 .t-row .n{color:var(--tinte);font-weight:600}
 .t-row .z{color:var(--meta);font-weight:600;white-space:nowrap}

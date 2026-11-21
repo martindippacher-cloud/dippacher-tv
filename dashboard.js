@@ -8,7 +8,7 @@
   const WETTER_MS=30*60*1000, TERMINE_MS=10*60*1000, RENDER_MS=60*1000, WETTER_MAX_ALT=12*60*60*1000;
   const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const rich=s=>esc(s).replace(/&lt;br\s*\/?&gt;/gi,' ').replace(/&amp;nbsp;/g,'&nbsp;');
-  const WT=['So','Mo','Di','Mi','Do','Fr','Sa'];
+  const WT=['So.','Mo.','Di.','Mi.','Do.','Fr.','Sa.'];
   const hhmm=d=>String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
   function jetzt(){return new Date()}
   function iso(d){return TVSchedule.iso(d)}

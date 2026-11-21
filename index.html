@@ -155,7 +155,7 @@ function renderBestand(el,data,err,offlineAt){
     when='Stand: '+when;
   }
   const rows=items.map(i=>{const q=qtyLabel(i.quantity);return '<div class="bst-row"><span class="fach">'+esc(i.fach!=null?i.fach:'–')+'</span><span class="name">'+esc(i.name)+'</span><span class="preis">'+eur.format(Number(i.price)||0)+'</span><span class="qty '+q.c+'">'+q.t+'</span></div>'}).join('');
-  box.innerHTML='<div class="bst-meta">'+esc(when)+' · Quelle: Food-Box Automat</div><div class="bst-head"><span>Fach</span><span>Artikel</span><span>Preis</span><span>Bestand</span></div><div class="bst-grid">'+rows+'</div>';
+  box.innerHTML='<div class="bst-meta">'+esc(when)+' · Quelle: Food-Box-Automat</div><div class="bst-head"><span>Fach</span><span>Artikel</span><span>Preis</span><span>Bestand</span></div><div class="bst-grid">'+rows+'</div>';
   fitBestand(box);
 }
 /* Bei vielen Artikeln Schrift schrittweise verkleinern, nie unter 2,2vw (~42 px) */
