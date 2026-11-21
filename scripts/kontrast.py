@@ -38,7 +38,7 @@ PAARE=[
  ('Dashboard Preise (Gold-Text)',     '#5A3F0B',KARTE),
  ('Dashboard Datum/Unterzeile (Rot)', '#7A1F23',KARTE),
  ('Dashboard Nebeninfo/Fuß',          '#4F3A2C',KARTE),
- ('Dashboard Bestand-Zahl (gruen)',   '#174A25',KARTE),
+ ('Dashboard Regenwahrscheinlichkeit (blau)','#1F4466',KARTE),
  ('Dashboard QR-Link',                '#5A1D16',KARTE),
  ('Dashboard Uhr (Kopf)',             '#2A1810',CREME),
  ('Dashboard Datum (Kopf)',           '#4F3A2C',CREME),

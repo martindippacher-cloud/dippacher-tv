@@ -197,35 +197,40 @@ Siehe `MITTAGSTISCH.md` und `beispiele/mittagstisch-beispiel.csv`.
 
 ## Dashboard (Hauptfolie, `folien/dashboard.json`)
 
-Infotafel mit Kopfzeile (Logo, Wetter, Datum, Uhr) und Kacheln in zwei Spalten. Die untere Logoleiste wird
-auf dieser Folie ausgeblendet, weil Logo und Uhr schon in der Kopfzeile stehen.
+Infotafel mit Kopfzeile (Logo, Datum, Uhr) und Kacheln in zwei Spalten. Die untere Logoleiste wird auf dieser Folie
+ausgeblendet, weil Logo und Uhr schon in der Kopfzeile stehen. Die Food-Box kommt im Dashboard bewusst nicht vor
+(die Food-Box-Folien laufen weiter in der normalen Rotation).
 
 ```json
 {
   "id": "dashboard", "typ": "dashboard", "dauer": 50, "wiederholeNach": 3,
   "kacheln": [
-    { "typ": "wetter",       "bereich": "kopf",   "lat": 49.694, "lon": 10.965 },
     { "typ": "teaser",       "bereich": "links",  "folien": ["welcome-stadtwerke", "welcome"] },
-    { "typ": "infos",        "bereich": "links",  "max": 2, "folien": ["weihnachten-vorbestellung", "gutschein", "foodbox"] },
-    { "typ": "mittagstisch", "bereich": "rechts", "folie": "mittagstisch", "alternative": "foodbox", "dataUrl": "…/inventory.json" },
+    { "typ": "infos",        "bereich": "links",  "max": 2, "folien": ["weihnachten-vorbestellung", "gutschein", "reservieren"] },
+    { "typ": "mittagstisch", "bereich": "links",  "folie": "mittagstisch", "ersetzt": "infos" },
+    { "typ": "wetter",       "bereich": "rechts", "ort": "Poppendorf", "lat": 49.694, "lon": 10.965 },
     { "typ": "termine",      "bereich": "rechts", "quelle": "termine.json", "max": 4 },
-    { "typ": "bestand",      "bereich": "rechts", "klein": true, "dataUrl": "…/inventory.json" },
     { "typ": "qr",           "bereich": "rechts", "klein": true, "folie": "reservieren" }
   ]
 }
 ```
 
+Aufteilung: links oben Foto-Teaser, links unten „Weitere Infos“ (mittags stattdessen der Mittagstisch),
+rechts oben das Wetter, rechts darunter die Termine. Die QR-Kachel erscheint nur, wenn rechts noch Platz ist.
+
 - **Reihenfolge** der Kacheln = Reihenfolge in der Liste (je Bereich). **Ausschalten:** `"aktiv": false` an der Kachel.
 - `"klein": true` = kleine Kachel; mehrere kleine stehen nebeneinander am Ende der Spalte.
+- `"ersetzt": "<typ>"`: Ist diese Kachel sichtbar, nimmt sie den Platz der genannten Kachel ein (Mittagstisch statt Weitere Infos).
 - Die Kacheln holen ihre Inhalte aus den **vorhandenen Folien** (Titel, Unterzeile, Bild, QR). Wer eine Folie ändert, ändert damit auch die Kachel.
   - `teaser`: erste Folie aus `folien`, die heute laut Zeitsteuerung gilt und ein `bild` hat.
   - `infos`: bis zu `max` Folien, die heute gelten; Vorschaubild = `bild`, sonst der QR-Code der Folie.
-  - `mittagstisch`: Liste aus `folien/mittagstisch.json` (auch `csvUrl`). Gilt die Mittagstisch-Folie gerade nicht (Uhrzeit/Tage),
-    zeigt die Kachel stattdessen die verfügbaren Artikel im Food-Box-Automaten mit Preisen (Live-Bestand), ohne Bestand den Text der Food-Box-Folie.
-  - `bestand`: Zahl der verfügbaren Artikel im Automaten. Erscheint nicht, wenn die Mittagstisch-Kachel schon den Bestand zeigt.
-  - `wetter`: Open-Meteo (kostenlos, ohne Schlüssel), alle 30 min. Koordinaten = Gaststätte (Dorfstraße 23, Poppendorf).
+  - `mittagstisch`: Liste aus `folien/mittagstisch.json` (auch `csvUrl`), nur solange die Mittagstisch-Folie laut Zeitsteuerung gilt. Sonst keine Kachel.
+  - `wetter`: Open-Meteo (kostenlos, ohne Schlüssel), alle 30 min. Jetzt: Symbol, Temperatur, Beschreibung, gefühlte Temperatur,
+    Wind (bei Niederschlag stattdessen die Menge), Höchst-/Tiefstwert heute. Dazu die nächsten 3 Tage mit Symbol, Max/Min und
+    Regenwahrscheinlichkeit. Koordinaten = Gaststätte (Dorfstraße 23, Poppendorf).
 - **Robust:** Fällt eine Quelle aus, fehlt nur diese Kachel, die übrigen rücken nach. Passt etwas nicht, werden unten Zeilen
-  weggelassen (nie kleinere Schrift, nie abgeschnitten). Wetter offline: letzter Stand bis 12 h mit „Stand HH:MM Uhr“, danach ausgeblendet.
+  weggelassen (nie kleinere Schrift, nie abgeschnitten). Wetter offline: letzter Stand bis 12 h mit „Stand HH:MM Uhr“ im Titel,
+  danach wird die Kachel ausgeblendet (die aktuelle Temperatur nur bis 3 h alt).
 
 ## Hauptfolie: `wiederholeNach`
 

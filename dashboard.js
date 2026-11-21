@@ -1,14 +1,13 @@
 /* ===== DASHBOARD-FOLIE (typ "dashboard") =====
-   Infotafel mit Kopfzeile (Logo, Wetter, Datum, Uhr) und Kacheln in zwei Spalten.
+   Infotafel mit Kopfzeile (Logo, Datum, Uhr) und Kacheln in zwei Spalten. Die Food-Box kommt hier bewusst nicht vor.
    Konfiguration: folien/dashboard.json -> "kacheln" (Reihenfolge, aktiv, bereich, klein).
    Grundsatz: fällt eine Datenquelle aus, verschwindet nur diese Kachel; die Folie bricht nie.
-   Externe Daten: Open-Meteo (Wetter, alle 30 min), Food-Box-Bestand (alle 45 s), termine.json (alle 10 min).
-   Letzter guter Stand liegt im localStorage (Wetter max. 12 h, Bestand wie Bestandsfolie). */
+   Externe Daten: Open-Meteo (Wetter, alle 30 min), termine.json (alle 10 min).
+   Letzter guter Wetterstand liegt im localStorage (max. 12 h, danach Kachel ausgeblendet). */
 (function(global){
-  const WETTER_MS=30*60*1000, BESTAND_MS=45*1000, TERMINE_MS=10*60*1000, RENDER_MS=60*1000, WETTER_MAX_ALT=12*60*60*1000;
+  const WETTER_MS=30*60*1000, TERMINE_MS=10*60*1000, RENDER_MS=60*1000, WETTER_MAX_ALT=12*60*60*1000;
   const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const rich=s=>esc(s).replace(/&lt;br\s*\/?&gt;/gi,' ').replace(/&amp;nbsp;/g,'&nbsp;');
-  const eur=new Intl.NumberFormat('de-DE',{style:'currency',currency:'EUR'});
   const WT=['So','Mo','Di','Mi','Do','Fr','Sa'];
   const hhmm=d=>String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
   function jetzt(){return new Date()}
@@ -61,8 +60,9 @@
   function wetterUrl(k){
     const lat=Number(k.lat)||49.694, lon=Number(k.lon)||10.965;
     return 'https://api.open-meteo.com/v1/forecast?latitude='+lat+'&longitude='+lon+
-      '&current=temperature_2m,weather_code,is_day&daily=weather_code,temperature_2m_max,temperature_2m_min'+
-      '&timezone=Europe%2FBerlin&forecast_days=3';
+      '&current=temperature_2m,apparent_temperature,weather_code,is_day,wind_speed_10m,precipitation'+
+      '&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max'+
+      '&timezone=Europe%2FBerlin&forecast_days=5';
   }
   async function ladeWetter(st,k){
     const url=wetterUrl(k), key='wetter-cache:'+url;
@@ -75,18 +75,6 @@
       const c=lsGet(key);
       st.wetter=(c&&c.data&&Date.now()-c.at<WETTER_MAX_ALT)?{data:c.data,at:c.at,alt:true}:null;
       console.warn('Wetter nicht erreichbar',e);
-    }
-  }
-  async function ladeBestand(st,url){
-    const key='bestand-cache:'+url;
-    try{
-      const d=await json(url);
-      if(!d||!Array.isArray(d.items)) throw new Error('kein items');
-      lsSet(key,{at:Date.now(),data:d});
-      st.bestand={data:d,alt:false};
-    }catch(e){
-      const c=lsGet(key);
-      st.bestand=(c&&c.data)?{data:c.data,alt:true,at:c.at}:null;
     }
   }
   async function ladeTermine(st,url){
@@ -108,23 +96,43 @@
   const gilt=f=>!!f && TVSchedule.aktiv(f, jetzt(), false);
 
   /* ---------- Kacheln ---------- */
-  function kopf(st){
-    const k=st.kacheln.find(x=>x.typ==='wetter');
-    let w='';
-    try{ if(k && st.wetter) w=wetterHtml(st.wetter,k); }catch(e){ w=''; }
+  function kopf(){
     return '<div class="d-kopf"><img class="d-logo" src="assets/logo.png" alt="Dippacher">'+
-      '<div class="d-kopf-r">'+w+'<div class="d-zeit"><div class="d-datum"></div><div class="d-uhr"></div></div></div></div>';
+      '<div class="d-kopf-r"><div class="d-zeit"><div class="d-datum"></div><div class="d-uhr"></div></div></div></div>';
   }
-  function wetterHtml(W,k){
-    const d=W.data, c=d.current, heute=iso(jetzt());
-    const i=d.daily.time.indexOf(heute);
-    const tag=(j,lbl)=>(j>=0&&d.daily.time[j]!=null)?'<div class="d-wt-tag">'+icon(d.daily.weather_code[j],1)+'<span class="lbl">'+lbl+'</span><span class="mm">'+grad(d.daily.temperature_2m_max[j])+' / '+grad(d.daily.temperature_2m_min[j])+'</span></div>':'';
-    const tage=i>=0?tag(i,'Heute')+tag(i+1,'Morgen'):'';
-    const aktuellOk=!W.alt || (Date.now()-W.at<3*60*60*1000);
-    const jetztTeil=aktuellOk?'<div class="d-wt-jetzt">'+icon(c.weather_code,c.is_day)+'<div><div class="d-wt-temp">'+grad(c.temperature_2m)+'</div><div class="d-wt-txt">'+esc(wmo(c.weather_code).t)+'</div></div></div>':'';
+  /* Große Wetterkachel: jetzt (Symbol, Temperatur, Beschreibung, gefühlt, Wind/Niederschlag) + nächste 3 Tage */
+  function wetter(st,k){
+    const W=st.wetter; if(!W) return '';
+    const d=W.data, c=d.current||{}, dl=d.daily||{}, heute=iso(jetzt());
+    const t=Array.isArray(dl.time)?dl.time:[];
+    const i=t.indexOf(heute);
+    const aktuellOk=c.temperature_2m!=null && (!W.alt || (Date.now()-W.at<3*60*60*1000));
+    let jetztTeil='';
+    if(aktuellOk){
+      const extra=[];
+      if(c.apparent_temperature!=null) extra.push('gefühlt '+grad(c.apparent_temperature));
+      if(Number(c.precipitation)>0) extra.push('Niederschlag '+String(Math.round(c.precipitation*10)/10).replace('.',',')+' mm');
+      else if(c.wind_speed_10m!=null) extra.push('Wind '+Math.round(c.wind_speed_10m)+' km/h');
+      const heuteMM=i>=0?'<div class="w-heute">Heute '+grad(dl.temperature_2m_max[i])+' / '+grad(dl.temperature_2m_min[i])+'</div>':'';
+      jetztTeil='<div class="w-jetzt">'+icon(c.weather_code,c.is_day)+'<div class="w-temp">'+grad(c.temperature_2m)+'</div>'+
+        '<div class="w-info"><div class="w-txt">'+esc(wmo(c.weather_code).t)+'</div>'+(extra.length?'<div class="w-extra">'+esc(extra.join(' · '))+'</div>':'')+heuteMM+'</div></div>';
+    }
+    let tage='';
+    if(i>=0){
+      const tg=[];
+      for(let j=i+1;j<=i+3 && j<t.length;j++){
+        const dt=new Date(t[j]+'T12:00:00');
+        const lbl=j===i+1?'Morgen':WT[dt.getDay()]+' '+dt.getDate()+'.'+(dt.getMonth()+1)+'.';
+        const pp=Array.isArray(dl.precipitation_probability_max)?dl.precipitation_probability_max[j]:null;
+        tg.push('<div class="w-tag"><div class="w-lbl">'+esc(lbl)+'</div>'+icon(dl.weather_code[j],1)+
+          '<div class="w-mm"><b>'+grad(dl.temperature_2m_max[j])+'</b> / '+grad(dl.temperature_2m_min[j])+'</div>'+
+          (pp!=null?'<div class="w-pp">Regen '+Math.round(pp)+' %</div>':'')+'</div>');
+      }
+      if(tg.length) tage='<div class="w-tage">'+tg.join('')+'</div>';
+    }
     if(!jetztTeil && !tage) return '';
-    const stand=W.alt?'<div class="d-wt-stand">Stand '+hhmm(new Date(W.at))+' Uhr</div>':'';
-    return '<div class="d-wetter">'+jetztTeil+(tage?'<div class="d-wt-tage">'+tage+stand+'</div>':stand)+'</div>';
+    const stand=W.alt?' <span class="w-stand">Stand '+hhmm(new Date(W.at))+' Uhr</span>':'';
+    return '<div class="k wetter"><h3>'+esc(k.titel||('Wetter in '+(k.ort||'Poppendorf')))+stand+'</h3>'+jetztTeil+tage+'</div>';
   }
   async function teaser(st,k){
     let f=null;
@@ -144,40 +152,12 @@
     if(!rows.length) return '';
     return '<div class="k infos"><h3>'+esc(k.titel||'Weitere Infos')+'</h3><div class="rows">'+rows.join('')+'</div></div>';
   }
-  /* Speisen zuerst, Getränke zuletzt */
-  const rang=i=>({'Hauptgerichte':0,'Beilagen':1,'Getränke':3})[i.category]??2;
-  function verfuegbar(B){
-    return [...(B.data.items||[])].filter(i=>Number(i.quantity)>0)
-      .sort((a,b)=>rang(a)-rang(b)||String(a.name).localeCompare(String(b.name),'de'));
-  }
-  function standTxt(B){
-    if(B.alt) return 'Stand von '+hhmm(new Date(B.at||Date.now()))+' (offline)';
-    const s=B.data.checkedAt||B.data.updatedAt; if(!s) return '';
-    return 'Bestand von '+new Date(s).toLocaleString('de-DE',{timeZone:'Europe/Berlin',hour:'2-digit',minute:'2-digit'})+' Uhr';
-  }
+  /* Mittagstisch nur, wenn die Mittagstisch-Folie gerade gilt (Zeitsteuerung). Sonst keine Kachel. */
   async function mittagstisch(st,k){
     const m=await folie(st,k.folie||'mittagstisch');
-    if(gilt(m) && Array.isArray(m.liste) && m.liste.length){
-      st.zeigtBestand=false;
-      const rows=m.liste.map(r=>{r=Array.isArray(r)?r:[r,''];return '<div class="row p-row"><span class="n">'+rich(r[0])+'</span><span class="p">'+rich(r[1])+'</span></div>'}).join('');
-      return '<div class="k mittag"><h3>'+esc(k.titel||'Heute bei uns · Mittagstisch')+(m.badge?' <span class="k-badge">'+rich(m.badge)+'</span>':'')+'</h3><div class="rows">'+rows+'</div>'+(m.zeit?'<div class="k-fuss">Mittagstisch '+esc(m.zeit.von)+'–'+esc(m.zeit.bis)+' Uhr</div>':'')+'</div>';
-    }
-    /* Alternative ohne Erfundenes: Food-Box (Live-Bestand mit echten Preisen, sonst Text der Food-Box-Folie) */
-    const fb=await folie(st,k.alternative||'foodbox');
-    st.zeigtBestand=false;
-    const B=st.bestandMittag;
-    const titel='Heute bei uns · Food-Box';
-    const unter=fb&&fb.unter?rich(fb.unter):'';
-    if(B){
-      const v=verfuegbar(B);
-      if(v.length){
-        st.zeigtBestand=true;
-        const rows=v.map(i=>'<div class="row p-row"><span class="n">'+esc(i.name)+'</span><span class="p">'+eur.format(Number(i.price)||0)+'</span></div>').join('');
-        return '<div class="k mittag"><h3>'+titel+'</h3><div class="rows">'+rows+'</div><div class="k-fuss">'+[esc(standTxt(B)),unter].filter(Boolean).join(' · ')+'</div></div>';
-      }
-    }
-    if(!fb) return '';
-    return '<div class="k mittag"><h3>'+titel+'</h3>'+(unter?'<div class="k-unter">'+unter+'</div>':'')+'<p class="k-text">'+rich(fb.text||'')+'</p></div>';
+    if(!(gilt(m) && Array.isArray(m.liste) && m.liste.length)) return '';
+    const rows=m.liste.map(r=>{r=Array.isArray(r)?r:[r,''];return '<div class="row p-row"><span class="n">'+rich(r[0])+'</span><span class="p">'+rich(r[1])+'</span></div>'}).join('');
+    return '<div class="k mittag"><h3>'+esc(k.titel||'Heute bei uns · Mittagstisch')+(m.badge?' <span class="k-badge">'+rich(m.badge)+'</span>':'')+'</h3><div class="rows">'+rows+'</div>'+(m.zeit?'<div class="k-fuss">Mittagstisch '+esc(m.zeit.von)+'–'+esc(m.zeit.bis)+' Uhr</div>':'')+'</div>';
   }
   function datumLabel(t,heute,morgen){
     const d=new Date(t.datum+'T12:00:00'), bis=t.bisDatum&&t.bisDatum!==t.datum?new Date(t.bisDatum+'T12:00:00'):null;
@@ -199,28 +179,26 @@
     const rows=liste.map(t=>'<div class="row t-row"><span class="d">'+esc(datumLabel(t,heute,morgen))+'</span><span class="n">'+esc(t.titel)+(t.zeit?' <span class="z">· '+esc(t.zeit)+'</span>':'')+'</span></div>').join('');
     return '<div class="k termine"><h3>'+esc(k.titel||'Termine')+'</h3><div class="rows">'+rows+'</div></div>';
   }
-  function bestandKlein(st,k){
-    if(st.zeigtBestand || !st.bestand) return '';
-    const v=verfuegbar(st.bestand);
-    return '<div class="k klein bst-k"><h3>Food-Box live</h3><div class="b-zahl"><b>'+v.length+'</b> Artikel verfügbar</div>'+
-      (v.length?'<div class="b-namen">'+v.slice(0,2).map(i=>esc(i.name)).join(', ')+(v.length>2?' …':'')+'</div>':'')+'</div>';
-  }
   async function qr(st,k){
     const f=await folie(st,k.folie||'reservieren');
     if(!f||!f.qr) return '';
     return '<div class="k klein qr-k"><img src="'+esc(f.qr)+'" alt=""><div><div class="q-t">'+rich(f.titel)+'</div>'+(f.link?'<div class="q-l">'+esc(f.link)+'</div>':'')+'</div></div>';
   }
-  const RENDER={teaser, infos, mittagstisch, termine, bestand:bestandKlein, qr};
+  const RENDER={wetter, teaser, infos, mittagstisch, termine, qr};
 
   /* ---------- Aufbau, Anpassen, Takt ---------- */
   async function render(st){
     const spalten={links:[],rechts:[]};
-    st.zeigtBestand=false;
-    /* mittagstisch vor bestand rendern, damit der kleine Bestand nicht doppelt erscheint */
     const reihen=st.kacheln.filter(k=>k.aktiv!==false && RENDER[k.typ] && (k.bereich==='links'||k.bereich==='rechts'||!k.bereich));
     const html=new Map();
-    for(const k of [...reihen].sort((a,b)=>(a.typ==='bestand')-(b.typ==='bestand'))){
+    for(const k of reihen){
       try{ html.set(k, await RENDER[k.typ](st,k) || ''); }catch(e){ console.warn('Kachel übersprungen:',k.typ,e); html.set(k,''); }
+    }
+    /* "ersetzt": eine sichtbare Kachel (z. B. Mittagstisch) nimmt den Platz einer anderen (z. B. Weitere Infos) ein */
+    for(const k of reihen){
+      if(!k.ersetzt || !html.get(k)) continue;
+      const weg=reihen.find(x=>x!==k && x.typ===k.ersetzt);
+      if(weg){ reihen.splice(reihen.indexOf(k),1); reihen[reihen.indexOf(weg)]=k; }
     }
     for(const k of reihen){
       const h=html.get(k); if(!h) continue;
@@ -234,7 +212,7 @@
       flush();
       return '<div class="d-col '+name+'">'+out+'</div>';
     };
-    let kopfHtml=''; try{ kopfHtml=kopf(st); }catch(e){ kopfHtml='<div class="d-kopf"><img class="d-logo" src="assets/logo.png" alt=""><div class="d-kopf-r"><div class="d-zeit"><div class="d-datum"></div><div class="d-uhr"></div></div></div></div>'; }
+    const kopfHtml=kopf();
     const neu=kopfHtml+'<div class="d-body">'+spalte('links',spalten.links)+spalte('rechts',spalten.rechts)+'</div>';
     if(neu!==st.letztes){
       st.letztes=neu;
@@ -253,7 +231,9 @@
   function passen(st){
     const el=st.el;
     const t=el.querySelector('.k.teaser');
-    if(t){ for(const sel of ['.t-ov p','.t-ov h2']){ const ov=t.querySelector('.t-ov'); if(ov && ov.scrollHeight>t.clientHeight+2){ const x=t.querySelector(sel); if(x) x.remove(); } } }
+    /* Wird das Foto zu klein (z. B. langer Mittagstisch darunter), Teaser ganz weglassen */
+    if(t && t.clientHeight<window.innerHeight*0.24){ t.remove(); }
+    else if(t){ for(const sel of ['.t-ov p','.t-ov h2']){ const ov=t.querySelector('.t-ov'); if(ov && ov.scrollHeight>t.clientHeight+2){ const x=t.querySelector(sel); if(x) x.remove(); } } }
     el.querySelectorAll('.d-col').forEach(col=>{
       const voll=()=>col.scrollHeight>col.clientHeight+2;
       for(let n=0;n<80 && voll();n++){ 
@@ -279,24 +259,17 @@
   }
   function build(f,el){
     const kacheln=Array.isArray(f.kacheln)?f.kacheln:[];
-    const st={f,el,kacheln,folien:{},wetter:null,bestand:null,bestandMittag:null,termine:null,letztes:''};
+    const st={f,el,kacheln,folien:{},wetter:null,termine:null,letztes:''};
     el.innerHTML='<div class="d-wrap"></div>';
     const r=()=>render(st).catch(e=>console.warn('Dashboard',e));
     const wk=kacheln.find(k=>k.typ==='wetter'&&k.aktiv!==false);
-    const bk=kacheln.find(k=>k.typ==='bestand'&&k.aktiv!==false);
-    const mk=kacheln.find(k=>k.typ==='mittagstisch'&&k.aktiv!==false);
     const tk=kacheln.find(k=>k.typ==='termine'&&k.aktiv!==false);
-    const bestUrl=(bk&&bk.dataUrl)||(mk&&mk.dataUrl)||null;
-    /* ein Abruf für beide Nutzer: kleine Bestandskachel und Food-Box-Alternative im Mittagstisch */
-    async function bestandLaden(){ if(!bestUrl) return; await ladeBestand(st,bestUrl); const b=st.bestand; st.bestandMittag=(mk&&mk.dataUrl)?b:null; st.bestand=bk?b:null; }
     Promise.all([
       wk?ladeWetter(st,wk):null,
-      bestandLaden(),
       tk?ladeTermine(st,tk.quelle||'termine.json'):null
     ].map(p=>Promise.resolve(p).catch(()=>{}))).then(r);
     r();
     if(wk) setInterval(()=>ladeWetter(st,wk).then(r),WETTER_MS);
-    if(bestUrl) setInterval(()=>bestandLaden().then(r),BESTAND_MS);
     if(tk) setInterval(()=>ladeTermine(st,tk.quelle||'termine.json').then(r),TERMINE_MS);
     setInterval(r,RENDER_MS);
     setInterval(()=>uhr(st),10000);
