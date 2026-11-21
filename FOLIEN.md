@@ -67,7 +67,9 @@ Einzeltermin:
 
 ## Inhaltliche Felder (Kurz)
 
-`titel`, `unter`, `text`, `bild`, `qr`/`logo`, `link`, `liste`, `badge`, `klasse`, `dauer` (Sekunden), `typ` (`html`/`bestand`/`bild`/`video`), bei Bild/Video `datei` + optional `fit`.
+`titel`, `unter`, `text`, `bild`, `qr`/`logo`, `link`, `qrPos`, `liste`, `badge`, `klasse`, `dauer` (Sekunden), `typ` (`html`/`bestand`/`bild`/`video`), bei Bild/Video `datei` + optional `fit`.
+
+**QR-Position (`qrPos`):** Standard ist rechts neben dem Text. Mit `"qrPos": "text"` sitzt die QR-Karte (Code 15vw mit heller Ruhezone, Link daneben) in der Textspalte unter dem Fließtext, damit das Foto rechts frei bleibt. Gilt nur, wenn die Folie `qr` und kein `logo` hat. Beispiel: `folien/gutschein.json`.
 
 **Text-Format:** Alle Texte werden escaped. Erlaubt sind nur `<br>` (Zeilenumbruch) und `&nbsp;` (geschütztes Leerzeichen). Anderes HTML erscheint als Text.
 
