@@ -7,13 +7,55 @@
   "wiederholeNach": 3,
   "_info": "Kacheln: Reihenfolge = Reihenfolge in der Liste, je Bereich (links / rechts). \"aktiv\": false blendet eine Kachel aus. \"klein\": true = kleine Kachel, mehrere stehen nebeneinander. \"ersetzt\": Kachel nimmt, wenn sie sichtbar ist, den Platz einer anderen ein (Mittagstisch statt Weitere Infos). Siehe FOLIEN.md.",
   "kacheln": [
-    { "typ": "teaser", "bereich": "links", "aktiv": true, "folien": ["welcome-stadtwerke", "welcome"] },
-    { "typ": "infos", "bereich": "links", "aktiv": true, "titel": "Weitere Infos", "max": 2,
-      "folien": ["weihnachten-vorbestellung", "gutschein", "reservieren"] },
-    { "typ": "mittagstisch", "bereich": "links", "aktiv": true, "folie": "mittagstisch", "ersetzt": "infos" },
-
-    { "typ": "wetter", "bereich": "rechts", "aktiv": true, "ort": "Poppendorf", "lat": 49.694, "lon": 10.965 },
-    { "typ": "termine", "bereich": "rechts", "aktiv": true, "titel": "Termine", "quelle": "termine.json", "max": 4 },
-    { "typ": "qr", "bereich": "rechts", "aktiv": true, "klein": true, "folie": "reservieren" }
+    {
+      "typ": "teaser",
+      "bereich": "links",
+      "aktiv": true,
+      "folien": [
+        "welcome-stadtwerke",
+        "welcome"
+      ]
+    },
+    {
+      "typ": "infos",
+      "bereich": "links",
+      "aktiv": true,
+      "titel": "Weitere Infos",
+      "max": 2,
+      "folien": [
+        "weihnachten-vorbestellung",
+        "gutschein"
+      ]
+    },
+    {
+      "typ": "mittagstisch",
+      "bereich": "links",
+      "aktiv": true,
+      "folie": "mittagstisch",
+      "ersetzt": "infos"
+    },
+    {
+      "typ": "wetter",
+      "bereich": "rechts",
+      "aktiv": true,
+      "ort": "Poppendorf",
+      "lat": 49.694,
+      "lon": 10.965
+    },
+    {
+      "typ": "termine",
+      "bereich": "rechts",
+      "aktiv": true,
+      "titel": "Termine",
+      "quelle": "termine.json",
+      "max": 4
+    },
+    {
+      "typ": "qr",
+      "bereich": "rechts",
+      "aktiv": true,
+      "klein": true,
+      "folie": "reservieren"
+    }
   ]
 }

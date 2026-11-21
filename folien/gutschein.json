@@ -6,5 +6,7 @@
   "qr": "assets/qr_gutschein.png",
   "link": "www.dippacher.de/gutscheine.html",
   "qrPos": "text",
-  "bild": "assets/gutscheinkartedippacher.jpg"
+  "bild": "assets/gutscheinkartedippacher.jpg",
+  "bisDatum": "2026-12-23",
+  "_bisDatum": "Weihnachtsgeschenk-Folie bis zum Gutscheinverkauf am 23.12. (dippacher.de/aktuelles.html)"
 }

@@ -1,0 +1,19 @@
+{
+  "id": "silvester",
+  "titel": "Einen guten Rutsch!",
+  "unter": "Wir sind im Betriebsurlaub",
+  "liste": [
+    [
+      "Betriebsurlaub Mo. 21. Dez. – Mi. 6. Jan.",
+      "geschlossen"
+    ],
+    [
+      "Wieder da",
+      "ab Do. 7. Januar 2027"
+    ]
+  ],
+  "text": "Über Weihnachten, Silvester und Neujahr geschlossen. Wir freuen uns auf Ihren Besuch im neuen Jahr!",
+  "ab": "2026-12-24",
+  "bisDatum": "2026-12-31",
+  "_quelle": "dippacher.de/oeffnungszeiten.html und aktuelles.html (Betriebsurlaub 21.12.2026–06.01.2027), Folie oeffnung-dezember"
+}

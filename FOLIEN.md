@@ -258,3 +258,17 @@ Die übrigen Folien laufen weiter in der Reihenfolge von `auswahl.json`. Beispie
 - Reihenfolge in der Datei ist egal: Der TV sortiert nach Datum und zeigt die nächsten `max` (Standard 4) Termine.
 - **Vergangene Termine verschwinden automatisch** (nach `bisDatum` bzw. `datum`). Laufende mehrtägige Termine stehen als „bis Mi. 6.1.“.
 - Heute/morgen erscheinen als „Heute“ bzw. „Morgen“. Nur echte, bestätigte Termine eintragen.
+
+## Saisonfolien Winter 2026/27 (Ablauf ohne Überschneidung)
+
+| Folie | sichtbar | Quelle |
+|---|---|---|
+| `weihnachten-vorbestellung` | bis 17.12.2026 (Bestellschluss) | dippacher.de/weihnachten.html |
+| `gutschein` (Weihnachtsgeschenk) | bis 23.12.2026 (Gutscheinverkauf) | dippacher.de/aktuelles.html |
+| `oeffnung-dezember` | bis 23.12.2026 (Abholung) | dippacher.de/oeffnungszeiten.html |
+| `silvester` | 24.–31.12.2026 | Betriebsurlaub 21.12.2026–06.01.2027 (oeffnungszeiten.html, aktuelles.html) |
+| `neujahr-urlaub` | 01.–06.01.2027 | wie oben, wieder da ab Do. 07.01.2027 |
+| `neujahr-wieder-da` | 07.–17.01.2027 | reguläre Öffnungszeiten von dippacher.de/oeffnungszeiten.html |
+
+Reservieren-QR (`assets/qr_reservierung_resmio.png`) zeigt direkt auf Resmio:
+`https://app.resmio.com/gaststatte-dippacher/widget?fullscreen=true` (Link von dippacher.de/online-reservierung.html).

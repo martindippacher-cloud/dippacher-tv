@@ -1,0 +1,15 @@
+{
+  "id": "neujahr-urlaub",
+  "titel": "Frohes neues Jahr!",
+  "unter": "Noch im Betriebsurlaub bis Mi. 6. Januar",
+  "liste": [
+    [
+      "Wieder da",
+      "ab Do. 7. Januar 2027"
+    ]
+  ],
+  "text": "Danke für Ihre Treue im vergangenen Jahr – wir freuen uns auf Sie!",
+  "ab": "2027-01-01",
+  "bisDatum": "2027-01-06",
+  "_quelle": "dippacher.de/oeffnungszeiten.html und aktuelles.html (Betriebsurlaub bis 06.01.2027), Folie oeffnung-dezember (Wieder da ab Do. 7. Januar 2027)"
+}

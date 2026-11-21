@@ -34,6 +34,7 @@ const PRECACHE = [
   './assets/qr_foodbox.png',
   './assets/qr_gutschein.png',
   './assets/qr_reservierung.png',
+  './assets/qr_reservierung_resmio.png',
   './assets/qr_weihnachten.png',
   './assets/schaueferla_9731Lr.jpg',
   './assets/stadtwerke_forchheim_bg.jpg',

@@ -3,6 +3,7 @@
   "titel": "Tisch reservieren",
   "unter": "Ganz einfach online",
   "text": "Für Familienfeiern, Stammtische oder den nächsten Besuch",
-  "qr": "assets/qr_reservierung.png",
-  "link": "www.dippacher.de"
+  "qr": "assets/qr_reservierung_resmio.png",
+  "link": "app.resmio.com/gaststatte-dippacher",
+  "_quelle": "Resmio-Link von www.dippacher.de/online-reservierung.html (app.resmio.com/gaststatte-dippacher/widget), QR zeigt auf https://app.resmio.com/gaststatte-dippacher/widget?fullscreen=true"
 }
