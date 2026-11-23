@@ -142,14 +142,16 @@ Beispiele im Repo: `folien/beispiel-bild.json`, `folien/beispiel-video.json` (be
 ## Vereinsplakate (`typ: "plakat"`)
 
 Plakate von Vereinen (PDF **oder** Bild: PNG, JPG, WEBP, AVIF). Der TV rendert selbst **keine PDFs/AVIF** –
-beim Einchecken wird daraus ein PNG gemacht, die Folie zeigt nur das PNG (robust auf Fully Kiosk / Google TV, offline gecacht).
+beim Einchecken wird daraus ein PNG oder JPG gemacht, die Folie zeigt nur dieses Bild (robust auf Fully Kiosk / Google TV, offline gecacht).
 
 **Plakat hinzufügen (3 Schritte):**
 
 1. Original nach `assets/vereine/original/` legen, sprechender Name ohne Leerzeichen, z. B. `sommerfest-2027.pdf`.
 2. Umwandeln (im Repo-Wurzelordner):
    `scripts/pdf_zu_bild.sh assets/vereine/original/sommerfest-2027.pdf`
-   → `assets/vereine/sommerfest-2027.png` (erste Seite, 1600 px hoch, Seitenverhältnis bleibt). Mehrere Dateien auf einmal gehen auch.
+   → `assets/vereine/sommerfest-2027.png` oder `.jpg` (erste Seite, 1600 px hoch, Seitenverhältnis bleibt). Das Skript wählt das Format selbst:
+   Foto-Plakate (viele Farben) als JPG Qualität 85 (klein, z. B. 0,3 statt 1,7 MB), Grafik-/Textplakate als PNG (scharfe Schrift). Erzwingen: `FORMAT=png` oder `FORMAT=jpg`.
+   Den ausgegebenen Pfad genau so in `bilder` eintragen. Mehrere Dateien auf einmal gehen auch.
 3. `folien/sommerfest-2027.json` anlegen und die id in `auswahl.json` → `reihenfolge` eintragen.
 
 ```json
@@ -177,7 +179,7 @@ beim Einchecken wird daraus ein PNG gemacht, die Folie zeigt nur das PNG (robust
 | Feld | Bedeutung |
 |------|-----------|
 | `layout` | `"zwei"` = zwei Plakate nebeneinander · `"mittig"` = ein Plakat in der Mitte · `"mitText"` = Plakat links, Kernaussagen rechts |
-| `bilder` | PNG-Pfade (bei `zwei` genau zwei, sonst eins). Fehlt bei `zwei` ein Bild, steht das andere mittig; fehlen alle, wird die Folie übersprungen |
+| `bilder` | Bildpfade (PNG/JPG aus dem Skript) (bei `zwei` genau zwei, sonst eins). Fehlt bei `zwei` ein Bild, steht das andere mittig; fehlen alle, wird die Folie übersprungen |
 | `kernpunkte` | nur bei `mitText`: `verein`, `titel`, `datum`, `uhrzeit`, `ort` (alles Text, wie auf dem Plakat) und `punkte` (2–4 Stichpunkte). Ohne `kernpunkte` wird `mitText` wie `mittig` gezeigt |
 | `badge` | optionales Schild über dem Text, z. B. `"BEISPIEL"` |
 | `qr`, `link` | optional bei `mitText`: kleiner QR mit Link unten rechts in der Textspalte |
