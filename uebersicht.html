@@ -8,9 +8,10 @@
 <link rel="stylesheet" href="assets/fonts/fonts.css">
 <style>
 /* Helles Schema passend zum TV (vorschau-hell) */
+html{color-scheme:only light}
 :root{--bg:#F5EDDF;--bg2:#EADDC6;--card:#FFFCF5;--line:#C9A04A;--gold:#5A3F0B;--rot:#7A1F23;--ink:#2A1810;--text:#3A2519;--muted:#4F3A2C}
 *{box-sizing:border-box}
-body{margin:0;font-family:'Source Sans 3',system-ui,sans-serif;background:radial-gradient(ellipse at 20% 0%,var(--bg) 40%,var(--bg2) 100%);color:var(--text);min-height:100vh}
+body{margin:0;font-family:'Source Sans 3',system-ui,sans-serif;background:radial-gradient(ellipse at 20% 0%,var(--bg) 40%,var(--bg2) 100%);color:var(--text);min-height:100vh;color-scheme:only light}
 header{padding:1.2rem 1.5rem .8rem;border-bottom:2px solid var(--line);display:flex;flex-wrap:wrap;gap:1rem;justify-content:space-between;align-items:flex-end}
 h1{font-family:'Playfair Display',serif;margin:0;font-size:clamp(1.5rem,3vw,2.2rem);color:var(--ink)}
 .meta{color:var(--muted);font-size:.95rem;max-width:40rem;line-height:1.4;margin:.35rem 0 0}
@@ -30,10 +31,15 @@ main{padding:1.2rem 1.5rem 2.5rem}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1rem}
 .card{background:var(--card);border:1px solid var(--line);border-radius:.7rem;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 .4rem 1.2rem #5a3a2022}
 .card.dim .preview{filter:grayscale(.75) opacity(.6)}
+.card.dim .preview.is-live{filter:none}
 .preview{position:relative;aspect-ratio:16/9;background:var(--bg2);overflow:hidden;border-bottom:1px solid var(--line)}
 .preview iframe{position:absolute;inset:0;width:1920px;height:1080px;border:0;transform-origin:0 0;pointer-events:none;background:var(--bg)}
 .preview .veil{position:absolute;inset:0;z-index:2}
 .preview-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.preview-fehlend{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:1rem;text-align:center;color:var(--ink);background:var(--bg2);font-weight:700;font-size:.95rem;line-height:1.35}
+.preview-fehlend[hidden]{display:none}
+.preview.is-live .preview-img,.preview.is-live .preview-fehlend{visibility:hidden}
+.live-btn{position:absolute;z-index:3;right:.5rem;bottom:.5rem;border:0;background:#8E2A2E;color:#FFF8EC;font:inherit;font-size:.72rem;font-weight:700;letter-spacing:.04em;padding:.28rem .55rem;border-radius:.3rem;cursor:pointer}
 .body{padding:.85rem 1rem 1rem;display:flex;flex-direction:column;gap:.45rem;flex:1}
 .idx{font-size:.8rem;letter-spacing:.04em;color:var(--muted)}
 .typ{display:inline-block;font-size:.7rem;font-weight:700;letter-spacing:.06em;padding:.15rem .45rem;border-radius:.3rem;background:var(--bg2);color:var(--gold);margin-left:.35rem}
@@ -49,6 +55,24 @@ main{padding:1.2rem 1.5rem 2.5rem}
 .row a{color:var(--rot);text-decoration:none;font-size:.9rem;font-weight:700;border:1px solid var(--rot);padding:.28rem .55rem;border-radius:.35rem}
 footer{padding:0 1.5rem 2rem;color:var(--muted);font-size:.85rem;line-height:1.45}
 code{background:#EADDC6;padding:.05rem .3rem;border-radius:.25rem;color:var(--ink)}
+
+.laeuft{display:flex;align-items:center;gap:.75rem;min-height:44px;margin:.15rem 0 0;padding:.15rem 0;cursor:pointer;-webkit-user-select:none;user-select:none}
+.laeuft input{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);clip-path:inset(50%);border:0}
+.laeuft-box{flex:0 0 44px;width:44px;height:44px;border:3px solid var(--rot);border-radius:.45rem;background:var(--card);position:relative}
+.laeuft input:checked + .laeuft-box{background:#8E2A2E;border-color:#8E2A2E}
+.laeuft input:checked + .laeuft-box::after{content:"";position:absolute;left:15px;top:6px;width:12px;height:22px;border:solid #FFF8EC;border-width:0 4px 4px 0;transform:rotate(45deg)}
+.laeuft input:focus-visible + .laeuft-box{outline:3px solid var(--gold);outline-offset:2px}
+.laeuft-meta{display:flex;flex-direction:column;gap:.12rem;min-width:0}
+.laeuft-txt{font-weight:700;font-size:1.15rem;line-height:1.2;color:var(--ink)}
+.laeuft-hint{font-size:.88rem;font-weight:700;color:var(--rot);line-height:1.3}
+.row a,.live-btn,.toolbar a{min-height:44px;min-width:44px;display:inline-flex;align-items:center;justify-content:center}
+.sendeleiste{position:fixed;left:0;right:0;bottom:0;z-index:20;display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;padding:.7rem 1rem calc(.7rem + env(safe-area-inset-bottom,0px));background:var(--card);border-top:2px solid var(--line);box-shadow:0 -.4rem 1.2rem #5a3a2022}
+.sendeleiste[hidden]{display:none}
+.senden-btn,.reset-btn{min-height:44px;padding:.5rem 1.05rem;border-radius:.45rem;font:inherit;font-weight:700;font-size:1rem;cursor:pointer}
+.senden-btn{background:#8E2A2E;color:#FFF8EC;border:0;flex:1 1 12rem}
+.reset-btn{background:var(--card);color:var(--rot);border:2px solid var(--rot)}
+.sende-ok{flex:1 1 100%;color:#174A25;background:#D7EBDA;font-weight:700;padding:.5rem .7rem;border-radius:.4rem;line-height:1.35}
+body.sende-offen{padding-bottom:calc(7.5rem + env(safe-area-inset-bottom,0px))}
 @media(max-width:420px){.grid{grid-template-columns:1fr}header,main,footer{padding-left:1rem;padding-right:1rem}}
 </style>
 </head>
@@ -57,7 +81,7 @@ code{background:#EADDC6;padding:.05rem .3rem;border-radius:.25rem;color:var(--in
   <div>
     <div class="pill">NUR LESEN · Änderungen über Bot / Dateien</div>
     <h1>Folien-Übersicht</h1>
-    <p class="meta">Miniaturen der Live-Folien. Reihenfolge aus <code>auswahl.json</code>. Typ HTML/Bild/Video, Version, Einblendung, Offline-Cache siehe unten.</p>
+    <p class="meta">Statische Miniaturen der Folien (keine Live-iframes). Reihenfolge aus <code>auswahl.json</code>. Typ, Version, Einblendung und Zeitplan siehe unten.</p>
   </div>
   <div class="toolbar"><a href="./?alle" target="_blank" rel="noopener">TV-Vorschau</a></div>
 </header>
@@ -68,14 +92,19 @@ code{background:#EADDC6;padding:.05rem .3rem;border-radius:.25rem;color:var(--in
   <div class="grid" id="grid">Lade Folien …</div>
 </main>
 <footer>
-  Anleitung: <code>FOLIEN.md</code> · <code>MONITORING.md</code> · Offline: <code>sw.js</code> · Alarm: <code>.github/workflows/tv-alarm.yml</code>
+  Anleitung: <code>FOLIEN.md</code> · <code>MONITORING.md</code> · Offline (nur der TV): <code>sw.js</code> · Alarm: <code>.github/workflows/tv-alarm.yml</code>
 </footer>
+<div id="sendeleiste" class="sendeleiste" hidden>
+  <button type="button" id="senden-btn" class="senden-btn">Änderung senden (0)</button>
+  <button type="button" id="reset-btn" class="reset-btn">Zurücksetzen</button>
+  <div id="sende-ok" class="sende-ok" hidden></div>
+</div>
 <script src="schedule.js"></script>
 <script src="slides.js"></script>
 <script>
 (function(){
   const d=new Date();
-  document.getElementById('clock').innerHTML='<strong>Jetzt:</strong> '+d.toLocaleString('de-DE',{weekday:'long',day:'2-digit',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'})+' (Europe/Berlin am Gerät)';
+  document.getElementById('clock').innerHTML='<strong>Jetzt:</strong> '+d.toLocaleString('de-DE',{weekday:'long',day:'2-digit',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'})+' (Europe/Berlin am Gerät). Die Karten zeigen fest gespeicherte Vorschaubilder. Eine Folie einzeln öffnen: „Live ansehen“. Optional höchstens eine Live-Vorschau gleichzeitig (Button auf dem Bild). Das Häkchen „läuft“ ist nur ein Entwurf: Die Seite ändert selbst nichts. Nach einer Änderung unten „Änderung senden“ tippen und die Nachricht im Chat an Digital Signage einfügen.';
   const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const txt=s=>esc(String(s??'').replace(/<br\s*\/?>/gi,' ').replace(/&nbsp;/g,' '));
   function typLabel(f){
@@ -87,16 +116,137 @@ code{background:#EADDC6;padding:.05rem .3rem;border-radius:.25rem;color:var(--in
     if(t==='plakat') return 'Plakat · '+({zwei:'zwei',mittig:'mittig',mitText:'mit Text'}[f.layout]||'mittig');
     return 'HTML';
   }
-  function scale(wrap,iframe){
-    const go=()=>{iframe.style.transform='scale('+((wrap.clientWidth||320)/1920)+')'};
-    go(); new ResizeObserver(go).observe(wrap);
+  function plainTitle(f){
+    const t=String(f.titel||f.id||'').replace(/<br\s*\/?>/gi,' ').replace(/&nbsp;/g,' ').replace(/<[^>]*>/g,'').replace(/\s+/g,' ').trim();
+    return t||f.id;
+  }
+  function kurzDatum(isoStr){
+    if(!isoStr) return '';
+    const[y,m,d]=String(isoStr).split('-');
+    const day=String(Number(d)), mon=String(Number(m));
+    return (y && Number(y)!==(new Date()).getFullYear()) ? (day+'.'+mon+'.'+y) : (day+'.'+mon+'.');
+  }
+  /* Hinweis, wenn die Folie zeitlich begrenzt, noch nicht dran, abgelaufen oder in einer Pause ist. */
+  function laeuftHinweis(f, now){
+    const heute=TVSchedule.iso(now);
+    const bis=TVSchedule.bisFeld(f);
+    const pz=TVSchedule.pause(f, heute);
+    if(f.datum && f.datum!==heute){
+      return (f.datum<heute?'endete ':'am ')+kurzDatum(f.datum);
+    }
+    if(f.ab && heute<f.ab) return 'ab '+kurzDatum(f.ab);
+    if(bis && heute>bis) return 'endete '+kurzDatum(bis);
+    if(pz) return 'Pause bis '+kurzDatum(pz.bis);
+    if(bis) return 'endet '+kurzDatum(bis);
+    return '';
   }
   function einblendungAktiv(eb){
     if(!eb||eb.aktiv===false) return false;
     if(eb.bis){const t=Date.parse(eb.bis); if(!isNaN(t)&&Date.now()>t) return false}
     return !!(eb.text||eb.titel||eb.bild);
   }
-  Promise.all([
+
+  /* Höchstens ein Live-iframe gleichzeitig, nur auf ausdrückliches Antippen. */
+  let live={card:null, ro:null};
+  function closeLive(){
+    if(!live.card) return;
+    const wrap=live.card.querySelector('.preview');
+    if(live.ro){try{live.ro.disconnect()}catch(e){}}
+    live.ro=null;
+    if(wrap){
+      wrap.querySelectorAll('iframe, .veil').forEach(n=>n.remove());
+      wrap.classList.remove('is-live');
+      const btn=wrap.querySelector('.live-btn');
+      if(btn) btn.textContent='Live-Vorschau';
+    }
+    live.card=null;
+  }
+  function openLive(card,i){
+    if(live.card===card){closeLive();return}
+    closeLive();
+    const wrap=card.querySelector('.preview'); if(!wrap) return;
+    const iframe=document.createElement('iframe');
+    iframe.title='Live-Vorschau';
+    iframe.src='./?folie='+i+'&alle';
+    iframe.tabIndex=-1;
+    const veil=document.createElement('div'); veil.className='veil';
+    wrap.appendChild(iframe); wrap.appendChild(veil);
+    wrap.classList.add('is-live');
+    const btn=wrap.querySelector('.live-btn');
+    if(btn) btn.textContent='Schließen';
+    const go=()=>{iframe.style.transform='scale('+((wrap.clientWidth||320)/1920)+')'};
+    go();
+    live.ro=new ResizeObserver(go);
+    live.ro.observe(wrap);
+    iframe.addEventListener('load',go);
+    live.card=card;
+  }
+
+  const leiste=document.getElementById('sendeleiste');
+  const sendenBtn=document.getElementById('senden-btn');
+  const resetBtn=document.getElementById('reset-btn');
+  const sendeOk=document.getElementById('sende-ok');
+  function aenderungen(){
+    return [...document.querySelectorAll('.laeuft input')].map(cb=>{
+      const an=cb.dataset.anfang==='1';
+      if(cb.checked===an) return null;
+      return {id:cb.dataset.id, titel:cb.dataset.titel, richtung:cb.checked?'ein':'aus'};
+    }).filter(Boolean);
+  }
+  function sendeText(list){
+    const aus=list.filter(x=>x.richtung==='aus');
+    const ein=list.filter(x=>x.richtung==='ein');
+    const fmt=a=>a.map(x=>x.titel+' ('+x.id+')').join(', ');
+    const teile=[];
+    if(aus.length) teile.push('Ausblenden: '+fmt(aus));
+    if(ein.length) teile.push('Einblenden: '+fmt(ein));
+    return 'Bitte am Info-Bildschirm ändern – '+teile.join('. ')+'.';
+  }
+  function updateLeiste(){
+    const list=aenderungen();
+    const n=list.length;
+    sendenBtn.textContent='Änderung senden ('+n+')';
+    leiste.hidden=n===0;
+    document.body.classList.toggle('sende-offen', n>0);
+    if(n===0) sendeOk.hidden=true;
+  }
+  function resetHaekchen(){
+    document.querySelectorAll('.laeuft input').forEach(cb=>{cb.checked=cb.dataset.anfang==='1'});
+    sendeOk.hidden=true; sendeOk.textContent='';
+    updateLeiste();
+  }
+  async function sendenAenderung(){
+    const list=aenderungen();
+    if(!list.length) return;
+    const text=sendeText(list);
+    sendeOk.hidden=true;
+    if(navigator.share){
+      try{ await navigator.share({text:text}); return; }
+      catch(e){ if(e && e.name==='AbortError') return; }
+    }
+    try{
+      if(navigator.clipboard && navigator.clipboard.writeText){
+        await navigator.clipboard.writeText(text);
+        sendeOk.textContent='Kopiert – jetzt im Chat an Digital Signage einfügen';
+        sendeOk.hidden=false;
+        return;
+      }
+    }catch(e){}
+    try{
+      const ta=document.createElement('textarea');
+      ta.value=text; document.body.appendChild(ta); ta.select();
+      document.execCommand('copy'); ta.remove();
+      sendeOk.textContent='Kopiert – jetzt im Chat an Digital Signage einfügen';
+      sendeOk.hidden=false;
+    }catch(e){
+      sendeOk.textContent=text;
+      sendeOk.hidden=false;
+    }
+  }
+  sendenBtn.addEventListener('click', sendenAenderung);
+  resetBtn.addEventListener('click', resetHaekchen);
+
+    Promise.all([
     loadFolien(),
     fetch('version.json',{cache:'no-store'}).then(r=>r.ok?r.json():{version:'–'}).catch(()=>({version:'–'})),
     fetch('einblendung.json',{cache:'no-store'}).then(r=>r.ok?r.json():{aktiv:false}).catch(()=>({aktiv:false})),
@@ -106,9 +256,9 @@ code{background:#EADDC6;padding:.05rem .3rem;border-radius:.25rem;color:var(--in
     const meta=document.getElementById('meta');
     const ebOn=einblendungAktiv(eb);
     const online=navigator.onLine;
-    let swState='kein SW';
-    if('serviceWorker' in navigator){
-      swState=navigator.serviceWorker.controller?'aktiv (kontrolliert)':'registriert / wartend';
+    let swState='kein SW (die Übersicht registriert keinen)';
+    if('serviceWorker' in navigator && navigator.serviceWorker.controller){
+      swState='TV-Worker aktiv (nicht von dieser Seite registriert)';
     }
     meta.innerHTML=
       ((window.FOLIEN_FEHLER||[]).length?'<div class="chip warn"><b>Übersprungen</b> '+FOLIEN_FEHLER.map(x=>esc(x.id)+' ('+esc(x.fehler)+')').join(', ')+'</div>':'')+
@@ -155,25 +305,44 @@ code{background:#EADDC6;padding:.05rem .3rem;border-radius:.25rem;color:var(--in
       const sek=TVDauer.sekunden(f);
       const dauerTxt=f.dauer?(' · '+esc(f.dauer)+' s fest'):(sek?' · '+sek+' s auto':' · Videolänge');
       const typ=typLabel(f);
-      let preview='';
-      if((f.typ==='bild') && (f.datei||f.bild)){
-        preview='<img class="preview-img" src="'+esc(f.datei||f.bild)+'" alt="">';
-      } else {
-        preview='<iframe loading="lazy" title="'+esc(f.id)+'" src="./?folie='+i+'&alle" tabindex="-1"></iframe><div class="veil"></div>';
-      }
+      const src='assets/vorschau/'+encodeURIComponent(f.id)+'.jpg';
       card.innerHTML=
-        '<div class="preview">'+preview+'</div>'+
+        '<div class="preview">'+
+          '<img class="preview-img" src="'+esc(src)+'" alt="Vorschau '+esc(f.id)+'" loading="lazy" width="640" height="360">'+
+          '<div class="preview-fehlend" hidden>Kein Vorschaubild</div>'+
+          '<button type="button" class="live-btn">Live-Vorschau</button>'+
+        '</div>'+
         '<div class="body">'+
           '<div class="idx">#'+i+' · <code>'+esc(f.id)+'</code><span class="typ">'+typ+'</span>'+(TVRotation.istHaupt(f)?'<span class="haupt">HAUPTFOLIE · alle '+esc(f.wiederholeNach)+'</span>':'')+dauerTxt+'</div>'+
           '<h2>'+title+'</h2>'+
           (f.badge?'<p class="sub">Badge: '+txt(f.badge)+'</p>':'')+
           '<span class="status '+st.cls+'">'+st.label+'</span>'+
+          '<label class="laeuft">'+
+            '<input type="checkbox">'+
+            '<span class="laeuft-box" aria-hidden="true"></span>'+
+            '<span class="laeuft-meta"><span class="laeuft-txt">läuft</span>'+(function(){const h=laeuftHinweis(f,d);return h?'<span class="laeuft-hint">'+esc(h)+'</span>':'';})()+'</span>'+
+          '</label>'+
           '<div class="row"><span style="font-size:.8rem;color:var(--muted)">Reihenfolge '+(i+1)+'/'+FOLIEN.length+'</span>'+
-          '<a href="./?folie='+i+'&alle" target="_blank" rel="noopener">Öffnen</a></div>'+
+          '<a href="./?folie='+i+'" target="_blank" rel="noopener">Live ansehen</a></div>'+
         '</div>';
       grid.appendChild(card);
-      const iframe=card.querySelector('iframe'), prev=card.querySelector('.preview');
-      if(iframe){iframe.addEventListener('load',()=>scale(prev,iframe)); scale(prev,iframe)}
+      (function(){
+        const cb=card.querySelector('.laeuft input');
+        const an=f.aktiv!==false;
+        cb.dataset.id=f.id;
+        cb.dataset.titel=plainTitle(f);
+        cb.dataset.anfang=an?'1':'0';
+        cb.checked=an;
+        cb.addEventListener('change', ()=>{sendeOk.hidden=true; updateLeiste()});
+      })();
+      const img=card.querySelector('.preview-img');
+      const fehl=card.querySelector('.preview-fehlend');
+      const fail=()=>{img.hidden=true; if(fehl) fehl.hidden=false;};
+      if(img){
+        img.addEventListener('error', fail);
+        if(img.complete && img.naturalWidth===0) fail();
+      }
+      card.querySelector('.live-btn').addEventListener('click', ev=>{ev.preventDefault(); ev.stopPropagation(); openLive(card,i)});
     });
   }).catch(e=>{
     document.getElementById('grid').textContent='Fehler: '+e.message;
