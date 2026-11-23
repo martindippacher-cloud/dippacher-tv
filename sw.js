@@ -51,7 +51,15 @@ self.addEventListener('install', (e) => {
     try {
       const aus = await (await fetch('./auswahl.json', {cache:'no-store'})).json();
       for (const id of (aus.reihenfolge || [])) {
-        try { await c.add(new Request('./folien/' + encodeURIComponent(id) + '.json', {cache:'reload'})); } catch (_) {}
+        try {
+          const u = './folien/' + encodeURIComponent(id) + '.json';
+          await c.add(new Request(u, {cache:'reload'}));
+          /* Bilder der Folie (z. B. Plakat-PNGs in assets/vereine/) gleich mitcachen, damit sie offline da sind */
+          const f = await (await c.match(u)).clone().json();
+          const bilder = [].concat(Array.isArray(f.bilder) ? f.bilder : [], f.bild || [], f.qr || [], f.logo || [])
+            .filter(b => typeof b === 'string' && b && !/^https?:/i.test(b));
+          for (const b of bilder) { try { if (!(await c.match('./' + b.replace(/^\.\//, '')))) await c.add('./' + b.replace(/^\.\//, '')); } catch (_) {} }
+        } catch (_) {}
       }
     } catch (_) {}
     self.skipWaiting();

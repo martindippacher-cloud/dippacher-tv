@@ -34,17 +34,20 @@
 
   // ===== ANZEIGEDAUER =====
   // Explizites "dauer" (Sekunden) in der Folie hat immer Vorrang (index.html).
-  // Ohne "dauer": Bestand 25 s, sonst nach Textmenge: 8 s + 0,6 s je Wort, begrenzt auf 15–30 s.
-  const DAUER_MIN=15, DAUER_MAX=30, DAUER_BESTAND=25, DAUER_DASHBOARD=50;
+  // Ohne "dauer": Bestand 25 s, Plakat 22 s (mitText: Wortregel, mind. 22 s), sonst nach Textmenge: 8 s + 0,6 s je Wort, begrenzt auf 15–30 s.
+  const DAUER_MIN=15, DAUER_MAX=30, DAUER_BESTAND=25, DAUER_DASHBOARD=50, DAUER_PLAKAT=22, DAUER_PLAKAT_TEXT_MIN=22;
   function plain(s){return String(s==null?'':s).replace(/<br\s*\/?>/gi,' ').replace(/&nbsp;/g,' ').replace(/<[^>]*>/g,'')}
   function woerter(f){
     let t=[f.titel,f.unter,f.text,f.badge].map(plain).join(' ');
+    if(f.typ==='plakat' && f.kernpunkte){ const k=f.kernpunkte; t+=' '+[k.titel,k.verein,k.datum,k.uhrzeit,k.ort].map(plain).join(' ')+' '+(Array.isArray(k.punkte)?k.punkte.map(plain).join(' '):''); }
     if(Array.isArray(f.liste)) t+=' '+f.liste.map(r=>Array.isArray(r)?r.map(plain).join(' '):plain(r)).join(' ');
     return t.split(/\s+/).filter(Boolean).length;
   }
   function auto(f){
     if((f.typ||'html')==='bestand') return DAUER_BESTAND;
     if(f.typ==='dashboard') return DAUER_DASHBOARD;
+    // Plakat: Bild braucht Zeit zum Anschauen; mit Kernpunkten nach Wortregel, aber mind. 22 s
+    if(f.typ==='plakat') return (f.layout==='mitText' && f.kernpunkte) ? Math.max(DAUER_PLAKAT_TEXT_MIN, Math.min(DAUER_MAX, Math.round(8+woerter(f)*0.6))) : DAUER_PLAKAT;
     return Math.max(DAUER_MIN, Math.min(DAUER_MAX, Math.round(8+woerter(f)*0.6)));
   }
   function sekunden(f){ return f.dauer ? Number(f.dauer) : ((f.typ==='video') ? null : auto(f)); }

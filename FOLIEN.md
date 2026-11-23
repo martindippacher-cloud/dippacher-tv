@@ -42,6 +42,7 @@ Alle optional, kombinierbar. Gerätelokalzeit (Europe/Berlin am Player).
 | `datum` | `"2026-12-24"` | nur an diesem Kalendertag |
 | `ab` | `"2026-12-01"` | ab diesem Tag (inkl.) |
 | `bisDatum` | `"2026-12-23"` | bis zu diesem Tag (inkl.), Alias: `bisTag`, `ablauf` |
+| `bisZeit` | `"22:00"` | nur zusammen mit `bisDatum`: am letzten Tag nur bis zu dieser Uhrzeit (z. B. Ende einer Veranstaltung) |
 | `pausen` | `[{"von":"2026-12-21","bis":"2027-01-06","grund":"Betriebsurlaub"}]` | Pause(n), jeweils inkl. von/bis; davor und danach läuft die Folie normal |
 
 Abwärtskompatibel: bisherige Felder `zeit`, `tage`, `datum`, `aktiv` gelten weiter.
@@ -83,7 +84,7 @@ Einzeltermin:
 ## Anzeigedauer
 
 - `dauer` in der Folie (Sekunden) hat immer Vorrang.
-- Ohne `dauer`: Dashboard 50 s; Bestand 25 s; sonst nach Textmenge: 8 s + 0,6 s je Wort (Titel, Untertitel, Liste, Text), mindestens 15 s, höchstens 30 s. Video: Länge der Datei.
+- Ohne `dauer`: Dashboard 50 s; Bestand 25 s; Plakat 22 s (`mitText`: Wortregel, mind. 22 s); sonst nach Textmenge: 8 s + 0,6 s je Wort (Titel, Untertitel, Liste, Text), mindestens 15 s, höchstens 30 s. Video: Länge der Datei.
 - Die Übersicht zeigt je Folie „… s fest“ oder „… s auto“.
 
 ## Robustheit
@@ -137,6 +138,61 @@ Ohne HTML-Inhalt – nur Mediendatei Vollbild.
 - Immer `muted` + `autoplay` (Browser-Policy)
 
 Beispiele im Repo: `folien/beispiel-bild.json`, `folien/beispiel-video.json` (beide `aktiv:false`).
+
+## Vereinsplakate (`typ: "plakat"`)
+
+Plakate von Vereinen (PDF **oder** Bild: PNG, JPG, WEBP, AVIF). Der TV rendert selbst **keine PDFs/AVIF** –
+beim Einchecken wird daraus ein PNG gemacht, die Folie zeigt nur das PNG (robust auf Fully Kiosk / Google TV, offline gecacht).
+
+**Plakat hinzufügen (3 Schritte):**
+
+1. Original nach `assets/vereine/original/` legen, sprechender Name ohne Leerzeichen, z. B. `sommerfest-2027.pdf`.
+2. Umwandeln (im Repo-Wurzelordner):
+   `scripts/pdf_zu_bild.sh assets/vereine/original/sommerfest-2027.pdf`
+   → `assets/vereine/sommerfest-2027.png` (erste Seite, 1600 px hoch, Seitenverhältnis bleibt). Mehrere Dateien auf einmal gehen auch.
+3. `folien/sommerfest-2027.json` anlegen und die id in `auswahl.json` → `reihenfolge` eintragen.
+
+```json
+{
+  "id": "sommerfest-2027",
+  "typ": "plakat",
+  "layout": "mitText",
+  "titel": "Sommerfest Musterverein",
+  "bilder": ["assets/vereine/sommerfest-2027.png"],
+  "kernpunkte": {
+    "verein": "Musterverein",
+    "titel": "Sommerfest",
+    "datum": "Samstag, 12.06.2027",
+    "uhrzeit": "Beginn 14 Uhr",
+    "ort": "Gaststätte Dippacher",
+    "punkte": ["Stichpunkt 1", "Stichpunkt 2"]
+  },
+  "qr": "assets/vereine/qr_musterverein.png",
+  "link": "www.beispiel.de",
+  "bisDatum": "2027-06-12",
+  "bisZeit": "22:00"
+}
+```
+
+| Feld | Bedeutung |
+|------|-----------|
+| `layout` | `"zwei"` = zwei Plakate nebeneinander · `"mittig"` = ein Plakat in der Mitte · `"mitText"` = Plakat links, Kernaussagen rechts |
+| `bilder` | PNG-Pfade (bei `zwei` genau zwei, sonst eins). Fehlt bei `zwei` ein Bild, steht das andere mittig; fehlen alle, wird die Folie übersprungen |
+| `kernpunkte` | nur bei `mitText`: `verein`, `titel`, `datum`, `uhrzeit`, `ort` (alles Text, wie auf dem Plakat) und `punkte` (2–4 Stichpunkte). Ohne `kernpunkte` wird `mitText` wie `mittig` gezeigt |
+| `badge` | optionales Schild über dem Text, z. B. `"BEISPIEL"` |
+| `qr`, `link` | optional bei `mitText`: kleiner QR mit Link unten rechts in der Textspalte |
+| `bisDatum` + `bisZeit` | **damit das Plakat nach der Veranstaltung von selbst verschwindet** (z. B. Veranstaltungstag, 22:00). `ab` für einen späteren Start |
+
+Hinweise:
+- Angaben in `kernpunkte` **nur vom Plakat** übernehmen, nichts ergänzen. Im Feld `_quelle` notieren, woher sie stammen.
+- `kernpunkte.datum` ist reiner Anzeigetext; die Zeitsteuerung läuft über `bisDatum`/`bisZeit` (nicht `datum`, das hieße „nur an diesem Tag“).
+- QR für einen Link: `python3 -c "import segno; segno.make('https://…', error='m').save('assets/vereine/qr_name.png', scale=12, border=2, dark='#2A1810', light='#FFFCF5')"`, vorher prüfen, ob der Link erreichbar ist.
+- Plakate werden nie verzerrt (`object-fit: contain`), sie stehen mit hellem Rahmen und leichtem Schatten auf Creme.
+- Dauer automatisch: `zwei`/`mittig` 22 s, `mitText` nach Wortregel, mind. 22 s, max. 30 s. Ein festes `dauer` geht immer vor.
+- Termin fürs Dashboard zusätzlich in `termine.json` eintragen.
+- Der Service Worker cached die Bilder aller Folien aus `auswahl.json` (`bilder`, `bild`, `qr`, `logo`) beim Installieren mit.
+- Beispiele (immer `aktiv:false`, Muster-Plakate mit „BEISPIEL“): `beispiel-plakat-zwei`, `beispiel-plakat-mittig`, `beispiel-plakat-text`.
+  Neu erzeugen: `python3 scripts/beispiel_plakate.py && scripts/pdf_zu_bild.sh assets/vereine/original/beispiel-*.pdf`.
 
 ## Version / Neu laden
 

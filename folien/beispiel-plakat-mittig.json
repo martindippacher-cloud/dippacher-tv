@@ -1,0 +1,9 @@
+{
+  "id": "beispiel-plakat-mittig",
+  "_info": "BEISPIEL – ein Plakat mittig. Muster-PDF, keine echte Veranstaltung. Bleibt aktiv:false.",
+  "typ": "plakat",
+  "layout": "mittig",
+  "titel": "Beispiel: ein Vereinsplakat mittig",
+  "bilder": ["assets/vereine/beispiel-verein-muster.png"],
+  "aktiv": false
+}

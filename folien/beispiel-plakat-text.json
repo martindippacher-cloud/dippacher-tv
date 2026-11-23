@@ -1,0 +1,18 @@
+{
+  "id": "beispiel-plakat-text",
+  "_info": "BEISPIEL – Plakat links, Kernpunkte rechts. Alles Mustertext, keine echte Veranstaltung. Bleibt aktiv:false.",
+  "typ": "plakat",
+  "layout": "mitText",
+  "titel": "Beispiel: Plakat mit Kernpunkten",
+  "badge": "BEISPIEL",
+  "bilder": ["assets/vereine/beispiel-verein-muster-2.png"],
+  "kernpunkte": {
+    "verein": "Muster-Sportverein (Beispiel)",
+    "titel": "Beispiel-Turnier",
+    "datum": "Beispieltag, TT.MM.JJJJ",
+    "uhrzeit": "Beginn hh:mm Uhr",
+    "ort": "Musterort, Beispielplatz",
+    "punkte": ["Stichpunkt 1 als Mustertext", "Stichpunkt 2: z. B. Eintritt oder Anmeldung", "Stichpunkt 3: z. B. Bewirtung"]
+  },
+  "aktiv": false
+}

@@ -7,6 +7,7 @@
 //   ab:"YYYY-MM-DD"           Startdatum inklusive
 //   bisDatum:"YYYY-MM-DD"     Ablaufdatum inklusive  (nicht "bis" – das wäre Uhrzeit-Konflikt)
 // Alias: bisTag / ablauf akzeptiert als bisDatum
+//   bisZeit:"HH:MM"            mit bisDatum: am letzten Tag nur bis zu dieser Uhrzeit (z. B. Veranstaltungsende)
 //   pausen:[{von:"YYYY-MM-DD", bis:"YYYY-MM-DD"}]  Pausen inklusive (z. B. Betriebsurlaub); davor und danach normal
 (function(global){
   const TAG=[,'Mo','Di','Mi','Do','Fr','Sa','So'];
@@ -28,6 +29,7 @@
     const ab=f.ab||null, bis=bisFeld(f);
     if(ab && heute<ab) return false;
     if(bis && heute>bis) return false;
+    if(bis && f.bisZeit && heute===bis && m>=min(f.bisZeit)) return false;
     if(pause(f, heute)) return false;
     if(f.tage && !f.tage.includes(wt)) return false;
     if(f.zeit && (m<min(f.zeit.von)||m>min(f.zeit.bis))) return false;
@@ -60,6 +62,7 @@
     }
     if(f.ab && heute<f.ab) return {cls:'geplant', label:'ab '+fmtDe(f.ab), live:false};
     if(bis && heute>bis) return {cls:'abgelaufen', label:'abgelaufen (bis '+fmtDe(bis)+')', live:false};
+    if(bis && f.bisZeit && heute===bis && m>=min(f.bisZeit)) return {cls:'abgelaufen', label:'abgelaufen (bis '+fmtDe(bis)+' '+f.bisZeit+' Uhr)', live:false};
     const pz=pause(f, heute);
     if(pz) return {cls:'geplant', label:'Pause '+fmtDe(pz.von)+'–'+fmtDe(pz.bis)+(pz.grund?' ('+pz.grund+')':''), live:false};
     if(f.tage && !f.tage.includes(wt)){
@@ -77,7 +80,7 @@
     if(f.tage) parts.push(tageLabel(f.tage));
     if(f.zeit) parts.push(f.zeit.von+'–'+f.zeit.bis);
     if(f.ab) parts.push('ab '+fmtDe(f.ab));
-    if(bis) parts.push('bis '+fmtDe(bis));
+    if(bis) parts.push('bis '+fmtDe(bis)+(f.bisZeit?' '+f.bisZeit+' Uhr':''));
     if(!parts.length) return {cls:'live', label:'läuft jetzt', live:true};
     return {cls:'live', label:parts.join(' · ')+' · läuft jetzt', live:true};
   }

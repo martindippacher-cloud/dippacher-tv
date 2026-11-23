@@ -84,6 +84,7 @@ code{background:#EADDC6;padding:.05rem .3rem;border-radius:.25rem;color:var(--in
     if(t==='video') return 'Video';
     if(t==='bestand') return 'Bestand';
     if(t==='dashboard') return 'Dashboard';
+    if(t==='plakat') return 'Plakat · '+({zwei:'zwei',mittig:'mittig',mitText:'mit Text'}[f.layout]||'mittig');
     return 'HTML';
   }
   function scale(wrap,iframe){

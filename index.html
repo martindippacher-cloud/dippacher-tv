@@ -123,6 +123,32 @@ body.lb-on .f{bottom:14vh}
 body.lb-on .f .in,body.lb-on .f.kompakt .in{padding-bottom:2vh}
 body.lb-on .f.media .media-cap{bottom:0}
 .fehler{padding:4vw;font-size:2.6vw;color:var(--rot)}
+/* ===== Plakat-Folie (typ "plakat"): Vereinsplakate als PNG, nie verzerrt (object-fit: contain) =====
+   Bereich: oben 4vh, unten über der Logoleiste (9vh) + Luft; mit Laufband rückt .f ohnehin hoch */
+.f.plakat{align-items:stretch}
+.pl{position:absolute;left:4vw;right:4vw;top:4.5vh;bottom:12vh;display:flex;align-items:center;justify-content:center;gap:4.5vw}
+body.lb-on .pl{bottom:3vh}
+.pl-bild{height:100%;min-width:0;display:flex;align-items:center;justify-content:center}
+.pl-bild img{display:block;max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;background:#fff;
+  border:.5vw solid var(--karte);outline:.12vw solid #C9A04A99;border-radius:.3vw;box-shadow:0 .5vw 1.8vw #5a3a2038,0 .1vw .3vw #5a3a2026}
+.pl.zwei .pl-bild{flex:0 1 auto;max-width:44vw}
+.pl.mittig .pl-bild{flex:0 1 auto}
+.pl.mitText{justify-content:flex-start;gap:4vw;left:5vw}
+.pl.mitText .pl-bild{flex:0 0 auto;max-width:44vw}
+.pl-text{flex:1;min-width:0;align-self:center;color:var(--text)}
+.pl-text .badge{margin-bottom:1.6vh}
+.pl-verein{font-size:2vw;font-weight:600;color:var(--rot);letter-spacing:.03em;margin:0 0 .8vh}
+.pl-text h1{font-size:4.2vw;line-height:1.08;margin:0 0 2.6vh}
+.pl-fakten{display:grid;grid-template-columns:auto 1fr;column-gap:1.6vw;row-gap:1.3vh;margin:0 0 3vh;padding:2vh 0;border-top:.15vw solid var(--gold);border-bottom:.15vw solid var(--gold)}
+.pl-fakten dt{font-size:1.75vw;font-weight:700;color:var(--meta);text-transform:uppercase;letter-spacing:.08em;align-self:baseline}
+.pl-fakten dd{margin:0;font-size:2.7vw;font-weight:700;color:var(--tinte);line-height:1.15;align-self:baseline}
+.pl-punkte{list-style:none;margin:0;padding:0;font-size:2.35vw}
+.pl-punkte li{display:block;border:0;padding:0 0 0 2.2vw;margin:0 0 1.2vh;position:relative;max-width:none;line-height:1.25;color:var(--text)}
+.pl-punkte li::before{content:"";position:absolute;left:.2vw;top:.5em;width:.85vw;height:.85vw;border-radius:50%;background:var(--rot-logo)}
+.pl-unten{display:flex;align-items:center;gap:1.6vw;margin-top:2.4vh}
+.pl-unten .pl-qr{flex:none;background:var(--karte);padding:.7vw;border-radius:.6vw;border:.12vw solid var(--gold);box-shadow:0 .3vw 1vw #5a3a2026}
+.pl-unten .pl-qr img{width:9vw;height:9vw;display:block}
+.pl-unten .pl-link{font-size:1.8vw;font-weight:600;color:var(--meta);overflow-wrap:anywhere;line-height:1.25}
 </style>
 <link rel="stylesheet" href="dashboard.css">
 </head><body>
@@ -273,10 +299,47 @@ function markKaputt(f,e,grund){
   if(f._kaputt) return; f._kaputt=true; e.dataset.kaputt=grund; console.warn('Folie übersprungen:',f.id,grund);
   if(e.classList.contains('on') && window.__tvNext) window.__tvNext();
 }
+/* Plakat-Folie: layout "zwei" | "mittig" | "mitText"; bilder[] sind fertige PNGs (scripts/pdf_zu_bild.sh).
+   Fehlt ein Bild: bei "zwei" bleibt das andere mittig stehen; fehlen alle: Folie wird übersprungen. */
+function buildPlakat(f,e){
+  const layout=({zwei:'zwei',mittig:'mittig',mitText:'mitText'})[f.layout]||'mittig';
+  let bilder=(Array.isArray(f.bilder)?f.bilder:[f.bilder]).filter(b=>typeof b==='string'&&b);
+  bilder=bilder.slice(0, layout==='zwei'?2:1);
+  if(!bilder.length){ markKaputt(f,e,'Plakat: keine bilder'); return; }
+  const k=f.kernpunkte||null;
+  let text='';
+  if(layout==='mitText' && k){
+    const fakten=[['Wann',k.datum],['Uhrzeit',k.uhrzeit],['Wo',k.ort]].filter(x=>x[1]);
+    text='<div class="pl-text">'+(f.badge?'<div class="badge">'+rich(f.badge)+'</div>':'')+
+      (k.verein?'<div class="pl-verein">'+rich(k.verein)+'</div>':'')+
+      '<h1>'+rich(k.titel||f.titel||'')+'</h1>'+
+      (fakten.length?'<dl class="pl-fakten">'+fakten.map(x=>'<dt>'+esc(x[0])+'</dt><dd>'+rich(x[1])+'</dd>').join('')+'</dl>':'')+
+      (Array.isArray(k.punkte)&&k.punkte.length?'<ul class="pl-punkte">'+k.punkte.slice(0,4).map(p=>'<li>'+rich(p)+'</li>').join('')+'</ul>':'')+
+      ((f.qr||f.link)?'<div class="pl-unten">'+(f.qr?'<div class="pl-qr"><img src="'+esc(f.qr)+'" alt=""></div>':'')+(f.link?'<div class="pl-link">'+linkTxt(f.link)+'</div>':'')+'</div>':'')+
+      '</div>';
+  }
+  e.innerHTML='<div class="pl '+(layout==='mitText'&&!k?'mittig':layout)+'">'+bilder.map(b=>'<div class="pl-bild"><img src="'+esc(b)+'" alt="'+esc(f.titel||'Plakat')+'"></div>').join('')+text+'</div>';
+  const box=e.querySelector('.pl');
+  e.querySelectorAll('.pl-bild img').forEach(function(im){
+    im.onerror=function(){
+      im.parentElement.remove(); console.warn('Plakat fehlt:',im.getAttribute('src'));
+      if(!e.querySelector('.pl-bild')) markKaputt(f,e,'Plakat-Bild fehlt');
+      else if(box.classList.contains('zwei')){box.classList.remove('zwei');box.classList.add('mittig')}
+    };
+  });
+  const qr=e.querySelector('.pl-qr img'); if(qr) qr.onerror=function(){qr.closest('.pl-qr').remove()};
+}
+/* Plakat mit Text: Textspalte zu hoch -> schrittweise verkleinern (bis 75 %) statt abschneiden */
+function fitPlakat(e){
+  const t=e.querySelector('.pl-text'); if(!t) return;
+  const box=e.querySelector('.pl');
+  let z=1; t.style.zoom='';
+  while(z>0.75 && t.scrollHeight*z>box.clientHeight){z=Math.round((z-0.03)*100)/100; t.style.zoom=z}
+}
 function buildSlide(f){
   const e=document.createElement('div');
   const typ=f.typ||'html';
-  e.className='f'+(typ==='bestand'?' bestand':'')+(typ==='dashboard'?' dash':'')+(typ==='bild'||typ==='video'?' media':'')+(typ==='html'&&f.bild?' hatbild':'')+(f.klasse?' '+String(f.klasse).replace(/[^\w -]/g,''):'');
+  e.className='f'+(typ==='bestand'?' bestand':'')+(typ==='dashboard'?' dash':'')+(typ==='bild'||typ==='video'?' media':'')+(typ==='plakat'?' plakat':'')+(typ==='html'&&f.bild?' hatbild':'')+(f.klasse?' '+String(f.klasse).replace(/[^\w -]/g,''):'');
   e.dataset.typ=typ;
   const cap=(f.titel||f.unter)?'<div class="media-cap">'+(f.titel?'<h1>'+rich(f.titel)+'</h1>':'')+(f.unter?'<h2>'+rich(f.unter)+'</h2>':'')+'</div>':'';
   if(typ==='dashboard'){
@@ -286,6 +349,8 @@ function buildSlide(f){
   }else if(typ==='bestand'){
     e.innerHTML='<div class="in"><div class="txt" style="width:100%"><h1>'+esc(f.titel)+'</h1>'+(f.unter?'<h2>'+esc(f.unter)+'</h2>':'')+'<div class="bst"><p class="bst-meta">Lade Bestand …</p></div></div></div>';
     loadBestand(f,e);setInterval(function(){loadBestand(f,e)},BESTAND_MS);
+  }else if(typ==='plakat'){
+    buildPlakat(f,e);
   }else if(typ==='bild'){
     const src=f.datei||f.bild||'';
     e.innerHTML='<img class="media-full '+fitClass(f)+'" src="'+esc(src)+'" alt="">'+cap;
@@ -347,7 +412,7 @@ function einbrennschutz(){
 function startPlayer(FOLIEN){
   const S=document.getElementById('s'); S.innerHTML='';
   const els=FOLIEN.map(f=>{const e=buildSlide(f); S.appendChild(e); return e});
-  const passen=()=>els.forEach(fitSlide);
+  const passen=()=>els.forEach(function(e){fitSlide(e); if(e.dataset.typ==='plakat') fitPlakat(e)});
   window.__tvPassen=passen;
   passen(); if(document.fonts&&document.fonts.ready) document.fonts.ready.then(passen);
   let i=-1, timer=null;

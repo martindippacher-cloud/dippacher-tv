@@ -1,0 +1,9 @@
+{
+  "id": "beispiel-plakat-zwei",
+  "_info": "BEISPIEL – zwei Plakate nebeneinander. Muster-PDFs, keine echte Veranstaltung. Bleibt aktiv:false.",
+  "typ": "plakat",
+  "layout": "zwei",
+  "titel": "Beispiel: zwei Vereinsplakate",
+  "bilder": ["assets/vereine/beispiel-verein-muster.png", "assets/vereine/beispiel-verein-muster-2.png"],
+  "aktiv": false
+}

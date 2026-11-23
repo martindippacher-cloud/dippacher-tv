@@ -1,0 +1,26 @@
+{
+  "id": "faschingsball-2027",
+  "_quelle": "Plakat von Martin (eingang/veranstaltung1.png, Original: assets/vereine/original/faschingsball-2027.png). Alle Angaben nur vom Plakat. Link geprüft 23.11.2026: www.poppendorf.de/gesangverein/ erreichbar (HTTP 200).",
+  "typ": "plakat",
+  "layout": "mitText",
+  "titel": "Faschingsball GV Liederkranz Poppendorf",
+  "bilder": [
+    "assets/vereine/faschingsball-2027.png"
+  ],
+  "kernpunkte": {
+    "verein": "GV Liederkranz Poppendorf",
+    "titel": "Faschingsball",
+    "datum": "Samstag, 30.01.2027",
+    "uhrzeit": "Einlass 18:30 Uhr · Beginn 19:30 Uhr",
+    "ort": "Gaststätte Dippacher",
+    "punkte": [
+      "Livemusik mit Jack & Manuel – Schlager trifft Rock",
+      "Barbetrieb",
+      "Kartenvorverkauf ab 12.11.2026 in der Gaststätte Dippacher"
+    ]
+  },
+  "qr": "assets/vereine/qr_gesangverein.png",
+  "link": "www.poppendorf.de/gesangverein",
+  "bisDatum": "2027-01-30",
+  "bisZeit": "22:00"
+}
