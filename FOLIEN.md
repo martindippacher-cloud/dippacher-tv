@@ -26,11 +26,21 @@ Live-TV und Übersicht lesen dieselben Dateien. **Keine Tokens** im Frontend. Ä
 3. Lokal prüfen: `python3 -m http.server` → `/?folie=N&alle` und `/uebersicht.html`.
 4. Alte JSON-Datei kann gelöscht oder archiviert werden.
 
-Zum kurz Abschalten ohne Löschen:
+Zum kurz Abschalten ohne Löschen bleibt die `id` in `reihenfolge`. In `auswahl.json`:
 
 ```json
 "overrides": { "mittagstisch": { "aktiv": false } }
 ```
+
+**`aktiv: false`** nimmt die Folie aus der Rotation **und** aus dem Dashboard (Teaser, Weitere Infos, Mittagstisch-Kachel, Reservieren-QR nutzen `TVSchedule.aktiv`).
+
+**Nur aus der Rotation, Dashboard unverändert** – wenn die Folie weiterhin auf der Infotafel erscheinen soll (z. B. Willkommen-Teaser oder Gutschein unter Weitere Infos):
+
+```json
+"overrides": { "welcome": { "inRotation": false }, "gutschein": { "inRotation": false } }
+```
+
+Die Übersicht zeigt dann „nicht in der Rotation“ und das Häkchen „läuft“ ist aus. Wiedereinblenden: den Override entfernen oder `"inRotation": true`.
 
 ## Zeitsteuerung (Felder)
 
@@ -38,7 +48,8 @@ Alle optional, kombinierbar. Gerätelokalzeit (Europe/Berlin am Player).
 
 | Feld | Beispiel | Bedeutung |
 |------|----------|-----------|
-| `aktiv` | `false` | dauerhaft aus |
+| `aktiv` | `false` | dauerhaft aus (Rotation **und** Dashboard) |
+| `inRotation` | `false` | nur nicht in der TV-Rotation; Dashboard darf die Folie weiter zeigen |
 | `zeit` | `{"von":"10:00","bis":"14:30"}` | Uhrzeitfenster |
 | `tage` | `[1,2,3,4,5]` | Wochentage Mo=1 … So=7 (wöchentlich) |
 | `datum` | `"2026-12-24"` | nur an diesem Kalendertag |
@@ -102,7 +113,7 @@ Einzeltermin:
 
 Die Karten verwenden **statische Vorschaubilder** (`assets/vorschau/<id>.jpg`, 640×360, typisch unter 60 KB), keine Live-iframes. So bleibt die Seite auf dem iPhone nutzbar (Safari stürzt sonst nach etwas Scrollen ab, weil jede Miniatur die komplette TV-App lädt). Pro Karte gibt es den Link „Live ansehen“ (`/?folie=N`, öffnet die Folie einzeln). Zusätzlich kann auf „Live-Vorschau“ höchstens **ein** Live-iframe gleichzeitig geladen werden. Fehlt ein Vorschaubild, erscheint eine Textkarte (kein iframe). Die Übersicht registriert keinen Service Worker und muss offline nicht funktionieren.
 
-Pro Folie gibt es ein großes Häkchen **„läuft“**, vorbelegt mit dem aktuellen Zustand (`aktiv` und nicht abgelaufen/pausiert = an). Bei Folien, die zeitlich noch nicht dran sind, schon abgelaufen sind oder in einer Pause liegen, steht ein Hinweis daneben (z. B. „endet 17.12.“, „ab 24.12.“, „Pause bis 6.1.“); das Häkchen bedeutet dann „aktiv“. **Die Seite selbst ändert nichts** (kein Schreiben, kein Token, kein Netzwerk-POST). Nach dem Umschalten erscheint unten die Leiste „Änderung senden (n)“. Antippen erzeugt einen deutschen Text (Titel + id), z. B. „Bitte am Info-Bildschirm ändern – Ausblenden: Gutschein (gutschein). Einblenden: Reservieren (reservieren).“, und öffnet auf dem iPhone das Teilen-Menü (`navigator.share`), sonst wird der Text in die Zwischenablage kopiert („Kopiert – jetzt im Chat an Digital Signage einfügen“). „Zurücksetzen“ stellt die Häkchen wieder her.
+Pro Folie gibt es ein großes Häkchen **„läuft“**, vorbelegt mit dem aktuellen Zustand (`aktiv`, in der Rotation, und nicht abgelaufen/pausiert = an). Folien mit `inRotation: false` haben das Häkchen aus und den Status „nicht in der Rotation“. Bei Folien, die zeitlich noch nicht dran sind, schon abgelaufen sind oder in einer Pause liegen, steht ein Hinweis daneben (z. B. „endet 17.12.“, „ab 24.12.“, „Pause bis 6.1.“); das Häkchen bedeutet dann „aktiv“. **Die Seite selbst ändert nichts** (kein Schreiben, kein Token, kein Netzwerk-POST). Nach dem Umschalten erscheint unten die Leiste „Änderung senden (n)“. Antippen erzeugt einen deutschen Text (Titel + id), z. B. „Bitte am Info-Bildschirm ändern – Ausblenden: Gutschein (gutschein). Einblenden: Reservieren (reservieren).“, und öffnet auf dem iPhone das Teilen-Menü (`navigator.share`), sonst wird der Text in die Zwischenablage kopiert („Kopiert – jetzt im Chat an Digital Signage einfügen“). „Zurücksetzen“ stellt die Häkchen wieder her.
 
 **Bei jedem Veröffentlichen** die Miniaturen neu erzeugen, besonders nach neuen oder geänderten Folien:
 

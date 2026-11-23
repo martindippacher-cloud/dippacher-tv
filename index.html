@@ -227,7 +227,7 @@ async function loadBestand(f,el){
     }
   }
 }
-function aktiv(f){return !f._kaputt && TVSchedule.aktiv(f, new Date(), P.has('alle'))}
+function aktiv(f){return !f._kaputt && TVSchedule.inRotation(f, new Date(), P.has('alle'))}
 
 function parseCSV(text){
   const rows=[]; let row=[], cur='', q=false;

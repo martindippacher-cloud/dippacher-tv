@@ -1,6 +1,7 @@
 // Zeitsteuerung für Dippacher TV (Europe/Berlin-Gerätelokalzeit)
 // Felder (alle optional, abwärtskompatibel):
-//   aktiv:false
+//   aktiv:false            dauerhaft aus (auch Dashboard-Kacheln, die diese Folie nutzen)
+//   inRotation:false       nur nicht in der TV-Rotation; Dashboard darf die Folie weiter zeigen
 //   zeit:{von:"HH:MM", bis:"HH:MM"}
 //   tage:[1..7]  Mo=1 … So=7  (wöchentlich)
 //   datum:"YYYY-MM-DD"        Einzeldatum
@@ -35,6 +36,12 @@
     if(f.zeit && (m<min(f.zeit.von)||m>min(f.zeit.bis))) return false;
     return true;
   }
+  /* TV-Rotation: aktiv plus nicht ausdrücklich aus der Rotation genommen.
+     Dashboard nutzt weiter nur aktiv() – so bleiben Teaser/Infos sichtbar. */
+  function inRotation(f, d, forceAlle){
+    if(f.inRotation===false) return false;
+    return aktiv(f, d, forceAlle);
+  }
   function tageLabel(tage){
     if(!tage||!tage.length) return '';
     const s=[...tage].sort((a,b)=>a-b);
@@ -56,6 +63,7 @@
     const heute=iso(d), m=d.getHours()*60+d.getMinutes(), wt=d.getDay()||7;
     const bis=bisFeld(f);
     if(f.aktiv===false) return {cls:'aus', label:'aus', live:false};
+    if(f.inRotation===false) return {cls:'aus', label:'nicht in der Rotation', live:false};
     if(f.datum && f.datum!==heute){
       if(f.datum<heute) return {cls:'abgelaufen', label:'abgelaufen (Datum '+fmtDe(f.datum)+')', live:false};
       return {cls:'geplant', label:'Einzeldatum '+fmtDe(f.datum), live:false};
@@ -84,5 +92,5 @@
     if(!parts.length) return {cls:'live', label:'läuft jetzt', live:true};
     return {cls:'live', label:parts.join(' · ')+' · läuft jetzt', live:true};
   }
-  global.TVSchedule={aktiv, statusInfo, tageLabel, iso, bisFeld, pause};
+  global.TVSchedule={aktiv, inRotation, statusInfo, tageLabel, iso, bisFeld, pause};
 })(window);

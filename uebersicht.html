@@ -283,7 +283,7 @@ body.sende-offen{padding-bottom:calc(7.5rem + env(safe-area-inset-bottom,0px))}
     /* Rotationsablauf jetzt (gleiche Logik wie der TV: slides.js TVRotation) */
     (function(){
       const box=document.getElementById('rotation');
-      const akt=k=>TVSchedule.aktiv(FOLIEN[k], d, false);
+      const akt=k=>TVSchedule.inRotation(FOLIEN[k], d, false);
       const seq=TVRotation.ablauf(FOLIEN, akt);
       if(!seq.length){ box.innerHTML='<b>Rotation:</b> gerade keine Folie aktiv.'; return; }
       let sum=0, hauptSum=0;
@@ -328,7 +328,7 @@ body.sende-offen{padding-bottom:calc(7.5rem + env(safe-area-inset-bottom,0px))}
       grid.appendChild(card);
       (function(){
         const cb=card.querySelector('.laeuft input');
-        const an=f.aktiv!==false;
+        const an=f.aktiv!==false && f.inRotation!==false;
         cb.dataset.id=f.id;
         cb.dataset.titel=plainTitle(f);
         cb.dataset.anfang=an?'1':'0';
