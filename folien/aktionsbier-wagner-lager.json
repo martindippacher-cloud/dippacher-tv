@@ -1,0 +1,24 @@
+{
+  "id": "aktionsbier-wagner-lager",
+  "_quelle": "Fakten nach der Beschreibung Lagerbier ungespundet auf der Website der Brauerei Wagner (Stammwürze 12,7 %, Alkohol 5,3 %, ungespundet, Spezialität Bamberg/Landkreis, kohlensäurearm, süffig, Aromahopfen, Merkendorf). Text für den TV kurz formuliert, nicht 1:1. Preis 4,20 € für 0,5 l und „frisch vom Fass“: Martin, 23.11.2026. Bilder: Flasche und Brauereifoto von Martin; Kennzeichen im Foto unkenntlich bzw. weggeschnitten.",
+  "titel": "Unser Aktionsbier",
+  "unter": "Lagerbier ungespundet<br>Brauerei Wagner, Merkendorf",
+  "badge": "Bei uns frisch vom Fass",
+  "menge": "0,5 l",
+  "preis": "4,20 €",
+  "liste": [
+    [
+      "Stammwürze",
+      "12,7 %"
+    ],
+    [
+      "Alkohol",
+      "5,3 %"
+    ]
+  ],
+  "text": "Eine Spezialität, die es nur in Bamberg und seinem Landkreis gibt: ungespundet, kernig, kohlensäurearm und süffig – mit Aromahopfen.",
+  "bild": "assets/aktionsbier-wagner-brauerei.jpg",
+  "logo": "assets/aktionsbier-wagner-flasche.png",
+  "klasse": "kompakt produkt",
+  "dauer": 25
+}

@@ -93,6 +93,17 @@ body.lb-on .f.bestand .bst{max-height:calc(84vh - 3vh - 3.4vw*1.05 - 2.3vw*1.3 -
 .qr.qr-text div{margin-top:0;font-size:1.8vw;max-width:15vw}
 .glogo{background:var(--karte);padding:2.2vw 2.4vw;border-radius:1vw;text-align:center;box-shadow:0 .6vw 2vw #5a3a2033;border:.15vw solid var(--gold);min-width:28vw;flex:none}
 .glogo img{display:block;margin:0 auto;width:26vw;max-width:520px;height:auto;object-fit:contain}
+/* Produktbild (z. B. Flasche) statt Partnerlogo: ohne Karte, Höhe begrenzt */
+.f.produkt .glogo{background:transparent;border:0;box-shadow:none;padding:0;min-width:0}
+.f.produkt .glogo img{width:auto;max-width:22vw;height:64vh;max-height:64vh;object-fit:contain}
+.f.produkt.hatbild .txt,.f.produkt.hatbild .txt p,.f.produkt.kompakt ul,.f.produkt.kompakt p{max-width:46vw}
+/* Preiszeile: menge (z. B. 0,5 l) ist optional und leicht nachtragbar */
+.preis{display:flex;align-items:baseline;gap:1.4vw;margin:0 0 2vh;font-variant-numeric:tabular-nums;flex-wrap:wrap}
+.preis-menge{font-size:2.6vw;font-weight:700;color:var(--tinte)}
+.preis-betrag{font-size:3.6vw;font-weight:700;color:var(--gold-text)}
+.f.kompakt .preis{margin:0 0 1.2vh}
+.f.kompakt .preis-menge{font-size:2.4vw}
+.f.kompakt .preis-betrag{font-size:3.2vw}
 .txt p{max-width:55vw}
 
 /* Bild-/Video-Folien Vollbild */
@@ -367,7 +378,8 @@ function buildSlide(f){
     const qrKarte=f.qr?'<div class="qr'+(qrImText?' qr-text':'')+'"><img src="'+esc(f.qr)+'" alt="">'+(f.link?'<div>'+linkTxt(f.link)+'</div>':'')+'</div>':'';
     const rechts=f.logo?'<div class="glogo"><img src="'+esc(f.logo)+'" alt=""></div>'
       :(qrImText?'':qrKarte);
-    e.innerHTML=(f.bild?'<div class="bg"></div>':'')+'<div class="in"><div class="txt">'+(f.badge?'<div class="badge">'+rich(f.badge)+'</div>':'')+'<h1>'+rich(f.titel)+'</h1>'+(f.unter?'<h2>'+rich(f.unter)+'</h2>':'')+(Array.isArray(f.liste)?'<ul>'+f.liste.map(function(r){r=Array.isArray(r)?r:[r,''];return '<li><span>'+rich(r[0])+'</span><span>'+rich(r[1])+'</span></li>'}).join('')+'</ul>':'')+(f.text?'<p>'+rich(f.text)+'</p>':'')+(qrImText?qrKarte:'')+'</div>'+rechts+'</div>';
+    const preisZeile=(f.preis||f.menge)?('<div class="preis">'+(f.menge?'<span class="preis-menge">'+rich(f.menge)+'</span>':'')+(f.preis?'<span class="preis-betrag">'+rich(f.preis)+'</span>':'')+'</div>'):'';
+    e.innerHTML=(f.bild?'<div class="bg"></div>':'')+'<div class="in"><div class="txt">'+(f.badge?'<div class="badge">'+rich(f.badge)+'</div>':'')+'<h1>'+rich(f.titel)+'</h1>'+(f.unter?'<h2>'+rich(f.unter)+'</h2>':'')+preisZeile+(Array.isArray(f.liste)?'<ul>'+f.liste.map(function(r){r=Array.isArray(r)?r:[r,''];return '<li><span>'+rich(r[0])+'</span><span>'+rich(r[1])+'</span></li>'}).join('')+'</ul>':'')+(f.text?'<p>'+rich(f.text)+'</p>':'')+(qrImText?qrKarte:'')+'</div>'+rechts+'</div>';
     /* Hintergrundbild vorladen: fehlt es, Folie ohne Bild zeigen */
     if(f.bild){
       const bg=e.querySelector('.bg'), pre=new Image();
