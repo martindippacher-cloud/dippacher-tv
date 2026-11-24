@@ -156,6 +156,8 @@ body.lb-on .pl{bottom:3vh}
 .pl-punkte{list-style:none;margin:0;padding:0;font-size:2.35vw}
 .pl-punkte li{display:block;border:0;padding:0 0 0 2.2vw;margin:0 0 1.2vh;position:relative;max-width:none;line-height:1.25;color:var(--text)}
 .pl-punkte li::before{content:"";position:absolute;left:.2vw;top:.5em;width:.85vw;height:.85vw;border-radius:50%;background:var(--rot-logo)}
+.pl-punkte li.heim{font-weight:700;color:var(--tinte)}
+.pl-schluss{margin:2.2vh 0 0;font-size:2.15vw;font-weight:700;color:var(--rot);line-height:1.3}
 .pl-unten{display:flex;align-items:center;gap:1.6vw;margin-top:2.4vh}
 .pl-unten .pl-qr{flex:none;background:var(--karte);padding:.7vw;border-radius:.6vw;border:.12vw solid var(--gold);box-shadow:0 .3vw 1vw #5a3a2026}
 .pl-unten .pl-qr img{width:9vw;height:9vw;display:block}
@@ -325,7 +327,8 @@ function buildPlakat(f,e){
       (k.verein?'<div class="pl-verein">'+rich(k.verein)+'</div>':'')+
       '<h1>'+rich(k.titel||f.titel||'')+'</h1>'+
       (fakten.length?'<dl class="pl-fakten">'+fakten.map(x=>'<dt>'+esc(x[0])+'</dt><dd>'+rich(x[1])+'</dd>').join('')+'</dl>':'')+
-      (Array.isArray(k.punkte)&&k.punkte.length?'<ul class="pl-punkte">'+k.punkte.slice(0,4).map(p=>'<li>'+rich(p)+'</li>').join('')+'</ul>':'')+
+      (Array.isArray(k.punkte)&&k.punkte.length?'<ul class="pl-punkte">'+k.punkte.slice(0,4).map(function(p){const o=(p&&typeof p==='object')?p:{text:p};return '<li'+(o.heim?' class="heim"':'')+'>'+rich(o.text!=null?o.text:p)+'</li>';}).join('')+'</ul>':'')+
+      (k.schluss?'<p class="pl-schluss">'+rich(k.schluss)+'</p>':'')+
       ((f.qr||f.link)?'<div class="pl-unten">'+(f.qr?'<div class="pl-qr"><img src="'+esc(f.qr)+'" alt=""></div>':'')+(f.link?'<div class="pl-link">'+linkTxt(f.link)+'</div>':'')+'</div>':'')+
       '</div>';
   }

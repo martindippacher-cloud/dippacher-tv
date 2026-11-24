@@ -39,7 +39,7 @@
   function plain(s){return String(s==null?'':s).replace(/<br\s*\/?>/gi,' ').replace(/&nbsp;/g,' ').replace(/<[^>]*>/g,'')}
   function woerter(f){
     let t=[f.titel,f.unter,f.text,f.badge].map(plain).join(' ');
-    if(f.typ==='plakat' && f.kernpunkte){ const k=f.kernpunkte; t+=' '+[k.titel,k.verein,k.datum,k.uhrzeit,k.ort].map(plain).join(' ')+' '+(Array.isArray(k.punkte)?k.punkte.map(plain).join(' '):''); }
+    if(f.typ==='plakat' && f.kernpunkte){ const k=f.kernpunkte; t+=' '+[k.titel,k.verein,k.datum,k.uhrzeit,k.ort,k.schluss].map(plain).join(' ')+' '+(Array.isArray(k.punkte)?k.punkte.map(p=>plain(p&&typeof p==='object'?p.text:p)).join(' '):''); }
     if(Array.isArray(f.liste)) t+=' '+f.liste.map(r=>Array.isArray(r)?r.map(plain).join(' '):plain(r)).join(' ');
     return t.split(/\s+/).filter(Boolean).length;
   }

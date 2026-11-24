@@ -1,0 +1,28 @@
+{
+  "id": "adventsfenster-2026",
+  "_quelle": "Flyer Adventsfenster 2026 der Pfarrgemeinde Heroldsbach und Hausen, von Martin am 24.11.2026 (Original: assets/vereine/original/adventsfenster-2026.jpg). Kernpunkte nur vom Flyer, nichts ergänzt. Preis oder Eintritt stehen nicht auf dem Flyer.",
+  "typ": "plakat",
+  "layout": "mitText",
+  "titel": "Adventsfenster 2026",
+  "bilder": [
+    "assets/vereine/adventsfenster-2026.jpg"
+  ],
+  "kernpunkte": {
+    "verein": "Pfarrgemeinde Heroldsbach und Hausen",
+    "titel": "Adventsfenster 2026",
+    "uhrzeit": "immer um 18:00 Uhr",
+    "punkte": [
+      "1. Advent · So. 29.11. · Heroldsbach beim Pfarrheim",
+      "2. Advent · So. 06.12. · Heroldsbach beim Musikverein (Heroldsbach-Thurn)",
+      {
+        "text": "3. Advent · So. 13.12. · Poppendorf, Dorfstraße 14",
+        "heim": true
+      },
+      "4. Advent · So. 20.12. · Hausen bei der Schule"
+    ],
+    "schluss": "Herzliche Einladung an die gesamte Bevölkerung"
+  },
+  "dauer": 30,
+  "bisDatum": "2026-12-20",
+  "bisZeit": "19:00"
+}

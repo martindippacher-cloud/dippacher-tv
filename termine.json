@@ -7,6 +7,10 @@
     { "datum": "2026-12-21", "bisDatum": "2027-01-06", "titel": "Betriebsurlaub – geschlossen", "quelle": "folien/oeffnung-dezember.json: „Betriebsurlaub Mo. 21. Dez. – Mi. 6. Jan. – geschlossen“" },
     { "datum": "2026-12-23", "titel": "Abholung Weihnachtsessen", "zeit": "15–18 Uhr", "quelle": "folien/oeffnung-dezember.json: „Mi. 23. Dezember nur Abholung 15–18 Uhr“; folien/weihnachten-vorbestellung.json: „Abholung am 23. Dezember“" },
     { "datum": "2027-01-07", "titel": "Wieder da", "quelle": "folien/oeffnung-dezember.json: „Wieder da – ab Do. 7. Januar 2027“" },
-    { "datum": "2027-01-30", "titel": "Faschingsball GV Liederkranz", "zeit": "19:30 Uhr", "quelle": "Plakat GV Liederkranz Poppendorf (assets/vereine/original/faschingsball-2027.png): „Samstag, 30.01.2027 … Beginn: 19.30 Uhr“" }
+    { "datum": "2027-01-30", "titel": "Faschingsball GV Liederkranz", "zeit": "19:30 Uhr", "quelle": "Plakat GV Liederkranz Poppendorf (assets/vereine/original/faschingsball-2027.png): „Samstag, 30.01.2027 … Beginn: 19.30 Uhr“" },
+    { "datum": "2026-11-29", "titel": "Adventsfenster Heroldsbach beim Pfarrheim", "zeit": "18:00 Uhr", "quelle": "Flyer Adventsfenster 2026 (assets/vereine/original/adventsfenster-2026.jpg): 1. Advent, Sonntag 29.11.2026, Heroldsbach beim Pfarrheim, immer um 18.00 Uhr" },
+    { "datum": "2026-12-06", "titel": "Adventsfenster Heroldsbach beim Musikverein (Heroldsbach-Thurn)", "zeit": "18:00 Uhr", "quelle": "Flyer Adventsfenster 2026: 2. Advent, Sonntag 06.12.2026, Heroldsbach beim Musikverein, Schloßstraße 21, 91336 Heroldsbach-Thurn, immer um 18.00 Uhr" },
+    { "datum": "2026-12-13", "titel": "Adventsfenster Poppendorf (Dorfstraße 14)", "zeit": "18:00 Uhr", "quelle": "Flyer Adventsfenster 2026: 3. Advent, Sonntag 13.12.2026, Poppendorf, Dorfstraße 14, immer um 18.00 Uhr" },
+    { "datum": "2026-12-20", "titel": "Adventsfenster Hausen bei der Schule", "zeit": "18:00 Uhr", "quelle": "Flyer Adventsfenster 2026: 4. Advent, Sonntag 20.12.2026, Hausen bei der Schule, immer um 18.00 Uhr" }
   ]
 }

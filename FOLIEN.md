@@ -207,7 +207,7 @@ beim Einchecken wird daraus ein PNG oder JPG gemacht, die Folie zeigt nur dieses
 |------|-----------|
 | `layout` | `"zwei"` = zwei Plakate nebeneinander · `"mittig"` = ein Plakat in der Mitte · `"mitText"` = Plakat links, Kernaussagen rechts |
 | `bilder` | Bildpfade (PNG/JPG aus dem Skript) (bei `zwei` genau zwei, sonst eins). Fehlt bei `zwei` ein Bild, steht das andere mittig; fehlen alle, wird die Folie übersprungen |
-| `kernpunkte` | nur bei `mitText`: `verein`, `titel`, `datum`, `uhrzeit`, `ort` (alles Text, wie auf dem Plakat) und `punkte` (2–4 Stichpunkte). Ohne `kernpunkte` wird `mitText` wie `mittig` gezeigt |
+| `kernpunkte` | nur bei `mitText`: `verein`, `titel`, `datum`, `uhrzeit`, `ort` (alles Text, wie auf dem Plakat) und `punkte` (2–4 Stichpunkte; ein Punkt darf `{ "text": "…", "heim": true }` sein, dann wird er dezent hervorgehoben, z. B. der eigene Ort). Optional `schluss` (ein Satz unter den Stichpunkten, z. B. eine Einladung). Ohne `kernpunkte` wird `mitText` wie `mittig` gezeigt |
 | `badge` | optionales Schild über dem Text, z. B. `"BEISPIEL"` |
 | `qr`, `link` | optional bei `mitText`: kleiner QR mit Link unten rechts in der Textspalte |
 | `bisDatum` + `bisZeit` | **damit das Plakat nach der Veranstaltung von selbst verschwindet** (z. B. Veranstaltungstag, 22:00). `ab` für einen späteren Start |
