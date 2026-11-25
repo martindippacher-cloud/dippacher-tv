@@ -293,7 +293,7 @@ ausgeblendet, weil Logo und Uhr schon in der Kopfzeile stehen. Die Food-Box komm
 
 ```json
 {
-  "id": "dashboard", "typ": "dashboard", "dauer": 30, "wiederholeNach": 3,
+  "id": "dashboard", "typ": "dashboard", "dauer": 30, "wiederholeNach": 4,
   "kacheln": [
     { "typ": "teaser",       "bereich": "links",  "folien": ["welcome-stadtwerke", "welcome"] },
     { "typ": "infos",        "bereich": "links",  "max": 2, "folien": ["weihnachten-vorbestellung", "gutschein", "reservieren"] },
