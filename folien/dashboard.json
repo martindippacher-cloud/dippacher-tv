@@ -3,7 +3,7 @@
   "typ": "dashboard",
   "titel": "Infotafel",
   "unter": "Hauptfolie mit Wetter, Terminen, Mittagstisch und mehr",
-  "dauer": 50,
+  "dauer": 30,
   "wiederholeNach": 3,
   "_info": "Kacheln: Reihenfolge = Reihenfolge in der Liste, je Bereich (links / rechts). \"aktiv\": false blendet eine Kachel aus. \"klein\": true = kleine Kachel, mehrere stehen nebeneinander. \"ersetzt\": Kachel nimmt, wenn sie sichtbar ist, den Platz einer anderen ein (Mittagstisch statt Weitere Infos). Siehe FOLIEN.md.",
   "kacheln": [
