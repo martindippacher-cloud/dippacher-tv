@@ -327,15 +327,16 @@ rechts oben das Wetter, rechts darunter die Termine. Die QR-Kachel erscheint nur
   weggelassen (nie kleinere Schrift, nie abgeschnitten). Wetter offline: letzter Stand bis 12 h mit „Stand HH:MM Uhr“ im Titel,
   danach wird die Kachel ausgeblendet (die aktuelle Temperatur nur bis 3 h alt).
 
-## Hauptfolie: `wiederholeNach`
+## Wiederholung: `wiederholeNach`
 
-Eine Folie mit `"wiederholeNach": N` kommt **zuerst** und danach **immer wieder nach je N anderen** (gerade aktiven) Folien.
-Die übrigen Folien laufen weiter in der Reihenfolge von `auswahl.json`. Beispiel mit `3`:
+Eine Folie mit `"wiederholeNach": N` kommt in der Rotation wieder, nachdem **N normale Folien** gelaufen sind (normal = gerade aktiv und ohne `wiederholeNach`). Die normalen Folien behalten die Reihenfolge aus `auswahl.json`. Beispiel nur mit dem Dashboard (`4`):
 
-`dashboard → welcome → gutschein → vorbestellung → dashboard → foodbox → bestand → kloesse → dashboard → …`
+`dashboard → a → b → c → d → dashboard → e → f → g → h → dashboard → …`
 
-- Häufiger: kleinere Zahl (`2`). Seltener: größere Zahl. Feld entfernen = normale Folie (einmal pro Durchlauf).
-- Die Übersicht (`uebersicht.html`) zeigt den aktuellen Ablauf, die Dauer eines Durchlaufs und den Anteil der Hauptfolie.
+- Häufiger: kleinere Zahl (`2` oder `3`). Seltener: größere Zahl. Feld entfernen = normale Folie (einmal pro Durchlauf).
+- **Mehrere Folien** dürfen `wiederholeNach` haben, jede mit eigener Zahl und eigenem Zähler. Sind mehrere gleichzeitig fällig, gilt die Reihenfolge in `auswahl.json`. Dieselbe Folie kommt nicht direkt hintereinander, solange es eine andere aktive Folie gibt.
+- So bleiben zum Beispiel das Dashboard mit `wiederholeNach: 4` (zweimal pro Durchlauf bei sieben oder acht normalen Folien) und eine Begrüßungsfolie mit `wiederholeNach: 3` unabhängig voneinander.
+- Die Übersicht (`uebersicht.html`) zeigt den aktuellen Ablauf, die Dauer eines Durchlaufs und den Anteil dieser Folien.
 
 ## Termine pflegen (`termine.json`)
 

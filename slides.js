@@ -54,23 +54,33 @@
   global.TVDauer={auto, sekunden, woerter};
 
   // ===== ROTATION =====
-  // Folien laufen in der Reihenfolge von auswahl.json. Eine Folie mit "wiederholeNach": N (z. B. das Dashboard)
-  // ist eine Hauptfolie: Sie kommt zuerst und danach immer wieder nach je N anderen (gerade aktiven) Folien.
-  // Ohne "wiederholeNach" verhält sich alles wie bisher (jede aktive Folie einmal pro Durchlauf).
+  // Folien laufen in der Reihenfolge von auswahl.json.
+  // Eine Folie mit "wiederholeNach": N wiederholt sich nach je N normalen Folien
+  // (normal = aktiv und ohne wiederholeNach). Mehrere solche Folien sind erlaubt,
+  // jede mit eigenem N und eigenem Zähler. Sind mehrere gleichzeitig fällig, gilt
+  // die Reihenfolge in auswahl.json. Dieselbe Folie kommt nicht direkt hintereinander,
+  // solange es eine andere aktive Folie gibt. Ohne "wiederholeNach" einmal pro Durchlauf.
   const istHaupt=f=>Number(f&&f.wiederholeNach)>0;
-  function neu(){ return {pos:-1, seit:Infinity, cur:-1, hauptPos:-1}; }
+  function neu(){ return {pos:-1, cur:-1, seit:{}}; }
   function naechste(F, aktivFn, st){
     const idx=F.map((f,k)=>k).filter(k=>aktivFn(k));
     if(!idx.length){ st.cur=-1; return -1; }
     const haupt=idx.filter(k=>istHaupt(F[k])), normal=idx.filter(k=>!istHaupt(F[k]));
-    let k;
-    const n=haupt.length?Math.min(...haupt.map(h=>Number(F[h].wiederholeNach))):Infinity;
-    if(haupt.length && (st.seit>=n || !normal.length) && !(normal.length && haupt.includes(st.cur))){
-      st.hauptPos=(st.hauptPos+1)%haupt.length; k=haupt[st.hauptPos]; st.seit=0;
-    } else {
-      k=normal.find(x=>x>st.pos); if(k===undefined) k=normal[0];
-      st.pos=k; st.seit++;
+    const faellig=h=>{const n=Number(F[h].wiederholeNach), s=st.seit[h]; return s===undefined||s>=n};
+    let kandidaten=haupt.filter(h=>faellig(h)&&h!==st.cur);
+    if(!kandidaten.length && !normal.length){
+      kandidaten=haupt.filter(h=>faellig(h));
+      if(!kandidaten.length) kandidaten=haupt.slice();
     }
+    let k;
+    if(kandidaten.length){
+      k=kandidaten[0];
+      st.seit[k]=0;
+    } else if(normal.length){
+      k=normal.find(x=>x>st.pos); if(k===undefined) k=normal[0];
+      st.pos=k;
+      for(const h of haupt){ if(st.seit[h]!==undefined) st.seit[h]++; }
+    } else { st.cur=-1; return -1; }
     st.cur=k; return k;
   }
   // Ein kompletter Durchlauf (jede normale Folie einmal) zum Anzeigen in der Übersicht
