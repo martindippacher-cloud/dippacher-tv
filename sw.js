@@ -39,7 +39,8 @@ const PRECACHE = [
   './assets/schaueferla_9731Lr.jpg',
   './assets/stadtwerke_forchheim_bg.jpg',
   './assets/stadtwerke_forchheim_logo.png',
-  './assets/stadtwerke_forchheim_logo.svg'
+  './assets/stadtwerke_forchheim_logo.svg',
+  './assets/karpfen_0461Lr.jpg'
 ];
 
 self.addEventListener('install', (e) => {
@@ -56,7 +57,8 @@ self.addEventListener('install', (e) => {
           await c.add(new Request(u, {cache:'reload'}));
           /* Bilder der Folie (z. B. Plakat-PNGs in assets/vereine/) gleich mitcachen, damit sie offline da sind */
           const f = await (await c.match(u)).clone().json();
-          const bilder = [].concat(Array.isArray(f.bilder) ? f.bilder : [], f.bild || [], f.qr || [], f.logo || [])
+          const kachelBilder = Array.isArray(f.kacheln) ? f.kacheln.map(k => k && k.bild) : [];
+          const bilder = [].concat(Array.isArray(f.bilder) ? f.bilder : [], f.bild || [], f.qr || [], f.logo || [], kachelBilder)
             .filter(b => typeof b === 'string' && b && !/^https?:/i.test(b));
           for (const b of bilder) { try { if (!(await c.match('./' + b.replace(/^\.\//, '')))) await c.add('./' + b.replace(/^\.\//, '')); } catch (_) {} }
         } catch (_) {}

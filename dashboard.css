@@ -80,3 +80,7 @@ body.dash-on.lb-on #laufband{bottom:0}
 .qr-k img{width:8.4vw;height:8.4vw;flex:none}
 .q-t{font-size:2.3vw;font-weight:700;color:var(--tinte);line-height:1.15}
 .q-l{font-size:1.9vw;font-weight:600;color:#5A1D16;margin-top:.4vh;overflow-wrap:anywhere}
+/* Foto-Kachel (z. B. Karpfen Do–Sa mittags): bildfüllend, ohne Text */
+.k.foto{flex:none;padding:0;min-height:0}
+.k.foto img{display:block;width:100%;height:auto;aspect-ratio:1382/553;object-fit:cover}
+.k.foto img.contain{object-fit:contain;background:var(--creme2)}

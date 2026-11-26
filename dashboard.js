@@ -94,6 +94,18 @@
     return f;
   }
   const gilt=f=>!!f && TVSchedule.aktiv(f, jetzt(), false);
+  /* Optionale Zeitsteuerung direkt an der Kachel (tage, zeit, datum, ab, bisDatum, bisZeit), gleiche Regeln wie bei Folien. */
+  function kachelGilt(k){
+    if(!k || k.aktiv===false) return false;
+    if(k.tage||k.zeit||k.datum||k.ab||k.bisDatum||k.bisTag||k.ablauf||k.bisZeit||k.pausen){
+      return TVSchedule.aktiv({
+        aktiv:true, tage:k.tage, zeit:k.zeit, datum:k.datum, ab:k.ab,
+        bisDatum:k.bisDatum, bisTag:k.bisTag, ablauf:k.ablauf, bisZeit:k.bisZeit, pausen:k.pausen
+      }, jetzt(), false);
+    }
+    return true;
+  }
+
 
   /* ---------- Kacheln ---------- */
   function kopf(){
@@ -152,7 +164,7 @@
     if(!rows.length) return '';
     return '<div class="k infos"><h3>'+esc(k.titel||'Weitere Infos')+'</h3><div class="rows">'+rows.join('')+'</div></div>';
   }
-  /* Mittagstisch nur, wenn die Mittagstisch-Folie gerade gilt (Zeitsteuerung). Sonst keine Kachel. */
+  /* Mittagstisch nur, wenn die Mittagstisch-Folie gerade gilt und die Kachel selbst (tage/zeit). Sonst keine Kachel. */
   async function mittagstisch(st,k){
     const m=await folie(st,k.folie||'mittagstisch');
     if(!(gilt(m) && Array.isArray(m.liste) && m.liste.length)) return '';
@@ -184,7 +196,17 @@
     if(!f||!f.qr) return '';
     return '<div class="k klein qr-k"><img src="'+esc(f.qr)+'" alt=""><div><div class="q-t">'+rich(f.titel)+'</div>'+(f.link?'<div class="q-l">'+esc(f.link)+'</div>':'')+'</div></div>';
   }
-  const RENDER={wetter, teaser, infos, mittagstisch, termine, qr};
+  /* Foto-Kachel: nur das Bild, kein Text. Sichtbarkeit über tage/zeit an der Kachel. */
+  async function foto(st,k){
+    const src=typeof k.bild==='string'?k.bild:'';
+    if(!src) return '';
+    const ok=await new Promise(function(res){const im=new Image(); im.onload=function(){res(true)}; im.onerror=function(){res(false)}; im.src=src;});
+    if(!ok){ console.warn('Kachel-Bild fehlt:',src); return ''; }
+    const fit=k.fit==='contain'?'contain':'cover';
+    return '<div class="k foto"><img class="'+fit+'" src="'+esc(src)+'" alt=""></div>';
+  }
+  const RENDER={wetter, teaser, infos, mittagstisch, termine, qr, foto};
+
 
   /* ---------- Aufbau, Anpassen, Takt ---------- */
   async function render(st){
@@ -192,6 +214,7 @@
     const reihen=st.kacheln.filter(k=>k.aktiv!==false && RENDER[k.typ] && (k.bereich==='links'||k.bereich==='rechts'||!k.bereich));
     const html=new Map();
     for(const k of reihen){
+      if(!kachelGilt(k)){ html.set(k,''); continue; }
       try{ html.set(k, await RENDER[k.typ](st,k) || ''); }catch(e){ console.warn('Kachel übersprungen:',k.typ,e); html.set(k,''); }
     }
     /* "ersetzt": eine sichtbare Kachel (z. B. Mittagstisch) nimmt den Platz einer anderen (z. B. Weitere Infos) ein */

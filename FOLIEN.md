@@ -302,7 +302,8 @@ ausgeblendet, weil Logo und Uhr schon in der Kopfzeile stehen. Die Food-Box komm
   "kacheln": [
     { "typ": "teaser",       "bereich": "links",  "folien": ["welcome-stadtwerke", "welcome"] },
     { "typ": "infos",        "bereich": "links",  "max": 2, "folien": ["weihnachten-vorbestellung", "gutschein", "reservieren"] },
-    { "typ": "mittagstisch", "bereich": "links",  "folie": "mittagstisch", "ersetzt": "infos" },
+    { "typ": "mittagstisch", "bereich": "links",  "folie": "mittagstisch", "ersetzt": "infos", "tage": [7] },
+    { "typ": "foto",         "bereich": "links",  "bild": "assets/karpfen_0461Lr.jpg", "fit": "cover", "tage": [4, 5, 6], "zeit": { "von": "10:00", "bis": "14:30" }, "ersetzt": "infos" },
     { "typ": "wetter",       "bereich": "rechts", "ort": "Poppendorf", "lat": 49.694, "lon": 10.965 },
     { "typ": "termine",      "bereich": "rechts", "quelle": "termine.json", "max": 4 },
     { "typ": "qr",           "bereich": "rechts", "klein": true, "folie": "reservieren" }
@@ -310,16 +311,17 @@ ausgeblendet, weil Logo und Uhr schon in der Kopfzeile stehen. Die Food-Box komm
 }
 ```
 
-Aufteilung: links oben Foto-Teaser, links unten „Weitere Infos“ (mittags stattdessen der Mittagstisch),
-rechts oben das Wetter, rechts darunter die Termine. Die QR-Kachel erscheint nur, wenn rechts noch Platz ist.
+Aufteilung: links oben der Willkommenstext, links unten „Weitere Infos“; mittags tritt an diese Stelle sonntags der Mittagstisch, donnerstags bis samstags ein Foto (Karpfen). Montag bis Mittwoch ist Ruhetag, dann bleibt „Weitere Infos“. Rechts oben das Wetter, rechts darunter die Termine. Die QR-Kachel erscheint nur, wenn rechts noch Platz ist.
 
 - **Reihenfolge** der Kacheln = Reihenfolge in der Liste (je Bereich). **Ausschalten:** `"aktiv": false` an der Kachel.
 - `"klein": true` = kleine Kachel; mehrere kleine stehen nebeneinander am Ende der Spalte.
-- `"ersetzt": "<typ>"`: Ist diese Kachel sichtbar, nimmt sie den Platz der genannten Kachel ein (Mittagstisch statt Weitere Infos).
-- Die Kacheln holen ihre Inhalte aus den **vorhandenen Folien** (Titel, Unterzeile, Bild, QR). Wer eine Folie ändert, ändert damit auch die Kachel.
+- `"ersetzt": "<typ>"`: Ist diese Kachel sichtbar, nimmt sie den Platz der genannten Kachel ein (Mittagstisch oder Foto statt Weitere Infos).
+- An einer Kachel sind dieselben Zeitfelder wie bei Folien möglich (`tage` Mo=1 … So=7, `zeit`, `datum`, `ab`, `bisDatum`, …). Sie gelten zusätzlich zur Logik des Kacheltyps.
+- Die Kacheln holen ihre Inhalte aus den **vorhandenen Folien** (Titel, Unterzeile, Bild, QR) oder, beim Typ `foto`, aus einem Bildpfad an der Kachel. Wer eine Folie ändert, ändert damit auch die Kachel.
   - `teaser`: erste Folie aus `folien`, die heute laut Zeitsteuerung gilt. Ohne Hintergrundbild, Text zentriert.
   - `infos`: bis zu `max` Folien, die heute gelten; Vorschaubild = `bild`, sonst der QR-Code der Folie.
-  - `mittagstisch`: Liste aus `folien/mittagstisch.json` (auch `csvUrl`), nur solange die Mittagstisch-Folie laut Zeitsteuerung gilt. Sonst keine Kachel.
+  - `mittagstisch`: Liste aus `folien/mittagstisch.json` (auch `csvUrl`), nur solange die Mittagstisch-Folie laut Zeitsteuerung gilt **und** die Kachel selbst (z. B. nur sonntags mit `"tage": [7]`). Sonst keine Kachel.
+  - `foto`: ein lokales Bild (`bild`, unter `assets/`) vollflächig in der Kachel, typisch `fit: "cover"`, ohne Text. Sichtbarkeit nur über die Zeitfelder der Kachel. Fehlt das Bild, erscheint die Kachel nicht.
   - `wetter`: Open-Meteo (kostenlos, ohne Schlüssel), alle 30 min. Jetzt: Symbol, Temperatur, Beschreibung, gefühlte Temperatur,
     Wind (bei Niederschlag stattdessen die Menge), Höchst-/Tiefstwert heute. Dazu die nächsten 3 Tage mit Symbol, Max/Min und
     Regenwahrscheinlichkeit. Koordinaten = Gaststätte (Dorfstraße 23, Poppendorf).

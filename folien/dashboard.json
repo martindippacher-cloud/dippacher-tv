@@ -5,7 +5,7 @@
   "unter": "Hauptfolie mit Wetter, Terminen, Mittagstisch und mehr",
   "dauer": 30,
   "wiederholeNach": 4,
-  "_info": "Kacheln: Reihenfolge = Reihenfolge in der Liste, je Bereich (links / rechts). \"aktiv\": false blendet eine Kachel aus. \"klein\": true = kleine Kachel, mehrere stehen nebeneinander. \"ersetzt\": Kachel nimmt, wenn sie sichtbar ist, den Platz einer anderen ein (Mittagstisch statt Weitere Infos). Siehe FOLIEN.md.",
+  "_info": "Kacheln: Reihenfolge = Reihenfolge in der Liste, je Bereich (links / rechts). \"aktiv\": false blendet eine Kachel aus. \"klein\": true = kleine Kachel, mehrere stehen nebeneinander. \"ersetzt\": Kachel nimmt, wenn sie sichtbar ist, den Platz einer anderen ein (Mittagstisch oder Foto statt Weitere Infos). Optional tage/zeit wie bei Folien (Mo=1 … So=7). Mittagstisch nur sonntags, Do–Sa mittags das Karpfenbild; Mo–Mi Ruhetag, dann Weitere Infos. Siehe FOLIEN.md.",
   "kacheln": [
     {
       "typ": "teaser",
@@ -32,7 +32,28 @@
       "bereich": "links",
       "aktiv": true,
       "folie": "mittagstisch",
-      "ersetzt": "infos"
+      "ersetzt": "infos",
+      "tage": [
+        7
+      ]
+    },
+    {
+      "typ": "foto",
+      "bereich": "links",
+      "aktiv": true,
+      "bild": "assets/karpfen_0461Lr.jpg",
+      "fit": "cover",
+      "tage": [
+        4,
+        5,
+        6
+      ],
+      "zeit": {
+        "von": "10:00",
+        "bis": "14:30"
+      },
+      "ersetzt": "infos",
+      "_info": "Do–Sa mittags anstelle von Weitere Infos. Bild: dippacher.de/assets/img/slider/Karpfen2_0461Lr.jpg"
     },
     {
       "typ": "wetter",
