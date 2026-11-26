@@ -337,7 +337,7 @@ Eine Folie mit `"wiederholeNach": N` kommt in der Rotation wieder, nachdem **N n
 
 - Häufiger: kleinere Zahl (`2` oder `3`). Seltener: größere Zahl. Feld entfernen = normale Folie (einmal pro Durchlauf).
 - **Mehrere Folien** dürfen `wiederholeNach` haben, jede mit eigener Zahl und eigenem Zähler. Sind mehrere gleichzeitig fällig, gilt die Reihenfolge in `auswahl.json`. Dieselbe Folie kommt nicht direkt hintereinander, solange es eine andere aktive Folie gibt.
-- So bleiben zum Beispiel das Dashboard mit `wiederholeNach: 4` (zweimal pro Durchlauf bei sieben oder acht normalen Folien) und eine Begrüßungsfolie mit `wiederholeNach: 3` unabhängig voneinander.
+- So bleiben zum Beispiel das Dashboard mit `wiederholeNach: 4` (zweimal pro Durchlauf bei sieben oder acht normalen Folien) und eine Begrüßungsfolie mit `wiederholeNach: 2` unabhängig voneinander.
 - Die Übersicht (`uebersicht.html`) zeigt den aktuellen Ablauf, die Dauer eines Durchlaufs und den Anteil dieser Folien.
 
 ## Termine pflegen (`termine.json`)
