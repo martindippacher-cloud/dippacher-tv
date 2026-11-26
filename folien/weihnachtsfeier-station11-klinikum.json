@@ -1,0 +1,19 @@
+{
+  "id": "weihnachtsfeier-station11-klinikum",
+  "_quelle": "Foto Eingang Klinikum Forchheim – Fränkische Schweiz, von Martin am 26.11.2026 (Original: assets/vereine/original/klinikum-forchheim.jpg). Gesichter im Anzeigebild etwas stärker verpixelt. Begrüßung und Pfeil „Hier entlang“ nach links in den Raum nach Martins Wunsch; keine Uhrzeit, kein Raumname, kein Menü und kein Preis ergänzt. Nur am 26.11.2026 ab 16:00 Uhr.",
+  "titel": "Herzlich willkommen",
+  "unter": "Station 11 vom Klinikum Forchheim",
+  "text": "Schön, dass Sie da sind! Wir wünschen Ihnen eine schöne Weihnachtsfeier.",
+  "badge": "Weihnachtsfeier",
+  "bild": "assets/vereine/weihnachtsfeier-station11-klinikum.jpg",
+  "hinweis": {
+    "text": "Hier entlang"
+  },
+  "klasse": "fotoKarte",
+  "dauer": 30,
+  "datum": "2026-11-26",
+  "zeit": {
+    "von": "16:00",
+    "bis": "23:59"
+  }
+}

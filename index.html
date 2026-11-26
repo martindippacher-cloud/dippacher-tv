@@ -27,6 +27,17 @@ html,body{margin:0;width:100vw;height:100vh;overflow:hidden;background:var(--cre
 .f.hatbild .txt{max-width:44vw}
 .f.hatbild .txt p{max-width:44vw}
 .f.hatbild h2{font-size:2.7vw}
+/* Gerahmtes Foto rechts (klasse "fotoKarte"): ganzes Motiv, Goldrahmen wie beim Plakat */
+.f.fotoKarte .bg{left:auto;right:5vw;top:45.5vh;bottom:auto;width:45vw;height:60vh;transform:translateY(-50%);-webkit-mask-image:none;mask-image:none;border-radius:.3vw;border:.5vw solid var(--karte);outline:.12vw solid #C9A04A99;box-shadow:0 .5vw 1.8vw #5a3a2038,0 .1vw .3vw #5a3a2026;background-size:cover;background-position:center}
+.f.fotoKarte .in{padding:0 5vw 9vh}
+.f.fotoKarte.hatbild .txt,.f.fotoKarte.hatbild .txt p{max-width:42vw}
+.f.fotoKarte h1{font-size:5vw}
+.f.fotoKarte h2{font-size:2.55vw;margin-bottom:2.4vh}
+/* Wegweiser nach links (Feld hinweis) */
+.hinweis{display:flex;align-items:center;gap:1.5vw;margin-top:4.2vh;padding-top:3vh;border-top:.15vw solid var(--gold);max-width:38vw}
+.hinweis-pfeil{flex:none;width:6.4vw;height:5vw;color:var(--rot-logo);filter:drop-shadow(0 .12vw .25vw #5a3a2044)}
+.hinweis-pfeil svg{display:block;width:100%;height:100%}
+.hinweis-text{font-family:'Playfair Display',serif;font-size:2.4vw;font-weight:600;color:var(--rot);letter-spacing:.04em}
 .in{position:relative;display:flex;align-items:center;gap:5vw;padding:0 7vw 9vh;width:100%;box-sizing:border-box}
 .txt{flex:1;min-width:0}
 h1{font-family:'Playfair Display',serif;font-size:6.2vw;line-height:1.05;margin:0 0 1.5vh;color:var(--tinte)}
@@ -382,7 +393,8 @@ function buildSlide(f){
     const rechts=f.logo?'<div class="glogo"><img src="'+esc(f.logo)+'" alt=""></div>'
       :(qrImText?'':qrKarte);
     const preisZeile=(f.preis||f.menge)?('<div class="preis">'+(f.menge?'<span class="preis-menge">'+rich(f.menge)+'</span>':'')+(f.preis?'<span class="preis-betrag">'+rich(f.preis)+'</span>':'')+'</div>'):'';
-    e.innerHTML=(f.bild?'<div class="bg"></div>':'')+'<div class="in"><div class="txt">'+(f.badge?'<div class="badge">'+rich(f.badge)+'</div>':'')+'<h1>'+rich(f.titel)+'</h1>'+(f.unter?'<h2>'+rich(f.unter)+'</h2>':'')+preisZeile+(Array.isArray(f.liste)?'<ul>'+f.liste.map(function(r){r=Array.isArray(r)?r:[r,''];return '<li><span>'+rich(r[0])+'</span><span>'+rich(r[1])+'</span></li>'}).join('')+'</ul>':'')+(f.text?'<p>'+rich(f.text)+'</p>':'')+(qrImText?qrKarte:'')+'</div>'+rechts+'</div>';
+    const hinweisHtml=(()=>{if(!f.hinweis)return '';const t=typeof f.hinweis==='string'?f.hinweis:(f.hinweis.text||'');return '<div class="hinweis"><span class="hinweis-pfeil" aria-hidden="true"><svg viewBox="0 0 72 56" focusable="false"><path fill="currentColor" d="M34 4 4 28l30 24v-14h34V18H34V4z"/></svg></span>'+(t?'<span class="hinweis-text">'+rich(t)+'</span>':'')+'</div>'})();
+    e.innerHTML=(f.bild?'<div class="bg"></div>':'')+'<div class="in"><div class="txt">'+(f.badge?'<div class="badge">'+rich(f.badge)+'</div>':'')+'<h1>'+rich(f.titel)+'</h1>'+(f.unter?'<h2>'+rich(f.unter)+'</h2>':'')+preisZeile+(Array.isArray(f.liste)?'<ul>'+f.liste.map(function(r){r=Array.isArray(r)?r:[r,''];return '<li><span>'+rich(r[0])+'</span><span>'+rich(r[1])+'</span></li>'}).join('')+'</ul>':'')+(f.text?'<p>'+rich(f.text)+'</p>':'')+hinweisHtml+(qrImText?qrKarte:'')+'</div>'+rechts+'</div>';
     /* Hintergrundbild vorladen: fehlt es, Folie ohne Bild zeigen */
     if(f.bild){
       const bg=e.querySelector('.bg'), pre=new Image();

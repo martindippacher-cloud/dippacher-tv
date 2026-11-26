@@ -88,11 +88,16 @@ Einzeltermin:
 
 ## Inhaltliche Felder (Kurz)
 
-`titel`, `unter`, `text`, `bild`, `qr`/`logo`, `link`, `qrPos`, `liste`, `preis` / `menge` (Preiszeile, Menge optional), `badge`, `klasse`, `dauer` (Sekunden), `typ` (`html`/`bestand`/`bild`/`video`/`dashboard`), `wiederholeNach` (Hauptfolie, siehe unten), bei Bild/Video `datei` + optional `fit`.
+`titel`, `unter`, `text`, `bild`, `qr`/`logo`, `link`, `qrPos`, `liste`, `preis` / `menge` (Preiszeile, Menge optional), `badge`, `klasse`, `hinweis`, `dauer` (Sekunden), `typ` (`html`/`bestand`/`bild`/`video`/`dashboard`), `wiederholeNach` (Hauptfolie, siehe unten), bei Bild/Video `datei` + optional `fit`.
 
 **Preis (`preis`, `menge`):** Optional. `preis` (z. B. `"4,20 €"`) erscheint groß in Gold. `menge` (z. B. `"0,5 l"`) steht davor; fehlt sie, wird nur der Preis gezeigt. Beispiel: `folien/aktionsbier-wagner-lager.json`.
 
 **QR-Position (`qrPos`):** Standard ist rechts neben dem Text. Mit `"qrPos": "text"` sitzt die QR-Karte (Code 15vw mit heller Ruhezone, Link daneben) in der Textspalte unter dem Fließtext, damit das Foto rechts frei bleibt. Gilt nur, wenn die Folie `qr` und kein `logo` hat. Beispiel: `folien/gutschein.json`.
+
+
+**Hinweis-Pfeil (`hinweis`):** Optional, typ `html`. Unter dem Text erscheint ein Pfeil nach links (Wegweiser, z. B. in einen Raum). Als Objekt `{"text":"Hier entlang"}` oder als Text-String. Beispiel: `folien/weihnachtsfeier-station11-klinikum.json`.
+
+**Foto als Karte (`klasse: "fotoKarte"`):** Das `bild` steht rechts als gerahmtes Foto (ganzes Motiv), nicht als weich ausgeblendeter Hintergrund. Gut für Begrüßungsfolien mit einem klaren Bild. Beispiel: `folien/weihnachtsfeier-station11-klinikum.json`.
 
 **Text-Format:** Alle Texte werden escaped. Erlaubt sind nur `<br>` (Zeilenumbruch) und `&nbsp;` (geschütztes Leerzeichen). Anderes HTML erscheint als Text.
 
