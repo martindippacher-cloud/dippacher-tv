@@ -283,7 +283,7 @@ body.sende-offen{padding-bottom:calc(7.5rem + env(safe-area-inset-bottom,0px))}
     /* Rotationsablauf jetzt (gleiche Logik wie der TV: slides.js TVRotation) */
     (function(){
       const box=document.getElementById('rotation');
-      const akt=k=>TVSchedule.inRotation(FOLIEN[k], d, false);
+      const akt=k=>TVSchedule.sichtbar(FOLIEN[k], FOLIEN, d, false);
       const seq=TVRotation.ablauf(FOLIEN, akt);
       if(!seq.length){ box.innerHTML='<b>Rotation:</b> gerade keine Folie aktiv.'; return; }
       let sum=0, hauptSum=0;
@@ -291,14 +291,15 @@ body.sende-offen{padding-bottom:calc(7.5rem + env(safe-area-inset-bottom,0px))}
         return h?'<span class="h">'+esc(f.id)+' '+sek+' s</span>':esc(f.id)+' '+sek+' s';});
       const mm=s=>Math.floor(s/60)+':'+String(s%60).padStart(2,'0');
       const haupt=FOLIEN.filter(f=>TVRotation.istHaupt(f));
-      box.innerHTML='<b>Rotation jetzt</b> ('+d.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'})+' Uhr): '+teile.join(' → ')+
+      const exo=TVSchedule.exklusivFolie(FOLIEN, d);
+      box.innerHTML='<b>Rotation jetzt</b> ('+d.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'})+' Uhr)'+(exo?' · <b>exklusiv:</b> '+esc(exo.id)+' '+esc(exo.exklusiv.von)+'–'+esc(exo.exklusiv.bis):'')+': '+teile.join(' → ')+
         '<br><b>Ein Durchlauf:</b> '+mm(sum)+' min · '+seq.length+' Auftritte'+(hauptSum?' · Hauptfolie '+mm(hauptSum)+' min ('+Math.round(hauptSum/sum*100)+' %)':'')+
         (haupt.length?'<br><b>Hauptfolie:</b> '+haupt.map(f=>esc(f.id)+' kommt nach je '+esc(f.wiederholeNach)+' anderen Folien wieder').join(', '):'');
     })();
 
     const grid=document.getElementById('grid'); grid.innerHTML='';
     FOLIEN.forEach((f,i)=>{
-      const st=TVSchedule.statusInfo(f,d);
+      const st=TVSchedule.statusInfo(f,d,FOLIEN);
       const card=document.createElement('article');
       card.className='card'+(st.live?'':' dim');
       const title=txt(f.titel)+(f.unter?' · '+txt(f.unter):'');

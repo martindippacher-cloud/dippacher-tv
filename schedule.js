@@ -10,6 +10,10 @@
 // Alias: bisTag / ablauf akzeptiert als bisDatum
 //   bisZeit:"HH:MM"            mit bisDatum: am letzten Tag nur bis zu dieser Uhrzeit (z. B. Veranstaltungsende)
 //   pausen:[{von:"YYYY-MM-DD", bis:"YYYY-MM-DD"}]  Pausen inklusive (z. B. Betriebsurlaub); davor und danach normal
+//   exklusiv:{von:"HH:MM", bis:"HH:MM", datum?:"YYYY-MM-DD"}
+//     In diesem Fenster läuft nur diese Folie (keine anderen, auch nicht das Dashboard).
+//     von einschließlich, bis ausschließlich: bei bis "18:30" beginnt um 18:30 wieder der normale Zyklus.
+//     Ohne datum gilt das Folien-datum, sonst jeder Tag, an dem die Folie sonst aktiv wäre.
 (function(global){
   const TAG=[,'Mo','Di','Mi','Do','Fr','Sa','So'];
   const min=t=>{const[a,b]=String(t).split(':');return(+a)*60+(+b)};
@@ -42,6 +46,58 @@
     if(f.inRotation===false) return false;
     return aktiv(f, d, forceAlle);
   }
+  /* Exklusiv-Fenster: von einschließlich, bis ausschließlich (Minute von bis gehört schon wieder zum normalen Zyklus). */
+  function exklusivFenster(f){
+    const ex=f&&f.exklusiv;
+    if(!ex||!ex.von||!ex.bis) return null;
+    return ex;
+  }
+  function exklusivAktiv(f, d){
+    const ex=exklusivFenster(f);
+    if(!ex) return false;
+    d=d||new Date();
+    const heute=iso(d), tag=ex.datum||f.datum||heute;
+    if(tag!==heute) return false;
+    const m=d.getHours()*60+d.getMinutes();
+    return m>=min(ex.von) && m<min(ex.bis);
+  }
+  function exklusivFolie(F, d){
+    if(!Array.isArray(F)) return null;
+    d=d||new Date();
+    for(const f of F){
+      if(f && inRotation(f, d) && exklusivAktiv(f, d)) return f;
+    }
+    return null;
+  }
+  /* Wie inRotation, berücksichtigt aber eine gerade aktive Exklusivfolie (dann nur diese). */
+  function sichtbar(f, F, d, forceAlle){
+    if(!inRotation(f, d, forceAlle)) return false;
+    if(forceAlle) return true;
+    const ex=exklusivFolie(F, d);
+    return !ex || ex===f || ex.id===f.id;
+  }
+  function um(isoTag, hm){
+    const[y,mo,da]=String(isoTag).split('-').map(Number);
+    const[h,mi]=String(hm).split(':').map(Number);
+    return new Date(y, mo-1, da, h, mi||0, 0, 0).getTime();
+  }
+  /* Millisekunden bis zum nächsten Beginn oder Ende eines Exklusivfensters, sonst Infinity. */
+  function msBisExklusivWechsel(F, d){
+    d=d||new Date();
+    const now=d.getTime(), heute=iso(d);
+    let best=Infinity;
+    if(!Array.isArray(F)) return best;
+    for(const f of F){
+      const ex=exklusivFenster(f);
+      if(!ex) continue;
+      const tag=ex.datum||f.datum||heute;
+      if(tag<heute) continue;
+      const start=um(tag, ex.von), ende=um(tag, ex.bis);
+      if(start>now) best=Math.min(best, start-now);
+      if(ende>now) best=Math.min(best, ende-now);
+    }
+    return best;
+  }
   function tageLabel(tage){
     if(!tage||!tage.length) return '';
     const s=[...tage].sort((a,b)=>a-b);
@@ -58,7 +114,7 @@
     const[y,m,d]=isoStr.split('-');
     return d+'.'+m+'.'+y;
   }
-  function statusInfo(f, d){
+  function statusInfo(f, d, F){
     d=d||new Date();
     const heute=iso(d), m=d.getHours()*60+d.getMinutes(), wt=d.getDay()||7;
     const bis=bisFeld(f);
@@ -89,8 +145,22 @@
     if(f.zeit) parts.push(f.zeit.von+'–'+f.zeit.bis);
     if(f.ab) parts.push('ab '+fmtDe(f.ab));
     if(bis) parts.push('bis '+fmtDe(bis)+(f.bisZeit?' '+f.bisZeit+' Uhr':''));
+    const ex=exklusivFenster(f);
+    if(ex){
+      const tag=ex.datum||f.datum;
+      parts.push('exklusiv '+(tag?fmtDe(tag)+' ':'')+ex.von+'–'+ex.bis);
+    }
+    if(F){
+      const exo=exklusivFolie(F, d);
+      if(exo && exo.id===f.id){
+        return {cls:'live', label:(parts.length?parts.join(' · ')+' · ':'')+'läuft jetzt allein (exklusiv)', live:true};
+      }
+      if(exo && exo.id!==f.id){
+        return {cls:'zeit', label:'während Exklusivfolie ausgeblendet', live:false};
+      }
+    }
     if(!parts.length) return {cls:'live', label:'läuft jetzt', live:true};
     return {cls:'live', label:parts.join(' · ')+' · läuft jetzt', live:true};
   }
-  global.TVSchedule={aktiv, inRotation, statusInfo, tageLabel, iso, bisFeld, pause};
+  global.TVSchedule={aktiv, inRotation, sichtbar, exklusivAktiv, exklusivFolie, msBisExklusivWechsel, statusInfo, tageLabel, iso, bisFeld, pause};
 })(window);

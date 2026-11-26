@@ -251,7 +251,7 @@ async function loadBestand(f,el){
     }
   }
 }
-function aktiv(f){return !f._kaputt && TVSchedule.inRotation(f, new Date(), P.has('alle'))}
+function aktiv(f){return !f._kaputt && TVSchedule.sichtbar(f, FOLIEN, new Date(), P.has('alle'))}
 
 function parseCSV(text){
   const rows=[]; let row=[], cur='', q=false;
@@ -458,7 +458,11 @@ function startPlayer(FOLIEN){
     if(k<0){timer=setTimeout(next,5000);return}
     show(k);
     clearTimeout(timer);
-    function arm(ms){clearTimeout(timer); timer=setTimeout(next, ms)}
+    function arm(ms){
+      const bis=TVSchedule.msBisExklusivWechsel(FOLIEN, new Date());
+      if(isFinite(bis)) ms=Math.min(ms, Math.max(250, bis));
+      clearTimeout(timer); timer=setTimeout(next, ms);
+    }
     const v=els[k]&&els[k].querySelector('video');
     if(v && !FOLIEN[k].dauer){
       const use=()=>arm(slideDauer(FOLIEN[k], els[k]));
