@@ -2,6 +2,9 @@
   "id": "mittagstisch",
   "titel": "Mittagstisch heute",
   "badge": "BEISPIEL",
+  "tage": [
+    7
+  ],
   "zeit": {
     "von": "10:00",
     "bis": "14:30"
@@ -20,7 +23,8 @@
       "Beispiel €"
     ]
   ],
-  "text": "Testfolie – erscheint nur mittags (10:00–14:30)",
+  "text": "Testfolie – erscheint sonntags mittags (10:00–14:30)",
   "csvUrl": null,
-  "_csvHinweis": "Optional: URL einer als CSV veröffentlichten Google-Tabelle (Spalten Datum,Gericht,Preis,Hinweis). null = bisherige feste liste nutzen. Siehe MITTAGSTISCH.md"
+  "_csvHinweis": "Optional: URL einer als CSV veröffentlichten Google-Tabelle (Spalten Datum,Gericht,Preis,Hinweis). null = bisherige feste liste nutzen. Siehe MITTAGSTISCH.md",
+  "_tage": "Nur sonntags, nach Martins Vorgabe vom 26.11.2026. Zeitfenster unverändert 10:00–14:30."
 }
