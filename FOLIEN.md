@@ -317,7 +317,7 @@ rechts oben das Wetter, rechts darunter die Termine. Die QR-Kachel erscheint nur
 - `"klein": true` = kleine Kachel; mehrere kleine stehen nebeneinander am Ende der Spalte.
 - `"ersetzt": "<typ>"`: Ist diese Kachel sichtbar, nimmt sie den Platz der genannten Kachel ein (Mittagstisch statt Weitere Infos).
 - Die Kacheln holen ihre Inhalte aus den **vorhandenen Folien** (Titel, Unterzeile, Bild, QR). Wer eine Folie ändert, ändert damit auch die Kachel.
-  - `teaser`: erste Folie aus `folien`, die heute laut Zeitsteuerung gilt und ein `bild` hat.
+  - `teaser`: erste Folie aus `folien`, die heute laut Zeitsteuerung gilt. Ohne Hintergrundbild, Text zentriert.
   - `infos`: bis zu `max` Folien, die heute gelten; Vorschaubild = `bild`, sonst der QR-Code der Folie.
   - `mittagstisch`: Liste aus `folien/mittagstisch.json` (auch `csvUrl`), nur solange die Mittagstisch-Folie laut Zeitsteuerung gilt. Sonst keine Kachel.
   - `wetter`: Open-Meteo (kostenlos, ohne Schlüssel), alle 30 min. Jetzt: Symbol, Temperatur, Beschreibung, gefühlte Temperatur,

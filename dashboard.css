@@ -28,15 +28,13 @@ body.dash-on.lb-on #laufband{bottom:0}
 .rows{display:flex;flex-direction:column;min-height:0}
 .row{border-bottom:.1vw dotted #C9A04A;padding:.65vh 0}
 .row:last-child{border-bottom:0}
-/* Teaser: Foto rechts, Text links auf weichem Creme-Verlauf */
-.k.teaser{padding:0;flex:1 1 0;position:relative;background-size:cover;background-position:75% center;background-color:var(--creme2);justify-content:flex-end}
-.t-ov{position:relative;padding:2vw 14% 1.8vw 2.2vw;width:70%;height:100%;box-sizing:border-box;display:flex;flex-direction:column;justify-content:center;
-  /* Text nur auf dem deckenden Teil (bis 78 %), danach weicher S-Kurven-Verlauf ins Foto */
-  background:linear-gradient(90deg,rgba(255,252,245,.96) 0%,rgba(255,252,245,.96) 78%,rgba(255,252,245,0.938) 80.0%,rgba(255,252,245,0.876) 82.0%,rgba(255,252,245,0.785) 84.0%,rgba(255,252,245,0.671) 86.0%,rgba(255,252,245,0.545) 88.0%,rgba(255,252,245,0.415) 90.0%,rgba(255,252,245,0.289) 92.0%,rgba(255,252,245,0.175) 94.0%,rgba(255,252,245,0.084) 96.0%,rgba(255,252,245,0.022) 98.0%,rgba(255,252,245,0.000) 100.0%)}
+/* Teaser: Willkommenstext zentriert, ohne Foto */
+.k.teaser{padding:2vw 2.4vw;flex:1 1 0;position:relative;justify-content:center;align-items:center;text-align:center}
+.t-ov{position:relative;padding:0;width:100%;max-width:36vw;box-sizing:border-box;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center}
 .t-ov h1{font-family:'Playfair Display',serif;font-size:3.6vw;line-height:1.05;margin:0 0 1vh;color:var(--tinte)}
-.t-ov h2{white-space:nowrap;font-size:2.1vw;font-weight:600;color:var(--rot);margin:0 0 1.2vh}
+.t-ov h2{font-size:2.1vw;font-weight:600;color:var(--rot);margin:0 0 1.2vh}
 .t-ov p{font-size:2.2vw;line-height:1.3;margin:0;color:var(--text);max-width:none}
-.t-badge{display:inline-block;align-self:flex-start;background:#8E2A2E;color:#FFF8EC;font-size:1.7vw;font-weight:700;padding:.2vw .9vw;border-radius:.35vw;margin-bottom:1vh}
+.t-badge{display:inline-block;align-self:center;background:#8E2A2E;color:#FFF8EC;font-size:1.7vw;font-weight:700;padding:.2vw .9vw;border-radius:.35vw;margin-bottom:1vh}
 /* Weitere Infos: Vorschaubild, Titel, Unterzeile */
 .k.infos{flex:none}
 .i-row{display:flex;align-items:center;gap:1.2vw}

@@ -136,9 +136,9 @@
   }
   async function teaser(st,k){
     let f=null;
-    for(const id of (k.folien||[k.folie])){ const x=await folie(st,id); if(gilt(x)&&x.bild){f=x;break} }
+    for(const id of (k.folien||[k.folie])){ const x=await folie(st,id); if(gilt(x)){f=x;break} }
     if(!f) return '';
-    return '<div class="k teaser" data-bild="'+esc(f.bild)+'" style="background-image:url(&quot;'+esc(encodeURI(f.bild))+'&quot;)">'+
+    return '<div class="k teaser">'+
       '<div class="t-ov">'+(f.badge?'<div class="t-badge">'+rich(f.badge)+'</div>':'')+'<h1>'+rich(f.titel)+'</h1>'+(f.unter?'<h2>'+rich(f.unter)+'</h2>':'')+(f.text?'<p>'+rich(f.text)+'</p>':'')+'</div></div>';
   }
   async function infos(st,k){
@@ -219,7 +219,7 @@
       st.el.innerHTML='<div class="d-wrap">'+neu+'</div>';
       st.el.querySelectorAll('img').forEach(im=>{im.onerror=function(){const k=im.closest('.row,.k.klein'); if(k) k.remove(); else im.remove(); passen(st);}});
       const t=st.el.querySelector('.k.teaser');
-      if(t){const pre=new Image(); pre.onerror=function(){t.remove(); passen(st)}; pre.src=t.dataset.bild;}
+      if(t && t.dataset.bild){const pre=new Image(); pre.onerror=function(){t.remove(); passen(st)}; pre.src=t.dataset.bild;}
       uhr(st);
       passen(st);
       /* Vor dem Laden der Schriften wird falsch gemessen: danach einmal komplett neu aufbauen */
