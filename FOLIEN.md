@@ -329,6 +329,11 @@ Aufteilung: links oben der Willkommenstext, links unten „Weitere Infos“; mit
   weggelassen (nie kleinere Schrift, nie abgeschnitten). Wetter offline: letzter Stand bis 12 h mit „Stand HH:MM Uhr“ im Titel,
   danach wird die Kachel ausgeblendet (die aktuelle Temperatur nur bis 3 h alt).
 
+### Weihnachtslook (bis 23.12.2026)
+
+Bis einschließlich 23.12.2026 23:59 (Europe/Berlin) trägt die Dashboard-Folie automatisch den festlicheren Look (Variante D: Tannengirlande, hängende Kugeln, Schnee in den Rändern, wärmerer Grund). Ab 24.12. 00:00 erscheint wieder der normale Look, ohne dass der Fernseher neu geladen werden muss. Andere Stufen zur Vorschau: `?xmas=a|b|c|d|off` (auch `?weihnachten=`).
+
+
 ## Wiederholung: `wiederholeNach`
 
 Eine Folie mit `"wiederholeNach": N` kommt in der Rotation wieder, nachdem **N normale Folien** gelaufen sind (normal = gerade aktiv und ohne `wiederholeNach`). Die normalen Folien behalten die Reihenfolge aus `auswahl.json`. Beispiel nur mit dem Dashboard (`4`):
