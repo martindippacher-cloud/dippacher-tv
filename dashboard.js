@@ -10,8 +10,55 @@
   const rich=s=>esc(s).replace(/&lt;br\s*\/?&gt;/gi,' ').replace(/&amp;nbsp;/g,'&nbsp;');
   const WT=['So.','Mo.','Di.','Mi.','Do.','Fr.','Sa.'];
   const hhmm=d=>String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
-  function jetzt(){return new Date()}
+  /* Uhrzeit: optional ?jetzt=2026-12-24 oder ?jetzt=2026-12-24T12:00:00 (auch ?datum=) für Vorschau. Datum ohne Uhr = 12:00 Ortszeit. */
+  function parseJetzt(){
+    try{
+      const q=new URLSearchParams(location.search);
+      let raw=q.get('jetzt')||q.get('datum');
+      if(!raw) return null;
+      if(/^\d{4}-\d{2}-\d{2}$/.test(raw)) raw+='T12:00:00';
+      const d=new Date(raw);
+      return isNaN(d.getTime())?null:d;
+    }catch(e){ return null; }
+  }
+  const JETZT_FIX=parseJetzt();
+  function jetzt(){ return JETZT_FIX?new Date(JETZT_FIX.getTime()):new Date(); }
   function iso(d){return TVSchedule.iso(d)}
+
+  /* Weihnachtslook bis einschl. 23.12.2026 23:59:59 Europe/Berlin.
+     Vorschau: ?xmas=a (nur Akzent), ?xmas=b (Akzent+Schnee), ?xmas=off. Alias ?weihnachten=.
+     Ohne Parameter: Variante B automatisch im Zeitfenster, danach aus. */
+  const XMAS_BIS=new Date('2026-12-23T23:59:59.999+01:00');
+  function param(name){ try{ return new URLSearchParams(location.search).get(name); }catch(e){ return null; } }
+  function xmasVariante(){
+    const q=String(param('xmas')||param('weihnachten')||'').toLowerCase();
+    if(q==='off'||q==='0'||q==='nein'||q==='aus') return null;
+    if(q==='a'||q==='akzent') return 'a';
+    if(q==='b'||q==='schnee') return 'b';
+    return jetzt().getTime()<=XMAS_BIS.getTime()?'b':null;
+  }
+  const XMAS_ZWEIG='<svg class="d-xmas-zweig" viewBox="0 0 100 48" aria-hidden="true">'+
+    '<path d="M8 34c22-3 42-14 70-19" stroke="#3D5340" stroke-width="2" fill="none" stroke-linecap="round"/>'+
+    '<path d="M22 33l-9-14M30 32l-6-16M38 30l-8-15M46 27l-5-16M54 24l-7-14M62 22l-4-13M70 20l-6-12" stroke="#4A6750" stroke-width="1.7" fill="none" stroke-linecap="round"/>'+
+    '<path d="M24 34l-5 11M34 31l-7 12M44 28l-5 12M54 25l-6 11M64 22l-4 10" stroke="#4A6750" stroke-width="1.55" fill="none" stroke-linecap="round"/>'+
+    '<circle cx="80" cy="15" r="2.7" fill="#C9A04A"/><circle cx="71" cy="24" r="2.1" fill="#C9A04A"/>'+
+    '</svg>';
+  function schneeHtml(){
+    const f=[[8,.68,36,-22],[17,.52,44,-10],[26,.78,30,-26],[35,.48,48,-14],[45,.62,38,-32],[54,.74,42,-8],[63,.50,34,-18],[72,.66,40,-28],[81,.54,46,-12],[90,.64,32,-24],[12,.44,52,-36],[68,.48,50,-16]];
+    return '<div class="d-schnee" aria-hidden="true">'+f.map(function(a){
+      return '<span style="--x:'+a[0]+';--s:'+a[1]+'vw;--d:'+a[2]+'s;--delay:'+a[3]+'s;--drift:'+(a[0]%2?0.8:-0.8)+'vw"></span>';
+    }).join('')+'</div>';
+  }
+  function applyXmas(st){
+    const v=xmasVariante();
+    const changed=st.xmas!==v;
+    st.xmas=v;
+    st.el.classList.toggle('dash-xmas',!!v);
+    st.el.classList.toggle('dash-xmas-a',v==='a');
+    st.el.classList.toggle('dash-xmas-b',v==='b');
+    if(changed) st.letztes='';
+    return changed;
+  }
   function lsGet(k){try{return JSON.parse(localStorage.getItem(k)||'null')}catch(e){return null}}
   function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
 
@@ -108,8 +155,11 @@
 
 
   /* ---------- Kacheln ---------- */
-  function kopf(){
-    return '<div class="d-kopf"><img class="d-logo" src="assets/logo.png" alt="Dippacher">'+
+  function kopf(st){
+    const links=st&&st.xmas
+      ? '<div class="d-kopf-l"><img class="d-logo" src="assets/logo.png" alt="Dippacher">'+XMAS_ZWEIG+'</div>'
+      : '<img class="d-logo" src="assets/logo.png" alt="Dippacher">';
+    return '<div class="d-kopf">'+links+
       '<div class="d-kopf-r"><div class="d-zeit"><div class="d-datum"></div><div class="d-uhr"></div></div></div></div>';
   }
   /* Große Wetterkachel: jetzt (Symbol, Temperatur, Beschreibung, gefühlt, Wind/Niederschlag) + nächste 3 Tage */
@@ -235,8 +285,10 @@
       flush();
       return '<div class="d-col '+name+'">'+out+'</div>';
     };
-    const kopfHtml=kopf();
-    const neu=kopfHtml+'<div class="d-body">'+spalte('links',spalten.links)+spalte('rechts',spalten.rechts)+'</div>';
+    applyXmas(st);
+    const kopfHtml=kopf(st);
+    const schnee=st.xmas==='b'?schneeHtml():'';
+    const neu=kopfHtml+'<div class="d-body">'+spalte('links',spalten.links)+spalte('rechts',spalten.rechts)+'</div>'+schnee;
     if(neu!==st.letztes){
       st.letztes=neu;
       st.el.innerHTML='<div class="d-wrap">'+neu+'</div>';
@@ -275,6 +327,7 @@
     });
   }
   function uhr(st){
+    if(applyXmas(st)){ render(st).catch(()=>{}); return; }
     const n=jetzt();
     const d=st.el.querySelector('.d-datum'), u=st.el.querySelector('.d-uhr');
     if(d) d.textContent=n.toLocaleDateString('de-DE',{weekday:'long',day:'numeric',month:'long'});
