@@ -5,6 +5,7 @@
 | Datei | Zweck |
 |-------|--------|
 | `folien/<id>.json` | Inhalt **einer** Folie (Titel, Text, Bild, QR, Zeiten …) |
+| `folien/archiv/<id>.json` | Ausgeblendete Folien als Vorlage (nicht in der Rotation, nicht in der Übersicht) |
 | `auswahl.json` | **Reihenfolge** der `id`s + optionale Overrides (`aktiv:false` …) |
 | `schedule.js` | Zeitlogik (gemeinsam für TV + Übersicht) |
 | `slides.js` | Lädt Auswahl + Folien-Dateien → `window.FOLIEN` |
@@ -24,7 +25,7 @@ Live-TV und Übersicht lesen dieselben Dateien. **Keine Tokens** im Frontend. Ä
 1. Neue Datei anlegen, z. B. `folien/aktion-maerz.json` (Felder siehe unten).
 2. In `auswahl.json` die alte `id` in `reihenfolge` durch die neue ersetzen **oder** an gewünschter Stelle einfügen.
 3. Lokal prüfen: `python3 -m http.server` → `/?folie=N&alle` und `/uebersicht.html`.
-4. Alte JSON-Datei kann gelöscht oder archiviert werden.
+4. Alte JSON-Datei kann gelöscht oder nach `folien/archiv/` verschoben werden (in der Übersicht: „löschen“ bzw. „ausblenden“, Umsetzung durch den Bot).
 
 Zum kurz Abschalten ohne Löschen bleibt die `id` in `reihenfolge`. In `auswahl.json`:
 
@@ -122,15 +123,29 @@ Die Karten verwenden **statische Vorschaubilder** (`assets/vorschau/<id>.jpg`, 6
 
 Pro Folie gibt es ein großes Häkchen **„läuft“**, vorbelegt mit dem aktuellen Zustand (`aktiv` und in der Rotation = an). Folien mit `inRotation: false` haben das Häkchen aus und den Status „nicht in der Rotation“. Bei Folien, die zeitlich noch nicht dran sind, schon abgelaufen sind oder in einer Pause liegen, steht ein Hinweis daneben (z. B. „endet 17.12.“, „ab 24.12.“, „Pause bis 6.1.“); das Häkchen bedeutet dann „aktiv“.
 
+Zusätzlich hat jede Folienkarte zwei Optionen unter **„Nicht mehr benötigt“**, die sich gegenseitig ausschließen (eines, oder keines):
+
+- **ausblenden** – Folie aus der Übersicht und der Rotation nehmen, aber als Vorlage im Archiv behalten.
+- **löschen** – Folie dauerhaft entfernen. Der Bot fragt vor der Umsetzung noch einmal nach.
+
+Die Seite selbst löscht oder verschiebt nichts (kein Schreiben, kein Token). Ist eine der beiden Optionen gesetzt, zählt das Häkchen „läuft“ für diese Folie nicht mit (die stärkere Aktion gilt).
+
 Darüber liegt der Block **Dashboard-Kacheln** (aus `folien/dashboard.json`, Feld `kacheln`). Jede Kachel hat ein eigenes Häkchen, vorbelegt mit `aktiv`. Die id im Kopiertext ist `id` oder sonst `typ` (z. B. `wetter`).
 
 **Die Häkchen gelten auf dem TV erst, nachdem der Bot die Änderung umgesetzt hat.** Die Seite selbst ändert nichts. Nach dem Umschalten erscheint unten ein kurzer Kopiertext nur mit den Abweichungen vom Live-Stand, zum Beispiel:
 
 ```
-TV-Änderung: aus: aktionsbier-wagner-lager; an: gutschein; Kachel aus: wetter
+TV-Änderung: aus: aktionsbier-wagner-lager; ausblenden: welcome-stadtwerke, beispiel-bild; löschen: beispiel-video; Kachel aus: wetter
 ```
 
-Format: immer der Vorspann `TV-Änderung:`, danach nur vorhandene Teile, getrennt durch `; ` – `aus:` / `an:` für Folien-ids, `Kachel aus:` / `Kachel an:` für Kachel-ids, mehrere ids jeweils durch `, `. Der Knopf **„Kopieren“** legt den Text in die Zwischenablage; schlägt das fehl (typisch auf manchen Handys), wird das Textfeld markiert, damit man selbst kopieren kann. **„Zurücksetzen“** stellt die Häkchen wieder auf den Live-Stand.
+Format: immer der Vorspann `TV-Änderung:`, danach nur vorhandene Teile, getrennt durch `; ` – `aus:` / `an:` für An/Aus in der Rotation, `ausblenden:` / `löschen:` für nicht mehr benötigte Folien, `Kachel aus:` / `Kachel an:` für Kachel-ids, mehrere ids jeweils durch `, `. Der Knopf **„Kopieren“** legt den Text in die Zwischenablage; schlägt das fehl (typisch auf manchen Handys), wird das Textfeld markiert, damit man selbst kopieren kann. **„Zurücksetzen“** stellt die Häkchen wieder auf den Live-Stand.
+
+### Was der Bot umsetzt
+
+- **`aus:` / `an:`** – Folie bleibt in der Übersicht. Typisch Override `inRotation: false` bzw. den Override entfernen (siehe oben). Die Folien-Datei bleibt in `folien/`.
+- **`ausblenden:`** – id aus `auswahl.json` nehmen (`reihenfolge` und `overrides`). Datei `folien/<id>.json` nach `folien/archiv/<id>.json` verschieben (Ordner anlegen, falls nötig). So bleibt die Folie als Vorlage erhalten, erscheint aber nicht mehr in der Übersicht und nicht auf dem TV. Die Miniatur `assets/vorschau/<id>.jpg` entfällt beim nächsten `scripts/vorschauen.sh` (verwaiste Dateien werden entfernt) oder kann mit ins Archiv. Medien unter `assets/` nur mitverschieben, wenn sie ausschließlich zu dieser Folie gehören.
+- **`löschen:`** – Zuerst noch einmal bei Martin nachfragen. Erst nach dieser Freigabe: id aus `auswahl.json` entfernen, `folien/<id>.json` und die Miniatur dauerhaft löschen (kein Archiv). Medien unter `assets/` nur löschen, wenn sie nicht von anderen Folien genutzt werden.
+- **`Kachel aus:` / `Kachel an:`** – in `folien/dashboard.json` das Feld `aktiv` der Kachel setzen.
 
 **Bei jedem Veröffentlichen** die Miniaturen neu erzeugen, besonders nach neuen oder geänderten Folien:
 

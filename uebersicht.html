@@ -86,6 +86,22 @@ body.sende-offen{padding-bottom:calc(16rem + env(safe-area-inset-bottom,0px))}
 .kacheln-list .laeuft{margin:0}
 .kacheln-list .laeuft-txt{font-size:1rem}
 .kacheln-list code{font-size:.8rem}
+.entsorgen{margin:.4rem 0 0;padding:.4rem 0 0;border-top:1px solid #C9A04A66}
+.entsorgen-label{font-size:.8rem;font-weight:700;letter-spacing:.04em;color:var(--muted);margin:0 0 .15rem}
+.entsorgen-opts{display:flex;flex-direction:column;gap:.1rem}
+.entsorgen-opt{margin:0}
+.entsorgen-opt .laeuft-txt{font-size:1rem}
+.entsorgen-opt .laeuft-hint{font-weight:600;color:var(--muted)}
+.laeuft.ist-inaktiv{opacity:.5;cursor:default}
+.laeuft input:disabled + .laeuft-box{opacity:.55;background:var(--bg2)}
+.laeuft-box-warn{border-color:#8E1F24}
+.laeuft input:checked + .laeuft-box-warn{background:#8E1F24;border-color:#8E1F24}
+.card.wird-archiv .preview{filter:grayscale(.35) opacity(.85)}
+.card.wird-geloescht{box-shadow:0 0 0 2px #8E1F24}
+.card.wird-geloescht .preview{filter:grayscale(.7) opacity(.55)}
+.sende-warn{color:#7A1F23}
+.sende-warn strong{color:#7A1F23}
+.sende-warn[hidden]{display:none}
 @media(max-width:420px){.grid{grid-template-columns:1fr}header,main,footer{padding-left:1rem;padding-right:1rem}.kacheln-list{grid-template-columns:1fr}}
 </style>
 </head>
@@ -107,6 +123,7 @@ body.sende-offen{padding-bottom:calc(16rem + env(safe-area-inset-bottom,0px))}
     <p class="kacheln-hint"><strong>Häkchen hier und bei den Folien sind nur ein Entwurf.</strong> Sie gelten auf dem TV erst, wenn du den Text unten kopierst, an Digital Signage schickst und die Änderung umgesetzt ist. Die Seite selbst ändert nichts (kein Schreiben, kein Token).</p>
     <div class="kacheln-list" id="kacheln-list"></div>
   </section>
+  <p class="hint" id="archiv-hint"><strong>Nicht mehr benötigte Folien:</strong> Pro Karte kannst du <strong>ausblenden</strong> (aus der Übersicht und der Rotation nehmen, als Vorlage im Archiv behalten) oder <strong>löschen</strong> (dauerhaft entfernen). Beides schließt sich aus. Die Seite selbst löscht oder verschiebt nichts – der Kopiertext geht an Digital Signage. Bei „löschen“ fragt der Bot vor der Umsetzung noch einmal nach.</p>
   <div class="grid" id="grid">Lade Folien …</div>
 </main>
 <footer>
@@ -114,7 +131,8 @@ body.sende-offen{padding-bottom:calc(16rem + env(safe-area-inset-bottom,0px))}
 </footer>
 <div id="sendeleiste" class="sendeleiste" hidden>
   <p class="sende-hinweis"><strong>Häkchen wirken erst auf dem TV, nachdem Digital Signage die Änderung umgesetzt hat.</strong> Text kopieren und im Chat schicken.</p>
-  <textarea id="kopierfeld" class="kopierfeld" readonly rows="2" aria-label="Kopiertext der Änderungen"></textarea>
+  <p class="sende-hinweis sende-warn" id="sende-loeschen-hinweis" hidden><strong>Löschen:</strong> Der Bot fragt vor der Umsetzung noch einmal nach. Die Seite selbst löscht nichts.</p>
+  <textarea id="kopierfeld" class="kopierfeld" readonly rows="3" aria-label="Kopiertext der Änderungen"></textarea>
   <div class="sende-btns">
     <button type="button" id="senden-btn" class="senden-btn">Kopieren</button>
     <button type="button" id="reset-btn" class="reset-btn">Zurücksetzen</button>
@@ -224,19 +242,68 @@ body.sende-offen{padding-bottom:calc(16rem + env(safe-area-inset-bottom,0px))}
     if(k.zeit&&(k.zeit.von||k.zeit.bis)) teile.push((k.zeit.von||'')+'–'+(k.zeit.bis||''));
     return teile.join(' ');
   }
+  const loeschenHinweis=document.getElementById('sende-loeschen-hinweis');
+  function karteEntsorgen(cb){
+    const card=cb && cb.closest('.card');
+    if(!card) return {ausblenden:false, loeschen:false};
+    return {
+      ausblenden:!!card.querySelector('input[data-art="ausblenden"]:checked'),
+      loeschen:!!card.querySelector('input[data-art="loeschen"]:checked')
+    };
+  }
+  function setzeEntsorgen(card){
+    const a=card.querySelector('input[data-art="ausblenden"]');
+    const l=card.querySelector('input[data-art="loeschen"]');
+    const laeuft=card.querySelector('input[data-art="folie"]');
+    const label=laeuft && laeuft.closest('label.laeuft');
+    const off=!!((a&&a.checked)||(l&&l.checked));
+    if(laeuft){ laeuft.disabled=off; }
+    if(label) label.classList.toggle('ist-inaktiv', off);
+    card.classList.toggle('wird-archiv', !!(a&&a.checked));
+    card.classList.toggle('wird-geloescht', !!(l&&l.checked));
+  }
+  function onEntsorgen(ev){
+    const cb=ev.target;
+    const card=cb.closest('.card');
+    if(!card) return;
+    const a=card.querySelector('input[data-art="ausblenden"]');
+    const l=card.querySelector('input[data-art="loeschen"]');
+    if(cb.dataset.art==='ausblenden' && a.checked && l) l.checked=false;
+    if(cb.dataset.art==='loeschen' && l.checked && a) a.checked=false;
+    setzeEntsorgen(card);
+    sendeOk.hidden=true;
+    updateLeiste();
+  }
   function aenderungen(){
-    return [...document.querySelectorAll('.laeuft input[data-art]')].map(cb=>{
+    const list=[];
+    document.querySelectorAll('input[data-art="folie"]').forEach(cb=>{
+      const e=karteEntsorgen(cb);
+      if(e.ausblenden||e.loeschen) return;
       const an=cb.dataset.anfang==='1';
-      if(cb.checked===an) return null;
-      return {art:cb.dataset.art, id:cb.dataset.id, titel:cb.dataset.titel, richtung:cb.checked?'an':'aus'};
-    }).filter(Boolean);
+      if(cb.checked===an) return;
+      list.push({art:'folie', id:cb.dataset.id, titel:cb.dataset.titel, richtung:cb.checked?'an':'aus'});
+    });
+    document.querySelectorAll('input[data-art="kachel"]').forEach(cb=>{
+      const an=cb.dataset.anfang==='1';
+      if(cb.checked===an) return;
+      list.push({art:'kachel', id:cb.dataset.id, titel:cb.dataset.titel, richtung:cb.checked?'an':'aus'});
+    });
+    document.querySelectorAll('input[data-art="ausblenden"]:checked').forEach(cb=>{
+      list.push({art:'ausblenden', id:cb.dataset.id, titel:cb.dataset.titel});
+    });
+    document.querySelectorAll('input[data-art="loeschen"]:checked').forEach(cb=>{
+      list.push({art:'loeschen', id:cb.dataset.id, titel:cb.dataset.titel});
+    });
+    return list;
   }
   /* Nur die Abweichungen vom Live-Stand, kurz und gut lesbar für den Bot. */
   function kopiertext(list){
-    const pack=(art,richtung)=>list.filter(x=>x.art===art && x.richtung===richtung).map(x=>x.id);
+    const pack=(art,richtung)=>list.filter(x=>x.art===art && (richtung?x.richtung===richtung:true)).map(x=>x.id);
     const teile=[];
     const aus=pack('folie','aus'); if(aus.length) teile.push('aus: '+aus.join(', '));
     const an=pack('folie','an'); if(an.length) teile.push('an: '+an.join(', '));
+    const ab=pack('ausblenden'); if(ab.length) teile.push('ausblenden: '+ab.join(', '));
+    const lo=pack('loeschen'); if(lo.length) teile.push('löschen: '+lo.join(', '));
     const kAus=pack('kachel','aus'); if(kAus.length) teile.push('Kachel aus: '+kAus.join(', '));
     const kAn=pack('kachel','an'); if(kAn.length) teile.push('Kachel an: '+kAn.join(', '));
     return teile.length ? 'TV-Änderung: '+teile.join('; ') : '';
@@ -246,12 +313,18 @@ body.sende-offen{padding-bottom:calc(16rem + env(safe-area-inset-bottom,0px))}
     const text=kopiertext(list);
     kopierfeld.value=text;
     leiste.hidden=!text;
+    const hatLoeschen=list.some(x=>x.art==='loeschen');
+    if(loeschenHinweis) loeschenHinweis.hidden=!hatLoeschen;
     document.body.classList.toggle('sende-offen', !!text);
     if(text) document.body.style.paddingBottom=(leiste.offsetHeight+16)+'px';
     else { document.body.style.paddingBottom=''; sendeOk.hidden=true; sendeOk.textContent=''; }
   }
   function resetHaekchen(){
-    document.querySelectorAll('.laeuft input[data-art]').forEach(cb=>{cb.checked=cb.dataset.anfang==='1'});
+    document.querySelectorAll('.laeuft input[data-art]').forEach(cb=>{
+      cb.checked=cb.dataset.anfang==='1';
+      if(cb.dataset.art==='folie') cb.disabled=false;
+    });
+    document.querySelectorAll('.card').forEach(card=>setzeEntsorgen(card));
     sendeOk.hidden=true; sendeOk.textContent='';
     updateLeiste();
   }
@@ -404,19 +477,42 @@ body.sende-offen{padding-bottom:calc(16rem + env(safe-area-inset-bottom,0px))}
             '<span class="laeuft-box" aria-hidden="true"></span>'+
             '<span class="laeuft-meta"><span class="laeuft-txt">läuft</span>'+(function(){const h=laeuftHinweis(f,d);return h?'<span class="laeuft-hint">'+esc(h)+'</span>':'';})()+'</span>'+
           '</label>'+
+          '<div class="entsorgen" role="group" aria-label="Nicht mehr benötigt">'+
+            '<div class="entsorgen-label">Nicht mehr benötigt</div>'+
+            '<div class="entsorgen-opts">'+
+              '<label class="laeuft entsorgen-opt">'+
+                '<input type="checkbox" data-art="ausblenden">'+
+                '<span class="laeuft-box" aria-hidden="true"></span>'+
+                '<span class="laeuft-meta"><span class="laeuft-txt">ausblenden</span><span class="laeuft-hint">ins Archiv, als Vorlage behalten</span></span>'+
+              '</label>'+
+              '<label class="laeuft entsorgen-opt">'+
+                '<input type="checkbox" data-art="loeschen">'+
+                '<span class="laeuft-box laeuft-box-warn" aria-hidden="true"></span>'+
+                '<span class="laeuft-meta"><span class="laeuft-txt">löschen</span><span class="laeuft-hint">dauerhaft – Bot fragt nochmal nach</span></span>'+
+              '</label>'+
+            '</div>'+
+          '</div>'+
           '<div class="row"><span style="font-size:.8rem;color:var(--muted)">Reihenfolge '+(i+1)+'/'+FOLIEN.length+'</span>'+
           '<a href="./?folie='+i+'" target="_blank" rel="noopener">Live ansehen</a></div>'+
         '</div>';
       grid.appendChild(card);
       (function(){
-        const cb=card.querySelector('.laeuft input');
+        const titel=plainTitle(f);
+        const cb=card.querySelector('.laeuft input:not([data-art])');
         const an=f.aktiv!==false && f.inRotation!==false;
         cb.dataset.art='folie';
         cb.dataset.id=f.id;
-        cb.dataset.titel=plainTitle(f);
+        cb.dataset.titel=titel;
         cb.dataset.anfang=an?'1':'0';
         cb.checked=an;
         cb.addEventListener('change', ()=>{sendeOk.hidden=true; updateLeiste()});
+        card.querySelectorAll('input[data-art="ausblenden"], input[data-art="loeschen"]').forEach(x=>{
+          x.dataset.id=f.id;
+          x.dataset.titel=titel;
+          x.dataset.anfang='0';
+          x.checked=false;
+          x.addEventListener('change', onEntsorgen);
+        });
       })();
       const img=card.querySelector('.preview-img');
       const fehl=card.querySelector('.preview-fehlend');
