@@ -86,18 +86,30 @@ body.dash-on.lb-on #laufband{bottom:0}
 .k.foto img.contain{object-fit:contain;background:var(--creme2)}
 
 /* ===== Weihnachtslook (bis 23.12.2026, Klassen an .f.dash) =====
-   Variante A: Tannengrün/Gold-Akzent an Kopfzeile und Kachelrahmen, Tannenzweig-Ornament.
-   Variante B: wie A plus leichte goldene Schneeflocken (nur transform, unter den Kacheln).
-   Standard im Zeitfenster: A. Vorschau: ?xmas=a|b|off. prefers-reduced-motion blendet den Schnee aus.
-   Bewusst ohne filter/blur und ohne JS-Animation, damit der TCL-/Fully-Kiosk-Client leicht bleibt. */
-.f.dash.dash-xmas{--xmas-nadel:#2F5D3A}
+   A: dezenter Akzent (Goldlinie, Tannenzweig, leichter Rahmen).
+   B: wie A plus leichte goldene Schneeflocken (unter den Kacheln).
+   C: deutlich (Standard) – Girlande, warmer Grund mit Sternen und Tannengrün-Vignette, Kachel-Icons, kräftigere Goldrahmen.
+   D: festlicher – wie C plus hängende Kugeln und sichtbarerer Schnee.
+   Vorschau: ?xmas=a|b|c|d|off. Ohne Parameter im Zeitfenster: C.
+   prefers-reduced-motion blendet den Schnee aus. Nur transform-Animationen, wenige DOM-Elemente. */
+.f.dash.dash-xmas{--xmas-nadel:#2F5D3A;--xmas-gold:#C9A24A;--xmas-rot:#A03033}
 .f.dash.dash-xmas .d-kopf{position:relative;z-index:2}
-.f.dash.dash-xmas .d-kopf::after{content:"";position:absolute;left:0;right:0;bottom:-.45vh;height:.16vw;background:var(--gold);border-radius:.1vw;pointer-events:none;opacity:.88}
 .f.dash.dash-xmas .d-kopf-l{display:flex;align-items:center;height:100%;min-width:0;gap:1vw}
 .f.dash.dash-xmas .d-xmas-zweig{height:9.5vh;width:auto;flex:none;display:block;margin-top:.1vh}
 .f.dash.dash-xmas .d-zeit{border-left-color:var(--xmas-nadel);box-shadow:-.12vw 0 0 var(--gold)}
-.f.dash.dash-xmas .k{position:relative;z-index:2;border-color:#C9A04A99;box-shadow:0 .35vw 1.4vw #5a3a2026,0 .05vw .2vw #5a3a2014,inset 0 0 0 .07vw #2F5D3A24}
+.f.dash.dash-xmas .k{position:relative;z-index:2}
+/* A / B */
+.f.dash.dash-xmas-a .d-kopf::after,.f.dash.dash-xmas-b .d-kopf::after{content:"";position:absolute;left:0;right:0;bottom:-.45vh;height:.16vw;background:var(--gold);border-radius:.1vw;pointer-events:none;opacity:.88}
+.f.dash.dash-xmas-a .k,.f.dash.dash-xmas-b .k{border-color:#C9A04A99;box-shadow:0 .35vw 1.4vw #5a3a2026,0 .05vw .2vw #5a3a2014,inset 0 0 0 .07vw #2F5D3A24}
+/* C / D */
+.f.dash.dash-xmas-c,.f.dash.dash-xmas-d{background-color:#EFE4CE;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cpath fill='%23C9A24A' fill-opacity='.22' d='M32 22l.85 4.15L37 27l-4.15 1.15L32 32.3l-.85-4.15L27 27l4.15-.85z'/%3E%3C/svg%3E"),url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cpath fill='%23C9A24A' fill-opacity='.22' d='M32 22l.85 4.15L37 27l-4.15 1.15L32 32.3l-.85-4.15L27 27l4.15-.85z'/%3E%3C/svg%3E"),radial-gradient(ellipse at 50% 38%,#F8F0E0 42%,#E8D8C0 70%,#C5CBB8 100%),radial-gradient(ellipse at 50% 50%,transparent 58%,#2F5D3A2E 100%);background-size:16vw 18vw,22vw 20vw,auto,auto;background-position:2vw 3vh,11vw 12vh,0 0,0 0}
+.f.dash.dash-xmas-c .k,.f.dash.dash-xmas-d .k{border:.08vw solid #C9A24A;box-shadow:0 .35vw 1.4vw #5a3a2026,0 0 0 .11vw #C9A24A,0 0 0 .2vw #2F5D3A66,inset 0 0 0 .06vw #2F5D3A1A}
+.f.dash.dash-xmas-d .k{box-shadow:0 .35vw 1.4vw #5a3a2026,0 0 0 .14vw #C9A24A,0 0 0 .26vw #2F5D3A77,inset 0 0 0 .06vw #2F5D3A1A}
+.f.dash.dash-xmas-c .k:not(.teaser):not(.foto) h3::before,.f.dash.dash-xmas-d .k:not(.teaser):not(.foto) h3::before{content:"";display:inline-block;width:1.7vw;height:1.7vw;margin-right:.5vw;vertical-align:-.2vw;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='%23C9A24A' d='M8 0l1.15 6.05L16 8l-6.85 1.95L8 16l-1.15-6.05L0 8l6.85-1.95z'/%3E%3C/svg%3E") center/contain no-repeat}
+.f.dash .d-xmas-dekor{position:absolute;inset:0;pointer-events:none;z-index:1;overflow:hidden}
+.f.dash .d-xmas-dekor svg{width:100%;height:100%;display:block}
 .f.dash .d-schnee{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:1}
 .f.dash .d-schnee span{position:absolute;top:-6%;left:calc(var(--x)*1%);width:var(--s);height:var(--s);background:transparent url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='none' stroke='%23C9A24A' stroke-width='1.4' stroke-linecap='round' d='M8 1.2v13.6M1.2 8h13.6M3.1 3.1l9.8 9.8M12.9 3.1l-9.8 9.8'/%3E%3C/svg%3E") center/contain no-repeat;opacity:.6;animation:d-schnee-fall var(--d) linear infinite;animation-delay:var(--delay)}
+.f.dash.dash-xmas-d .d-schnee span{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cg fill='none' stroke-linecap='round'%3E%3Cpath stroke='%232F5D3A' stroke-width='2.4' d='M8 1.1v13.8M1.1 8h13.8M3.05 3.05l9.9 9.9M12.95 3.05l-9.9 9.9'/%3E%3Cpath stroke='%23C9A24A' stroke-width='1.35' d='M8 1.1v13.8M1.1 8h13.8M3.05 3.05l9.9 9.9M12.95 3.05l-9.9 9.9'/%3E%3C/g%3E%3C/svg%3E");opacity:.88}
 @keyframes d-schnee-fall{from{transform:translate3d(0,-6vh,0)}to{transform:translate3d(var(--drift,0),112vh,0)}}
 @media (prefers-reduced-motion:reduce){.f.dash .d-schnee{display:none}}
