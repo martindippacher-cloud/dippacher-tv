@@ -2,38 +2,20 @@
   "_info": "Reihenfolge der Folien (ids). Optional overrides: {\"id\":{\"aktiv\":false}} blendet dauerhaft aus (auch im Dashboard). {\"id\":{\"inRotation\":false}} nimmt die Folie nur aus der TV-Rotation, Inhalte im Dashboard bleiben. Änderungen nur lokal/per Bot – kein Token im Frontend. Hauptfolie: folien/dashboard.json hat \"wiederholeNach\": 4 und kommt nach je 4 anderen Folien wieder (siehe FOLIEN.md).",
   "reihenfolge": [
     "dashboard",
-    "welcome",
     "mittagstisch",
     "gutschein",
     "weihnachten-vorbestellung",
-    "foodbox",
     "bestand",
-    "kloesse",
     "reservieren",
     "aktionsbier-wagner-lager",
     "oeffnung-dezember",
-    "silvester",
-    "neujahr-urlaub",
-    "neujahr-wieder-da",
     "faschingsball-2027",
     "weihnachtsfeier-liederkranz-2026",
     "adventsfenster-2026",
     "abend"
   ],
   "overrides": {
-    "welcome": {
-      "inRotation": false
-    },
     "gutschein": {
-      "inRotation": false
-    },
-    "foodbox": {
-      "inRotation": false
-    },
-    "bestand": {
-      "inRotation": false
-    },
-    "kloesse": {
       "inRotation": false
     },
     "abend": {

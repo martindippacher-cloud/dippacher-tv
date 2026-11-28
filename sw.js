@@ -30,7 +30,6 @@ const PRECACHE = [
   './assets/logo.png',
   './assets/food-box-24.7.jpg',
   './assets/gutscheinkartedippacher.jpg',
-  './assets/kloesse.jpg',
   './assets/qr_foodbox.png',
   './assets/qr_gutschein.png',
   './assets/qr_reservierung.png',
@@ -63,6 +62,25 @@ self.addEventListener('install', (e) => {
           for (const b of bilder) { try { if (!(await c.match('./' + b.replace(/^\.\//, '')))) await c.add('./' + b.replace(/^\.\//, '')); } catch (_) {} }
         } catch (_) {}
       }
+      /* Folien, die nur noch eine Dashboard-Kachel braucht (z. B. Teaser aus folien/archiv/). */
+      try {
+        const dash = await (await fetch('./folien/dashboard.json', {cache:'no-store'})).json();
+        const ids = [];
+        for (const k of (dash.kacheln || [])) {
+          if (k && k.folie) ids.push(k.folie);
+          if (k && Array.isArray(k.folien)) ids.push.apply(ids, k.folien);
+        }
+        const inAuswahl = new Set(aus.reihenfolge || []);
+        for (const id of ids) {
+          if (!id || inAuswahl.has(id)) continue;
+          let u = './folien/' + encodeURIComponent(id) + '.json';
+          try { await c.add(new Request(u, {cache:'reload'})); }
+          catch (_) {
+            u = './folien/archiv/' + encodeURIComponent(id) + '.json';
+            try { await c.add(new Request(u, {cache:'reload'})); } catch (__) { continue; }
+          }
+        }
+      } catch (_) {}
     } catch (_) {}
     self.skipWaiting();
   })());

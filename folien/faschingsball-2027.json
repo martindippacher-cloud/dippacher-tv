@@ -22,5 +22,6 @@
   "qr": "assets/vereine/qr_gesangverein.png",
   "link": "www.poppendorf.de/gesangverein",
   "bisDatum": "2027-01-30",
-  "bisZeit": "22:00"
+  "bisZeit": "22:00",
+  "dauer": 20
 }

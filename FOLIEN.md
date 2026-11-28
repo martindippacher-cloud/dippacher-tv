@@ -73,8 +73,8 @@ Alle optional, kombinierbar. Gerätelokalzeit (Europe/Berlin am Player).
 
 Abwärtskompatibel: bisherige Felder `zeit`, `tage`, `datum`, `aktiv` gelten weiter.
 
-**Pausen** eignen sich für wiederkehrende Folien, die nur zeitweise nicht passen. Beispiel: Die Food-Box-Folien
-(`foodbox`, `bestand`, `kloesse`) pausieren im Betriebsurlaub 21.12.2026–06.01.2027, weil der Automat dann nicht befüllt wird.
+**Pausen** eignen sich für wiederkehrende Folien, die nur zeitweise nicht passen. Beispiel: Die Bestands-Folie
+(`bestand`) pausiert im Betriebsurlaub 21.12.2026–06.01.2027, weil der Automat dann nicht befüllt wird.
 Die Übersicht zeigt „Pause …“. Auch Laufband-Texte können so pausieren: statt eines Strings `{"text":"…","pausen":[…]}`.
 
 ### Beispiele
@@ -356,7 +356,7 @@ Aufteilung: links oben der Willkommenstext, links unten „Weitere Infos“; mit
 - `"ersetzt": "<typ>"`: Ist diese Kachel sichtbar, nimmt sie den Platz der genannten Kachel ein (Mittagstisch oder Foto statt Weitere Infos).
 - An einer Kachel sind dieselben Zeitfelder wie bei Folien möglich (`tage` Mo=1 … So=7, `zeit`, `datum`, `ab`, `bisDatum`, …). Sie gelten zusätzlich zur Logik des Kacheltyps.
 - Die Kacheln holen ihre Inhalte aus den **vorhandenen Folien** (Titel, Unterzeile, Bild, QR) oder, beim Typ `foto`, aus einem Bildpfad an der Kachel. Wer eine Folie ändert, ändert damit auch die Kachel.
-  - `teaser`: erste Folie aus `folien`, die heute laut Zeitsteuerung gilt. Ohne Hintergrundbild, Text zentriert.
+  - `teaser`: erste Folie aus der Liste, die heute laut Zeitsteuerung gilt. Ohne Hintergrundbild, Text zentriert. Liegt die Folie nicht in `auswahl.json` (ausgeblendet), liest das Dashboard `folien/archiv/<id>.json` – so bleibt die Kachel „Herzlich willkommen“ erhalten, auch wenn die eigene Welcome-Folie nicht mehr in der Rotation und der Übersicht steht.
   - `infos`: bis zu `max` Folien, die heute gelten; Vorschaubild = `bild`, sonst der QR-Code der Folie.
   - `mittagstisch`: Liste aus `folien/mittagstisch.json` (auch `csvUrl`), nur solange die Mittagstisch-Folie laut Zeitsteuerung gilt **und** die Kachel selbst (z. B. nur sonntags mit `"tage": [7]`). Sonst keine Kachel.
   - `foto`: ein lokales Bild (`bild`, unter `assets/`) vollflächig in der Kachel, typisch `fit: "cover"`, ohne Text. Sichtbarkeit nur über die Zeitfelder der Kachel. Fehlt das Bild, erscheint die Kachel nicht.
@@ -421,10 +421,12 @@ Eine Folie mit `"exklusiv": { "von": "17:30", "bis": "18:30" }` läuft in diesem
 | `weihnachten-vorbestellung` | bis 17.12.2026 (Bestellschluss) | dippacher.de/weihnachten.html |
 | `gutschein` (Weihnachtsgeschenk) | bis 23.12.2026 (Gutscheinverkauf) | dippacher.de/aktuelles.html |
 | `oeffnung-dezember` | bis 23.12.2026 (Abholung) | dippacher.de/oeffnungszeiten.html |
-| `silvester` | 24.–31.12.2026 | Betriebsurlaub 21.12.2026–06.01.2027 (oeffnungszeiten.html, aktuelles.html) |
-| `neujahr-urlaub` | 01.–06.01.2027 | wie oben, wieder da ab Do. 07.01.2027 |
-| `neujahr-wieder-da` | 07.–17.01.2027 | reguläre Öffnungszeiten von dippacher.de/oeffnungszeiten.html |
-| `foodbox`, `bestand`, `kloesse` | Pause 21.12.2026–06.01.2027 | Martin: Automat im Betriebsurlaub nicht befüllt |
+| `silvester` | ausgeblendet, Vorlage in `folien/archiv/` (war 24.–31.12.2026) | Betriebsurlaub 21.12.2026–06.01.2027 |
+| `neujahr-urlaub` | ausgeblendet, Vorlage in `folien/archiv/` (war 01.–06.01.2027) | wie oben |
+| `neujahr-wieder-da` | ausgeblendet, Vorlage in `folien/archiv/` (war 07.–17.01.2027) | reguläre Öffnungszeiten |
+| `foodbox` | ausgeblendet, Vorlage in `folien/archiv/` | zuvor Pause im Betriebsurlaub |
+| `bestand` | in der Rotation; Pause 21.12.2026–06.01.2027 | Martin: Automat im Betriebsurlaub nicht befüllt |
+| `kloesse` | gelöscht (Datei, Miniatur und `assets/kloesse.jpg`) | war Food-Box-Folie |
 
 Reservieren-QR (`assets/qr_reservierung_resmio.png`) zeigt direkt auf Resmio:
 `https://app.resmio.com/gaststatte-dippacher/widget?fullscreen=true` (Link von dippacher.de/online-reservierung.html).

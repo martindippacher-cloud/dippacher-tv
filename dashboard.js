@@ -140,12 +140,14 @@
     try{ const d=await json(url); st.termine=Array.isArray(d.termine)?d.termine:(Array.isArray(d)?d:[]); }
     catch(e){ if(!st.termine) st.termine=null; }
   }
-  /* Andere Folie nachschlagen: zuerst die bereits geladene (mit Overrides aus auswahl.json), sonst Datei */
+  /* Andere Folie nachschlagen: zuerst die bereits geladene (mit Overrides aus auswahl.json),
+     sonst folien/<id>.json, danach folien/archiv/<id>.json (ausgeblendete Vorlage, z. B. Willkommens-Teaser). */
   async function folie(st,id){
     if(!id) return null;
     if(st.folien[id]!==undefined) return st.folien[id];
     let f=(global.FOLIEN||[]).find(x=>x.id===id)||null;
     if(!f){ try{ f=await json('folien/'+encodeURIComponent(id)+'.json'); }catch(e){ f=null; } }
+    if(!f){ try{ f=await json('folien/archiv/'+encodeURIComponent(id)+'.json'); }catch(e){ f=null; } }
     if(f && f.csvUrl && typeof global.applyMittagstischCSV==='function'){
       try{ f=Object.assign({},f); await global.applyMittagstischCSV([f]); }catch(e){}
     }
