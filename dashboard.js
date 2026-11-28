@@ -27,7 +27,7 @@
 
   /* Weihnachtslook bis einschl. 23.12.2026 23:59:59 Europe/Berlin.
      Vorschau: ?xmas=a (nur Akzent), ?xmas=b (Akzent+Schnee), ?xmas=off. Alias ?weihnachten=.
-     Ohne Parameter: Variante B automatisch im Zeitfenster, danach aus. */
+     Ohne Parameter: Variante A automatisch im Zeitfenster, danach aus. */
   const XMAS_BIS=new Date('2026-12-23T23:59:59.999+01:00');
   function param(name){ try{ return new URLSearchParams(location.search).get(name); }catch(e){ return null; } }
   function xmasVariante(){
@@ -35,18 +35,20 @@
     if(q==='off'||q==='0'||q==='nein'||q==='aus') return null;
     if(q==='a'||q==='akzent') return 'a';
     if(q==='b'||q==='schnee') return 'b';
-    return jetzt().getTime()<=XMAS_BIS.getTime()?'b':null;
+    return jetzt().getTime()<=XMAS_BIS.getTime()?'a':null;
   }
   const XMAS_ZWEIG='<svg class="d-xmas-zweig" viewBox="0 0 100 48" aria-hidden="true">'+
-    '<path d="M8 34c22-3 42-14 70-19" stroke="#3D5340" stroke-width="2" fill="none" stroke-linecap="round"/>'+
-    '<path d="M22 33l-9-14M30 32l-6-16M38 30l-8-15M46 27l-5-16M54 24l-7-14M62 22l-4-13M70 20l-6-12" stroke="#4A6750" stroke-width="1.7" fill="none" stroke-linecap="round"/>'+
-    '<path d="M24 34l-5 11M34 31l-7 12M44 28l-5 12M54 25l-6 11M64 22l-4 10" stroke="#4A6750" stroke-width="1.55" fill="none" stroke-linecap="round"/>'+
-    '<circle cx="80" cy="15" r="2.7" fill="#C9A04A"/><circle cx="71" cy="24" r="2.1" fill="#C9A04A"/>'+
+    '<path d="M8 34c22-3 42-14 70-19" stroke="#2F5D3A" stroke-width="2.2" fill="none" stroke-linecap="round"/>'+
+    '<path d="M22 33l-9-14M30 32l-6-16M38 30l-8-15M46 27l-5-16M54 24l-7-14M62 22l-4-13M70 20l-6-12" stroke="#2F5D3A" stroke-width="1.9" fill="none" stroke-linecap="round"/>'+
+    '<path d="M24 34l-5 11M34 31l-7 12M44 28l-5 12M54 25l-6 11M64 22l-4 10" stroke="#2F5D3A" stroke-width="1.75" fill="none" stroke-linecap="round"/>'+
+    '<circle cx="80" cy="15" r="2.7" fill="#A03033"/><circle cx="71" cy="24" r="2.1" fill="#A03033"/>'+
     '</svg>';
   function schneeHtml(){
-    const f=[[8,.68,36,-22],[17,.52,44,-10],[26,.78,30,-26],[35,.48,48,-14],[45,.62,38,-32],[54,.74,42,-8],[63,.50,34,-18],[72,.66,40,-28],[81,.54,46,-12],[90,.64,32,-24],[12,.44,52,-36],[68,.48,50,-16]];
+    /* Größen 10–14 px; x so gewählt, dass Flocken vor allem in Rändern und der Mittelgasse laufen.
+       Die Schicht liegt unter den Kacheln, damit Foto und Schrift frei bleiben. */
+    const f=[[1.8,11,40,-18],[2.5,13,34,-26],[51.1,12,38,-12],[51.7,14,46,-22],[52.4,10,32,-28],[97.2,13,42,-10],[97.9,11,36,-20],[38,12,44,-16],[44,10,30,-24],[60,14,48,-8],[66,11,34,-30]];
     return '<div class="d-schnee" aria-hidden="true">'+f.map(function(a){
-      return '<span style="--x:'+a[0]+';--s:'+a[1]+'vw;--d:'+a[2]+'s;--delay:'+a[3]+'s;--drift:'+(a[0]%2?0.8:-0.8)+'vw"></span>';
+      return '<span style="--x:'+a[0]+';--s:'+a[1]+'px;--d:'+a[2]+'s;--delay:'+a[3]+'s;--drift:'+(a[0]%2?0.8:-0.8)+'vw"></span>';
     }).join('')+'</div>';
   }
   function applyXmas(st){
