@@ -88,9 +88,9 @@ body.dash-on.lb-on #laufband{bottom:0}
 /* ===== Weihnachtslook (bis 23.12.2026, Klassen an .f.dash) =====
    A: dezenter Akzent (Goldlinie, Tannenzweig, leichter Rahmen).
    B: wie A plus leichte goldene Schneeflocken (unter den Kacheln).
-   C: deutlich (Standard) – Girlande, warmer Grund mit Sternen und Tannengrün-Vignette, Kachel-Icons, kräftigere Goldrahmen.
-   D: festlicher – wie C plus hängende Kugeln und sichtbarerer Schnee.
-   Vorschau: ?xmas=a|b|c|d|off. Ohne Parameter im Zeitfenster: C.
+   C: deutlich – Girlande, warmer Grund mit Sternen und Tannengrün-Vignette, Kachel-Icons, kräftigere Goldrahmen.
+   D: festlicher (Standard) – wie C plus hängende Kugeln und sichtbarerer Schnee.
+   Vorschau: ?xmas=a|b|c|d|off. Ohne Parameter im Zeitfenster: D.
    prefers-reduced-motion blendet den Schnee aus. Nur transform-Animationen, wenige DOM-Elemente. */
 .f.dash.dash-xmas{--xmas-nadel:#2F5D3A;--xmas-gold:#C9A24A;--xmas-rot:#A03033}
 .f.dash.dash-xmas .d-kopf{position:relative;z-index:2}

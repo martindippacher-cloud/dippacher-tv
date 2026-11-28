@@ -27,7 +27,7 @@
 
   /* Weihnachtslook bis einschl. 23.12.2026 23:59:59 Europe/Berlin.
      Vorschau: ?xmas=a|b|c|d|off (Alias ?weihnachten=).
-     Ohne Parameter: Variante C (deutlich) automatisch im Zeitfenster, danach aus. */
+     Ohne Parameter: Variante D (festlich) automatisch im Zeitfenster, danach aus. */
   const XMAS_BIS=new Date('2026-12-23T23:59:59.999+01:00');
   function param(name){ try{ return new URLSearchParams(location.search).get(name); }catch(e){ return null; } }
   function xmasVariante(){
@@ -37,7 +37,7 @@
     if(q==='b'||q==='schnee') return 'b';
     if(q==='c'||q==='deutlich') return 'c';
     if(q==='d'||q==='festlich') return 'd';
-    return jetzt().getTime()<=XMAS_BIS.getTime()?'c':null;
+    return jetzt().getTime()<=XMAS_BIS.getTime()?'d':null;
   }
   const XMAS_ZWEIG='<svg class="d-xmas-zweig" viewBox="0 0 100 48" aria-hidden="true">'+
     '<path d="M8 34c22-3 42-14 70-19" stroke="#2F5D3A" stroke-width="2.2" fill="none" stroke-linecap="round"/>'+
