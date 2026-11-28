@@ -11,7 +11,7 @@
 | `schedule.js` | Zeitlogik (gemeinsam für TV + Übersicht) |
 | `slides.js` | Lädt Auswahl + Folien-Dateien → `window.FOLIEN` |
 | `index.html` | TV-Player |
-| `uebersicht.html` | Nur lesende Übersicht mit Miniaturen |
+| `uebersicht.html` | Nur lesende Übersicht mit Miniaturen und Kopiertext für Änderungen |
 | `version.json` | Versionsstempel – Player lädt nur bei Änderung neu |
 | `einblendung.json` | Sofort-Einblendung / Takeover mit Ablauf |
 | `termine.json` | Anstehende Termine für die Dashboard-Kachel |
@@ -129,11 +129,21 @@ Einzeltermin:
 
 ## Übersicht
 
-`uebersicht.html` zeigt Status-Klartext (z. B. `Mo–Fr 10:00–14:30 · jetzt nicht`, `bis 23.12.2026`, `abgelaufen`, `aus`). **Nur lesen** – Schalter für den TV setzt der Bot in den Dateien.
+`uebersicht.html` zeigt Status-Klartext (z. B. `Mo–Fr 10:00–14:30 · jetzt nicht`, `bis 23.12.2026`, `abgelaufen`, `aus`). **Nur lesen** – die Seite schreibt nichts (kein Token, kein Netzwerk-POST). Schalter für den TV setzt der Bot in den Dateien, nachdem Martin den Kopiertext schickt.
 
 Die Karten verwenden **statische Vorschaubilder** (`assets/vorschau/<id>.jpg`, 640×360, typisch unter 60 KB), keine Live-iframes. So bleibt die Seite auf dem iPhone nutzbar (Safari stürzt sonst nach etwas Scrollen ab, weil jede Miniatur die komplette TV-App lädt). Pro Karte gibt es den Link „Live ansehen“ (`/?folie=N`, öffnet die Folie einzeln). Zusätzlich kann auf „Live-Vorschau“ höchstens **ein** Live-iframe gleichzeitig geladen werden. Fehlt ein Vorschaubild, erscheint eine Textkarte (kein iframe). Die Übersicht registriert keinen Service Worker und muss offline nicht funktionieren.
 
-Pro Folie gibt es ein großes Häkchen **„läuft“**, vorbelegt mit dem aktuellen Zustand (`aktiv`, in der Rotation, und nicht abgelaufen/pausiert = an). Folien mit `inRotation: false` haben das Häkchen aus und den Status „nicht in der Rotation“. Bei Folien, die zeitlich noch nicht dran sind, schon abgelaufen sind oder in einer Pause liegen, steht ein Hinweis daneben (z. B. „endet 17.12.“, „ab 24.12.“, „Pause bis 6.1.“); das Häkchen bedeutet dann „aktiv“. **Die Seite selbst ändert nichts** (kein Schreiben, kein Token, kein Netzwerk-POST). Nach dem Umschalten erscheint unten die Leiste „Änderung senden (n)“. Antippen erzeugt einen deutschen Text (Titel + id), z. B. „Bitte am Info-Bildschirm ändern – Ausblenden: Gutschein (gutschein). Einblenden: Reservieren (reservieren).“, und öffnet auf dem iPhone das Teilen-Menü (`navigator.share`), sonst wird der Text in die Zwischenablage kopiert („Kopiert – jetzt im Chat an Digital Signage einfügen“). „Zurücksetzen“ stellt die Häkchen wieder her.
+Pro Folie gibt es ein großes Häkchen **„läuft“**, vorbelegt mit dem aktuellen Zustand (`aktiv` und in der Rotation = an). Folien mit `inRotation: false` haben das Häkchen aus und den Status „nicht in der Rotation“. Bei Folien, die zeitlich noch nicht dran sind, schon abgelaufen sind oder in einer Pause liegen, steht ein Hinweis daneben (z. B. „endet 17.12.“, „ab 24.12.“, „Pause bis 6.1.“); das Häkchen bedeutet dann „aktiv“.
+
+Darüber liegt der Block **Dashboard-Kacheln** (aus `folien/dashboard.json`, Feld `kacheln`). Jede Kachel hat ein eigenes Häkchen, vorbelegt mit `aktiv`. Die id im Kopiertext ist `id` oder sonst `typ` (z. B. `wetter`).
+
+**Die Häkchen gelten auf dem TV erst, nachdem der Bot die Änderung umgesetzt hat.** Die Seite selbst ändert nichts. Nach dem Umschalten erscheint unten ein kurzer Kopiertext nur mit den Abweichungen vom Live-Stand, zum Beispiel:
+
+```
+TV-Änderung: aus: aktionsbier-wagner-lager; an: gutschein; Kachel aus: wetter
+```
+
+Format: immer der Vorspann `TV-Änderung:`, danach nur vorhandene Teile, getrennt durch `; ` – `aus:` / `an:` für Folien-ids, `Kachel aus:` / `Kachel an:` für Kachel-ids, mehrere ids jeweils durch `, `. Der Knopf **„Kopieren“** legt den Text in die Zwischenablage; schlägt das fehl (typisch auf manchen Handys), wird das Textfeld markiert, damit man selbst kopieren kann. **„Zurücksetzen“** stellt die Häkchen wieder auf den Live-Stand.
 
 **Bei jedem Veröffentlichen** die Miniaturen neu erzeugen, besonders nach neuen oder geänderten Folien:
 

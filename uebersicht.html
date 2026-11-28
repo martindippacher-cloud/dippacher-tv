@@ -72,14 +72,27 @@ code{background:#EADDC6;padding:.05rem .3rem;border-radius:.25rem;color:var(--in
 .senden-btn{background:#8E2A2E;color:#FFF8EC;border:0;flex:1 1 12rem}
 .reset-btn{background:var(--card);color:var(--rot);border:2px solid var(--rot)}
 .sende-ok{flex:1 1 100%;color:#174A25;background:#D7EBDA;font-weight:700;padding:.5rem .7rem;border-radius:.4rem;line-height:1.35}
-body.sende-offen{padding-bottom:calc(7.5rem + env(safe-area-inset-bottom,0px))}
-@media(max-width:420px){.grid{grid-template-columns:1fr}header,main,footer{padding-left:1rem;padding-right:1rem}}
+body.sende-offen{padding-bottom:calc(16rem + env(safe-area-inset-bottom,0px))}
+.sende-hinweis{flex:1 1 100%;margin:0;color:var(--muted);font-size:.88rem;line-height:1.4}
+.sende-hinweis strong{color:var(--ink)}
+.kopierfeld{flex:1 1 100%;width:100%;min-height:3.2rem;resize:vertical;font:inherit;font-size:.95rem;line-height:1.4;color:var(--ink);background:#FFF8EC;border:1px solid var(--line);border-radius:.4rem;padding:.55rem .7rem;user-select:all;-webkit-user-select:all}
+.kopierfeld:focus{outline:3px solid var(--gold);outline-offset:1px}
+.sende-btns{display:flex;flex-wrap:wrap;gap:.6rem;flex:1 1 100%}
+.kacheln-box{margin:0 0 1.1rem;padding:.85rem 1rem 1rem;border:1px solid var(--line);border-radius:.55rem;background:var(--card)}
+.kacheln-box h2{margin:0 0 .35rem;font-size:1.15rem;color:var(--ink);font-family:'Playfair Display',serif}
+.kacheln-box .kacheln-hint{margin:0 0 .8rem;color:var(--muted);font-size:.92rem;line-height:1.45}
+.kacheln-box .kacheln-hint strong{color:var(--ink)}
+.kacheln-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:.2rem 1rem}
+.kacheln-list .laeuft{margin:0}
+.kacheln-list .laeuft-txt{font-size:1rem}
+.kacheln-list code{font-size:.8rem}
+@media(max-width:420px){.grid{grid-template-columns:1fr}header,main,footer{padding-left:1rem;padding-right:1rem}.kacheln-list{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 <header>
   <div>
-    <div class="pill">NUR LESEN · Änderungen über Bot / Dateien</div>
+    <div class="pill">NUR LESEN · Häkchen wirken erst nach Umsetzung auf dem TV</div>
     <h1>Folien-Übersicht</h1>
     <p class="meta">Statische Miniaturen der Folien (keine Live-iframes). Reihenfolge aus <code>auswahl.json</code>. Typ, Version, Einblendung und Zeitplan siehe unten.</p>
   </div>
@@ -89,14 +102,23 @@ body.sende-offen{padding-bottom:calc(7.5rem + env(safe-area-inset-bottom,0px))}
   <p class="hint" id="clock"></p>
   <div class="meta-row" id="meta"></div>
   <div class="rot" id="rotation"></div>
+  <section class="kacheln-box" id="kacheln-box" hidden>
+    <h2>Dashboard-Kacheln</h2>
+    <p class="kacheln-hint"><strong>Häkchen hier und bei den Folien sind nur ein Entwurf.</strong> Sie gelten auf dem TV erst, wenn du den Text unten kopierst, an Digital Signage schickst und die Änderung umgesetzt ist. Die Seite selbst ändert nichts (kein Schreiben, kein Token).</p>
+    <div class="kacheln-list" id="kacheln-list"></div>
+  </section>
   <div class="grid" id="grid">Lade Folien …</div>
 </main>
 <footer>
   Anleitung: <code>FOLIEN.md</code> · <code>MONITORING.md</code> · Offline (nur der TV): <code>sw.js</code> · Alarm: <code>.github/workflows/tv-alarm.yml</code>
 </footer>
 <div id="sendeleiste" class="sendeleiste" hidden>
-  <button type="button" id="senden-btn" class="senden-btn">Änderung senden (0)</button>
-  <button type="button" id="reset-btn" class="reset-btn">Zurücksetzen</button>
+  <p class="sende-hinweis"><strong>Häkchen wirken erst auf dem TV, nachdem Digital Signage die Änderung umgesetzt hat.</strong> Text kopieren und im Chat schicken.</p>
+  <textarea id="kopierfeld" class="kopierfeld" readonly rows="2" aria-label="Kopiertext der Änderungen"></textarea>
+  <div class="sende-btns">
+    <button type="button" id="senden-btn" class="senden-btn">Kopieren</button>
+    <button type="button" id="reset-btn" class="reset-btn">Zurücksetzen</button>
+  </div>
   <div id="sende-ok" class="sende-ok" hidden></div>
 </div>
 <script src="schedule.js"></script>
@@ -104,7 +126,7 @@ body.sende-offen{padding-bottom:calc(7.5rem + env(safe-area-inset-bottom,0px))}
 <script>
 (function(){
   const d=new Date();
-  document.getElementById('clock').innerHTML='<strong>Jetzt:</strong> '+d.toLocaleString('de-DE',{weekday:'long',day:'2-digit',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'})+' (Europe/Berlin am Gerät). Die Karten zeigen fest gespeicherte Vorschaubilder. Eine Folie einzeln öffnen: „Live ansehen“. Optional höchstens eine Live-Vorschau gleichzeitig (Button auf dem Bild). Das Häkchen „läuft“ ist nur ein Entwurf: Die Seite ändert selbst nichts. Nach einer Änderung unten „Änderung senden“ tippen und die Nachricht im Chat an Digital Signage einfügen.';
+  document.getElementById('clock').innerHTML='<strong>Jetzt:</strong> '+d.toLocaleString('de-DE',{weekday:'long',day:'2-digit',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'})+' (Europe/Berlin am Gerät). Die Karten zeigen fest gespeicherte Vorschaubilder. Eine Folie einzeln öffnen: „Live ansehen“. Optional höchstens eine Live-Vorschau gleichzeitig (Button auf dem Bild). Das Häkchen „läuft“ und die Kachel-Häkchen sind nur ein Entwurf: Die Seite ändert selbst nichts am TV. Nach einer Änderung erscheint unten ein kurzer Kopiertext. Den Text kopieren und im Chat an Digital Signage schicken – erst danach gilt die Änderung auf dem Fernseher.';
   const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const txt=s=>esc(String(s??'').replace(/<br\s*\/?>/gi,' ').replace(/&nbsp;/g,' '));
   function typLabel(f){
@@ -186,65 +208,94 @@ body.sende-offen{padding-bottom:calc(7.5rem + env(safe-area-inset-bottom,0px))}
   const sendenBtn=document.getElementById('senden-btn');
   const resetBtn=document.getElementById('reset-btn');
   const sendeOk=document.getElementById('sende-ok');
+  const kopierfeld=document.getElementById('kopierfeld');
+  function kachelId(k,i){ return (k && (k.id||k.typ)) ? String(k.id||k.typ) : ('kachel-'+i); }
+  function kachelName(k){
+    if(k && k.titel) return String(k.titel);
+    const namen={teaser:'Willkommen',infos:'Weitere Infos',mittagstisch:'Mittagstisch',foto:'Foto',wetter:'Wetter',termine:'Termine',qr:'Reservieren-QR'};
+    return (k && namen[k.typ]) || (k && k.typ) || 'Kachel';
+  }
+  function kachelHinweis(k){
+    const teile=[];
+    if(Array.isArray(k.tage)&&k.tage.length){
+      const namen={1:'Mo',2:'Di',3:'Mi',4:'Do',5:'Fr',6:'Sa',7:'So'};
+      teile.push(k.tage.map(t=>namen[t]||t).join(', '));
+    }
+    if(k.zeit&&(k.zeit.von||k.zeit.bis)) teile.push((k.zeit.von||'')+'–'+(k.zeit.bis||''));
+    return teile.join(' ');
+  }
   function aenderungen(){
-    return [...document.querySelectorAll('.laeuft input')].map(cb=>{
+    return [...document.querySelectorAll('.laeuft input[data-art]')].map(cb=>{
       const an=cb.dataset.anfang==='1';
       if(cb.checked===an) return null;
-      return {id:cb.dataset.id, titel:cb.dataset.titel, richtung:cb.checked?'ein':'aus'};
+      return {art:cb.dataset.art, id:cb.dataset.id, titel:cb.dataset.titel, richtung:cb.checked?'an':'aus'};
     }).filter(Boolean);
   }
-  function sendeText(list){
-    const aus=list.filter(x=>x.richtung==='aus');
-    const ein=list.filter(x=>x.richtung==='ein');
-    const fmt=a=>a.map(x=>x.titel+' ('+x.id+')').join(', ');
+  /* Nur die Abweichungen vom Live-Stand, kurz und gut lesbar für den Bot. */
+  function kopiertext(list){
+    const pack=(art,richtung)=>list.filter(x=>x.art===art && x.richtung===richtung).map(x=>x.id);
     const teile=[];
-    if(aus.length) teile.push('Ausblenden: '+fmt(aus));
-    if(ein.length) teile.push('Einblenden: '+fmt(ein));
-    return 'Bitte am Info-Bildschirm ändern – '+teile.join('. ')+'.';
+    const aus=pack('folie','aus'); if(aus.length) teile.push('aus: '+aus.join(', '));
+    const an=pack('folie','an'); if(an.length) teile.push('an: '+an.join(', '));
+    const kAus=pack('kachel','aus'); if(kAus.length) teile.push('Kachel aus: '+kAus.join(', '));
+    const kAn=pack('kachel','an'); if(kAn.length) teile.push('Kachel an: '+kAn.join(', '));
+    return teile.length ? 'TV-Änderung: '+teile.join('; ') : '';
   }
   function updateLeiste(){
     const list=aenderungen();
-    const n=list.length;
-    sendenBtn.textContent='Änderung senden ('+n+')';
-    leiste.hidden=n===0;
-    document.body.classList.toggle('sende-offen', n>0);
-    if(n===0) sendeOk.hidden=true;
+    const text=kopiertext(list);
+    kopierfeld.value=text;
+    leiste.hidden=!text;
+    document.body.classList.toggle('sende-offen', !!text);
+    if(text) document.body.style.paddingBottom=(leiste.offsetHeight+16)+'px';
+    else { document.body.style.paddingBottom=''; sendeOk.hidden=true; sendeOk.textContent=''; }
   }
   function resetHaekchen(){
-    document.querySelectorAll('.laeuft input').forEach(cb=>{cb.checked=cb.dataset.anfang==='1'});
+    document.querySelectorAll('.laeuft input[data-art]').forEach(cb=>{cb.checked=cb.dataset.anfang==='1'});
     sendeOk.hidden=true; sendeOk.textContent='';
     updateLeiste();
   }
-  async function sendenAenderung(){
-    const list=aenderungen();
-    if(!list.length) return;
-    const text=sendeText(list);
+  function markiereFeld(){
+    const ta=kopierfeld;
+    const ro=ta.hasAttribute('readonly');
+    if(ro) ta.removeAttribute('readonly');
+    ta.focus();
+    ta.select();
+    try{ ta.setSelectionRange(0, ta.value.length); }catch(e){}
+    if(ro) setTimeout(()=>{ ta.setAttribute('readonly',''); }, 0);
+  }
+  async function kopierenAenderung(){
+    const text=kopierfeld.value || kopiertext(aenderungen());
+    if(!text) return;
+    kopierfeld.value=text;
     sendeOk.hidden=true;
-    if(navigator.share){
-      try{ await navigator.share({text:text}); return; }
-      catch(e){ if(e && e.name==='AbortError') return; }
-    }
     try{
       if(navigator.clipboard && navigator.clipboard.writeText){
         await navigator.clipboard.writeText(text);
         sendeOk.textContent='Kopiert – jetzt im Chat an Digital Signage einfügen';
         sendeOk.hidden=false;
+        updateLeiste();
         return;
       }
     }catch(e){}
     try{
-      const ta=document.createElement('textarea');
-      ta.value=text; document.body.appendChild(ta); ta.select();
-      document.execCommand('copy'); ta.remove();
-      sendeOk.textContent='Kopiert – jetzt im Chat an Digital Signage einfügen';
+      markiereFeld();
+      const ok=document.execCommand('copy');
+      sendeOk.textContent=ok
+        ? 'Kopiert – jetzt im Chat an Digital Signage einfügen'
+        : 'Text ist markiert – kopieren und im Chat an Digital Signage einfügen';
       sendeOk.hidden=false;
     }catch(e){
-      sendeOk.textContent=text;
+      markiereFeld();
+      sendeOk.textContent='Text ist markiert – kopieren und im Chat an Digital Signage einfügen';
       sendeOk.hidden=false;
     }
+    updateLeiste();
   }
-  sendenBtn.addEventListener('click', sendenAenderung);
+  sendenBtn.addEventListener('click', kopierenAenderung);
   resetBtn.addEventListener('click', resetHaekchen);
+  kopierfeld.addEventListener('focus', markiereFeld);
+  kopierfeld.addEventListener('click', markiereFeld);
 
     Promise.all([
     loadFolien(),
@@ -297,6 +348,36 @@ body.sende-offen{padding-bottom:calc(7.5rem + env(safe-area-inset-bottom,0px))}
         (haupt.length?'<br><b>Hauptfolie:</b> '+haupt.map(f=>esc(f.id)+' kommt nach je '+esc(f.wiederholeNach)+' anderen Folien wieder').join(', '):'');
     })();
 
+    (function(){
+      const box=document.getElementById('kacheln-box');
+      const listEl=document.getElementById('kacheln-list');
+      const dash=FOLIEN.find(f=>f.typ==='dashboard'||f.id==='dashboard');
+      const kacheln=(dash && Array.isArray(dash.kacheln)) ? dash.kacheln : [];
+      listEl.innerHTML='';
+      if(!kacheln.length){ box.hidden=true; return; }
+      box.hidden=false;
+      kacheln.forEach((k,i)=>{
+        const id=kachelId(k,i);
+        const an=k.aktiv!==false;
+        const extra=kachelHinweis(k);
+        const label=document.createElement('label');
+        label.className='laeuft';
+        label.innerHTML=
+          '<input type="checkbox">'+
+          '<span class="laeuft-box" aria-hidden="true"></span>'+
+          '<span class="laeuft-meta"><span class="laeuft-txt">'+esc(kachelName(k))+'</span>'+
+          '<span class="laeuft-hint"><code>'+esc(id)+'</code>'+(extra?' · '+esc(extra):'')+'</span></span>';
+        const cb=label.querySelector('input');
+        cb.dataset.art='kachel';
+        cb.dataset.id=id;
+        cb.dataset.titel=kachelName(k);
+        cb.dataset.anfang=an?'1':'0';
+        cb.checked=an;
+        cb.addEventListener('change', ()=>{sendeOk.hidden=true; updateLeiste()});
+        listEl.appendChild(label);
+      });
+    })();
+
     const grid=document.getElementById('grid'); grid.innerHTML='';
     FOLIEN.forEach((f,i)=>{
       const st=TVSchedule.statusInfo(f,d,FOLIEN);
@@ -330,6 +411,7 @@ body.sende-offen{padding-bottom:calc(7.5rem + env(safe-area-inset-bottom,0px))}
       (function(){
         const cb=card.querySelector('.laeuft input');
         const an=f.aktiv!==false && f.inRotation!==false;
+        cb.dataset.art='folie';
         cb.dataset.id=f.id;
         cb.dataset.titel=plainTitle(f);
         cb.dataset.anfang=an?'1':'0';
