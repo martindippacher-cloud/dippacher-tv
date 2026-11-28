@@ -5,6 +5,8 @@
 | Datei | Zweck |
 |-------|--------|
 | `folien/<id>.json` | Inhalt **einer** Folie (Titel, Text, Bild, QR, Zeiten …) |
+| `folien/archiv/<id>.json` | Abgelaufene Folien, als Vorlage aufbewahrt (nicht in der Rotation) |
+| `folien/beispiele/<id>.json` | Beispielfolien / Vorlagen (nicht in der Rotation) |
 | `auswahl.json` | **Reihenfolge** der `id`s + optionale Overrides (`aktiv:false` …) |
 | `schedule.js` | Zeitlogik (gemeinsam für TV + Übersicht) |
 | `slides.js` | Lädt Auswahl + Folien-Dateien → `window.FOLIEN` |
@@ -24,7 +26,7 @@ Live-TV und Übersicht lesen dieselben Dateien. **Keine Tokens** im Frontend. Ä
 1. Neue Datei anlegen, z. B. `folien/aktion-maerz.json` (Felder siehe unten).
 2. In `auswahl.json` die alte `id` in `reihenfolge` durch die neue ersetzen **oder** an gewünschter Stelle einfügen.
 3. Lokal prüfen: `python3 -m http.server` → `/?folie=N&alle` und `/uebersicht.html`.
-4. Alte JSON-Datei kann gelöscht oder archiviert werden.
+4. Alte JSON-Datei nach `folien/archiv/` verschieben (nicht hart löschen, bleibt als Vorlage).
 
 Zum kurz Abschalten ohne Löschen bleibt die `id` in `reihenfolge`. In `auswahl.json`:
 
@@ -41,6 +43,17 @@ Zum kurz Abschalten ohne Löschen bleibt die `id` in `reihenfolge`. In `auswahl.
 ```
 
 Die Übersicht zeigt dann „nicht in der Rotation“ und das Häkchen „läuft“ ist aus. Wiedereinblenden: den Override entfernen oder `"inRotation": true`.
+
+## Abgelaufene Folien und Vorlagen zurückholen
+
+Abgelaufene Folien liegen in `folien/archiv/`, Beispielfolien in `folien/beispiele/`. Sie stehen nicht in `auswahl.json` und erscheinen weder auf dem TV noch in der Übersicht. Die zugehörigen Bilder in `assets/` (und Vorschaubilder in `assets/vorschau/`) bleiben liegen.
+
+### Eine Vorlage zurückholen
+
+1. Die Datei von `folien/archiv/<id>.json` oder `folien/beispiele/<id>.json` nach `folien/<id>.json` **kopieren** (die Vorlage darf im Archiv bzw. bei den Beispielen liegen bleiben).
+2. Inhalt anpassen (Texte, Daten, `aktiv`, Zeiten). Wird daraus eine neue Folie, eine neue `id` wählen und die Datei entsprechend umbenennen.
+3. Die `id` in `auswahl.json` → `reihenfolge` an der gewünschten Stelle eintragen.
+4. Lokal prüfen: `python3 -m http.server` → `/?folie=N&alle` und `/uebersicht.html`.
 
 ## Zeitsteuerung (Felder)
 
@@ -95,9 +108,9 @@ Einzeltermin:
 **QR-Position (`qrPos`):** Standard ist rechts neben dem Text. Mit `"qrPos": "text"` sitzt die QR-Karte (Code 15vw mit heller Ruhezone, Link daneben) in der Textspalte unter dem Fließtext, damit das Foto rechts frei bleibt. Gilt nur, wenn die Folie `qr` und kein `logo` hat. Beispiel: `folien/gutschein.json`.
 
 
-**Hinweis-Pfeil (`hinweis`):** Optional, typ `html`. Unter dem Text erscheint ein Pfeil nach links (Wegweiser, z. B. in einen Raum). Als Objekt `{"text":"Hier entlang"}` oder als Text-String. Beispiel: `folien/weihnachtsfeier-station11-klinikum.json`.
+**Hinweis-Pfeil (`hinweis`):** Optional, typ `html`. Unter dem Text erscheint ein Pfeil nach links (Wegweiser, z. B. in einen Raum). Als Objekt `{"text":"Hier entlang"}` oder als Text-String. Beispiel: `folien/archiv/weihnachtsfeier-station11-klinikum.json`.
 
-**Foto als Karte (`klasse: "fotoKarte"`):** Das `bild` steht rechts als gerahmtes Foto (ganzes Motiv), nicht als weich ausgeblendeter Hintergrund. Gut für Begrüßungsfolien mit einem klaren Bild. Beispiel: `folien/weihnachtsfeier-station11-klinikum.json`.
+**Foto als Karte (`klasse: "fotoKarte"`):** Das `bild` steht rechts als gerahmtes Foto (ganzes Motiv), nicht als weich ausgeblendeter Hintergrund. Gut für Begrüßungsfolien mit einem klaren Bild. Beispiel: `folien/archiv/weihnachtsfeier-station11-klinikum.json`.
 
 **Text-Format:** Alle Texte werden escaped. Erlaubt sind nur `<br>` (Zeilenumbruch) und `&nbsp;` (geschütztes Leerzeichen). Anderes HTML erscheint als Text.
 
@@ -169,7 +182,7 @@ Ohne HTML-Inhalt – nur Mediendatei Vollbild.
 - Mit `dauer`: feste Sekunden (Video startet bei jedem Durchlauf neu)
 - Immer `muted` + `autoplay` (Browser-Policy)
 
-Beispiele im Repo: `folien/beispiel-bild.json`, `folien/beispiel-video.json` (beide `aktiv:false`).
+Beispiele im Repo: `folien/beispiele/beispiel-bild.json`, `folien/beispiele/beispiel-video.json` (beide `aktiv:false`).
 
 ## Vereinsplakate (`typ: "plakat"`)
 
@@ -225,8 +238,9 @@ Hinweise:
 - Dauer automatisch: `zwei`/`mittig` 22 s, `mitText` nach Wortregel, mind. 22 s, max. 30 s. Ein festes `dauer` geht immer vor.
 - Termin fürs Dashboard zusätzlich in `termine.json` eintragen.
 - Der Service Worker cached die Bilder aller Folien aus `auswahl.json` (`bilder`, `bild`, `qr`, `logo`) beim Installieren mit.
-- Beispiele (immer `aktiv:false`, Muster-Plakate mit „BEISPIEL“): `beispiel-plakat-zwei`, `beispiel-plakat-mittig`, `beispiel-plakat-text`.
+- Beispiele (immer `aktiv:false`, Muster-Plakate mit „BEISPIEL“, unter `folien/beispiele/`): `beispiel-plakat-zwei`, `beispiel-plakat-mittig`, `beispiel-plakat-text`.
   Neu erzeugen: `python3 scripts/beispiel_plakate.py && scripts/pdf_zu_bild.sh assets/vereine/original/beispiel-*.pdf`.
+  Zurück in die Übersicht: Datei nach `folien/` kopieren und die `id` in `auswahl.json` eintragen (siehe oben).
 
 ## Version / Neu laden
 
@@ -300,7 +314,7 @@ ausgeblendet, weil Logo und Uhr schon in der Kopfzeile stehen. Die Food-Box komm
 {
   "id": "dashboard", "typ": "dashboard", "dauer": 30, "wiederholeNach": 4,
   "kacheln": [
-    { "typ": "teaser",       "bereich": "links",  "folien": ["welcome-stadtwerke", "welcome"] },
+    { "typ": "teaser",       "bereich": "links",  "folien": ["welcome"] },
     { "typ": "infos",        "bereich": "links",  "max": 2, "folien": ["weihnachten-vorbestellung", "gutschein", "reservieren"] },
     { "typ": "mittagstisch", "bereich": "links",  "folie": "mittagstisch", "ersetzt": "infos", "tage": [7] },
     { "typ": "foto",         "bereich": "links",  "bild": "assets/karpfen_0461Lr.jpg", "fit": "cover", "tage": [4, 5, 6], "zeit": { "von": "10:00", "bis": "14:30" }, "ersetzt": "infos" },
@@ -337,12 +351,12 @@ Eine Folie mit `"wiederholeNach": N` kommt in der Rotation wieder, nachdem **N n
 
 - Häufiger: kleinere Zahl (`2` oder `3`). Seltener: größere Zahl. Feld entfernen = normale Folie (einmal pro Durchlauf).
 - **Mehrere Folien** dürfen `wiederholeNach` haben, jede mit eigener Zahl und eigenem Zähler. Sind mehrere gleichzeitig fällig, gilt die Reihenfolge in `auswahl.json`. Dieselbe Folie kommt nicht direkt hintereinander, solange es eine andere aktive Folie gibt.
-- So bleiben zum Beispiel das Dashboard mit `wiederholeNach: 4` (zweimal pro Durchlauf bei sieben oder acht normalen Folien) und eine Begrüßungsfolie mit `wiederholeNach: 2` unabhängig voneinander.
+- So bleiben zum Beispiel das Dashboard mit `wiederholeNach: 4` (zweimal pro Durchlauf bei sieben oder acht normalen Folien) und eine weitere Folie mit `wiederholeNach: 2` unabhängig voneinander.
 - Die Übersicht (`uebersicht.html`) zeigt den aktuellen Ablauf, die Dauer eines Durchlaufs und den Anteil dieser Folien.
 
 ## Exklusiv: eine Folie allein (`exklusiv`)
 
-Eine Folie mit `"exklusiv": { "von": "17:30", "bis": "18:30" }` läuft in diesem Fenster **allein** – der Rest der Rotation (einschließlich Dashboard) pausiert. Beispiel: `folien/weihnachtsfeier-station11-klinikum.json`.
+Eine Folie mit `"exklusiv": { "von": "17:30", "bis": "18:30" }` läuft in diesem Fenster **allein** – der Rest der Rotation (einschließlich Dashboard) pausiert. Beispiel: `folien/archiv/weihnachtsfeier-station11-klinikum.json`.
 
 ```json
 "exklusiv": { "von": "17:30", "bis": "18:30" }
